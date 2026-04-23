@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>실전 프로젝트 I — 설계부터 구현까지 | M6 | 모두의연구소</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@latest/dist/web/static/pretendard.min.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;font-family:'Pretendard',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#030712;-webkit-font-smoothing:antialiased}
+.nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;justify-content:center;gap:3px;padding:10px 40px;opacity:0.15;transition:opacity .4s}
+.nav:hover{opacity:0.85}
+.nav-dot{width:28px;height:3px;background:rgba(255,255,255,.25);border-radius:2px;border:none;cursor:pointer;transition:all .25s;flex-shrink:0}
+.nav-dot.active{background:#F7585C;width:36px}
+.nav-dot:hover{background:rgba(247,88,92,.6)}
+body.light-slide .nav-dot{background:rgba(0,0,0,.12)}
+body.light-slide .nav-dot.active{background:#F7585C}
+body.light-slide .nav-dot:hover{background:rgba(247,88,92,.5)}
+.slide-num{position:fixed;bottom:24px;right:36px;font-size:.75rem;color:rgba(255,255,255,.15);z-index:100;font-variant-numeric:tabular-nums;letter-spacing:1px;transition:color .5s}
+body.light-slide .slide-num{color:rgba(0,0,0,.12)}
+.deck{width:100%;height:100%;position:relative}
+.slide{position:absolute;inset:0;display:flex;flex-direction:column;padding:72px 96px 56px;opacity:0;transition:opacity .45s ease;pointer-events:none;overflow:hidden}
+.slide.active{opacity:1;pointer-events:auto}
+.s-white{background:#fff;color:#030712}
+.s-light{background:#F4F6F8;color:#030712}
+.s-dark{background:#030712;color:#fff}
+.s-accent{background:#F7585C;color:#fff}
+.s-coral{background:#FFF2F2;color:#030712}
+.s-gradient{background:linear-gradient(135deg,#030712 0%,#1a1f2e 100%);color:#fff}
+.s-label{font-size:.78rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#F7585C;margin-bottom:14px}
+.s-dark .s-label,.s-gradient .s-label,.s-accent .s-label{color:rgba(255,255,255,.45)}
+.s-title{font-size:2.6rem;font-weight:700;line-height:1.35;margin-bottom:36px;max-width:80%;word-break:keep-all}
+.s-body{flex:1;display:flex;flex-direction:column;justify-content:flex-start}
+.t-main{font-size:1.45rem;line-height:1.75;color:#2E3339;max-width:75%;word-break:keep-all}
+.s-dark .t-main,.s-gradient .t-main{color:rgba(255,255,255,.82)}
+.s-accent .t-main{color:rgba(255,255,255,.92)}
+.t-sub{font-size:1.05rem;line-height:1.65;color:#5F656C;margin-top:14px;max-width:70%;word-break:keep-all}
+.s-dark .t-sub,.s-gradient .t-sub{color:rgba(255,255,255,.4)}
+.s-accent .t-sub{color:rgba(255,255,255,.6)}
+.t-quote{font-size:1.5rem;line-height:1.8;border-left:4px solid #F7585C;padding-left:24px;margin:16px 0;max-width:72%;word-break:keep-all}
+.s-dark .t-quote{border-left-color:rgba(255,255,255,.2)}
+.t-huge{font-size:9rem;font-weight:800;line-height:1;color:#F7585C;letter-spacing:-4px}
+.t-big{font-size:3rem;font-weight:700;line-height:1.4;word-break:keep-all}
+.t-emphasis{font-size:2rem;font-weight:700;line-height:1.55;word-break:keep-all}
+.hl{color:#F7585C}
+.s-accent .hl{color:#fff;text-decoration:underline;text-decoration-thickness:3px;text-underline-offset:4px}
+.dim{opacity:.45}
+.slide.cover{justify-content:center;padding-top:0}
+.cover .s-title{font-size:3.2rem;max-width:72%;margin-bottom:20px}
+.cover-sub{font-size:1.15rem;color:#5F656C;margin-bottom:6px}
+.s-dark .cover-sub{color:rgba(255,255,255,.4)}
+.cover-brand{font-size:.85rem;color:#F7585C;font-weight:700;letter-spacing:1.5px;margin-top:12px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:24px;max-width:92%}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;max-width:95%}
+.card{padding:28px 30px;border-radius:14px;background:#F4F6F8}
+.s-dark .card,.s-gradient .card{background:rgba(255,255,255,.06)}
+.s-light .card{background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.04)}
+.card-icon{font-size:1.8rem;margin-bottom:14px}
+.card-title{font-size:1.15rem;font-weight:700;margin-bottom:8px;line-height:1.4}
+.card-desc{font-size:.95rem;line-height:1.6;color:#5F656C}
+.s-dark .card-desc,.s-gradient .card-desc{color:rgba(255,255,255,.55)}
+.cmp-table{width:90%;border-collapse:collapse;margin-top:8px}
+.cmp-table th{text-align:left;padding:14px 18px;font-size:.82rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#5F656C;border-bottom:2px solid #E5E7EB}
+.cmp-table td{padding:16px 18px;font-size:1.05rem;line-height:1.5;border-bottom:1px solid #F0F0F0}
+.cmp-table td:first-child{font-weight:600;color:#030712;width:30%}
+.cmp-table .old{color:#9198A1}
+.cmp-table .new{color:#F7585C;font-weight:700}
+.num-list{list-style:none;padding:0;counter-reset:item}
+.num-list li{font-size:1.3rem;line-height:1.5;padding:12px 0 12px 50px;position:relative;counter-increment:item;word-break:keep-all}
+.num-list li::before{content:counter(item);position:absolute;left:0;top:12px;width:34px;height:34px;border-radius:50%;background:#F7585C;color:#fff;display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:700}
+.chk-list{list-style:none;padding:0}
+.chk-list li{font-size:1.35rem;line-height:1.5;padding:10px 0 10px 40px;position:relative;word-break:keep-all}
+.chk-list li::before{content:'';position:absolute;left:0;top:16px;width:18px;height:18px;border-radius:50%;background:#F7585C}
+.demo-tag{display:inline-block;padding:6px 16px;background:#F7585C;color:#fff;border-radius:6px;font-size:.8rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:20px}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.slide.active .s-label{animation:fadeUp .45s ease .08s both}
+.slide.active .s-title{animation:fadeUp .45s ease .16s both}
+.slide.active .s-body>*{animation:fadeUp .45s ease .28s both}
+.slide.active .s-body>*:nth-child(2){animation-delay:.36s}
+.slide.active .s-body>*:nth-child(3){animation-delay:.42s}
+@keyframes spotlightGlow{0%{box-shadow:0 0 0 0 rgba(247,88,92,.4)}50%{box-shadow:0 0 20px 10px rgba(247,88,92,.2)}100%{box-shadow:0 0 0 0 rgba(247,88,92,0)}}
+.spotlight-active{animation:spotlightGlow .6s ease-out;border-radius:8px}
+.slide.centered{align-items:center;text-align:center}
+.centered .s-title{max-width:90%;text-align:center}
+.centered .t-main{max-width:80%;text-align:center;margin:0 auto}
+.centered .t-sub{max-width:70%;text-align:center;margin:14px auto 0}
+.flow-wrap{display:flex;align-items:center;gap:0;max-width:95%;margin:16px 0}
+.flow-step{display:flex;flex-direction:column;align-items:center;gap:8px;padding:18px 22px;border-radius:12px;background:#F4F6F8;min-width:120px;text-align:center;flex:1}
+.s-dark .flow-step,.s-gradient .flow-step{background:rgba(255,255,255,.06)}
+.flow-step-icon{font-size:1.6rem}
+.flow-step-label{font-size:.92rem;font-weight:700;line-height:1.4}
+.flow-step-desc{font-size:.78rem;color:#5F656C;line-height:1.4}
+.s-dark .flow-step-desc,.s-gradient .flow-step-desc{color:rgba(255,255,255,.5)}
+.flow-arrow{font-size:1.4rem;color:#F7585C;flex-shrink:0;padding:0 4px;font-weight:700}
+.s-dark .flow-arrow{color:rgba(255,255,255,.35)}
+.hl-box{padding:20px 24px;border-radius:10px;border-left:4px solid;margin:14px 0;max-width:85%;display:flex;gap:14px;align-items:flex-start}
+.hl-box-icon{font-size:1.3rem;flex-shrink:0;margin-top:2px}
+.hl-box-content{flex:1}
+.hl-box-title{font-size:1rem;font-weight:700;margin-bottom:4px}
+.hl-box-desc{font-size:.92rem;line-height:1.6;opacity:.85}
+.hl-box.info{background:rgba(59,130,246,.08);border-left-color:#3B82F6}
+.hl-box.info .hl-box-title{color:#2563EB}
+.hl-box.warning{background:rgba(245,158,11,.08);border-left-color:#F59E0B}
+.hl-box.warning .hl-box-title{color:#D97706}
+.hl-box.success{background:rgba(16,185,129,.08);border-left-color:#10B981}
+.hl-box.success .hl-box-title{color:#059669}
+.sections-bar{position:fixed;bottom:0;left:0;right:0;z-index:150;display:flex;justify-content:center;gap:8px;padding:12px 40px;background:rgba(3,7,18,.85);backdrop-filter:blur(10px);opacity:0;transition:opacity .4s;pointer-events:none}
+.sections-bar.visible{opacity:1;pointer-events:auto}
+.section-chip{padding:6px 16px;border-radius:20px;font-size:.78rem;font-weight:600;cursor:pointer;transition:all .25s;border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.5);background:transparent}
+.section-chip.active{background:#F7585C;color:#fff;border-color:#F7585C}
+.section-chip:hover{border-color:rgba(247,88,92,.5);color:rgba(255,255,255,.8)}
+.pen-overlay{position:fixed;top:0;left:0;width:100%;height:100%;z-index:300;pointer-events:none;cursor:default}
+.pen-overlay.active{pointer-events:auto;cursor:crosshair}
+@media(max-width:1100px){.slide{padding:56px 56px 40px}.s-title{font-size:2.1rem}.cover .s-title{font-size:2.6rem}.t-huge{font-size:6.5rem}.t-main{font-size:1.25rem}.grid-2,.grid-3{max-width:100%}}
+@page{size:254mm 142.875mm;margin:0}
+@media print{html,body{margin:0;padding:0;background:white!important;height:auto!important}.nav,.slide-num,.sections-bar,.pen-overlay{display:none!important}.deck{position:static!important;height:auto!important;overflow:visible!important}.slide{position:relative!important;inset:auto!important;opacity:1!important;pointer-events:auto!important;page-break-after:always;break-after:page;width:254mm;height:142.875mm;overflow:hidden;box-sizing:border-box}}
+</style>
+</head>
+<body class="light-slide">
+<div class="nav" id="nav"></div>
+<div class="slide-num" id="slideNum"></div>
+<div class="sections-bar" id="sectionsBar"></div>
+<canvas class="pen-overlay" id="penOverlay"></canvas>
+<div class="deck" id="deck">
+
+<!-- 1. 커버 -->
+<div class="slide s-dark cover" data-theme="dark" data-section="시작" data-notes="수강생들 환영. 오늘부터 배운 것을 종합하여 실전 프로젝트를 시작하는 시간. M1~M5까지 배운 기술을 모두 활용해 웹 앱을 직접 만들어 볼 것이라고 안내. 설렘과 긴장감을 동시에 가질 수 있도록 분위기 세팅.">
+<div class="cover-brand">모두의연구소 · Antigravity 과정</div>
+<h1 class="s-title" style="margin-top:16px">실전 프로젝트 I<br><span class="hl">설계부터 구현까지</span></h1>
+<p class="cover-sub">M6 — 지금까지 배운 것, 모두 써먹을 시간</p>
+<p class="cover-sub dim">모두의연구소 · 2026</p>
+</div>
+
+<!-- 2. 아젠다 -->
+<div class="slide s-light" data-theme="light" data-section="시작" data-notes="오늘 2시간 동안 배울 내용을 한눈에 보여주기. 5개 섹션으로 구성. M1~M5 복습은 짧게, 실전 프로젝트에 집중한다는 점 강조. 오늘은 직접 만들어보는 수업이라고 강조.">
+<p class="s-label">Today</p>
+<h2 class="s-title">오늘의 여정</h2>
+<div class="s-body">
+<div class="grid-3">
+<div class="card"><div class="card-icon">🔄</div><div class="card-title">M1–M5 복습</div><div class="card-desc">여정 되짚기</div></div>
+<div class="card"><div class="card-icon">🚀</div><div class="card-title">프로젝트 시작</div><div class="card-desc">요구사항 정의부터 환경 구축까지</div></div>
+<div class="card"><div class="card-icon">🔍</div><div class="card-title">레거시 분석</div><div class="card-desc">기존 코드를 AI로 파악하기</div></div>
+</div>
+<div class="grid-2" style="margin-top:20px">
+<div class="card"><div class="card-icon">⚙️</div><div class="card-title">기능 구현 사이클</div><div class="card-desc">정의 → 설계 → 구현 → 테스트 → 리뷰</div></div>
+<div class="card"><div class="card-icon">🧪</div><div class="card-title">테스트 자동 생성</div><div class="card-desc">AI가 테스트 코드도 작성</div></div>
+</div>
+</div>
+</div>
+
+<!-- 3. M1–M5 여정 되짚기 (1) -->
+<div class="slide s-gradient" data-theme="dark" data-section="리뷰" data-notes="지금까지 5주간의 여정을 한 장으로 요약. M1에서 바이브 코딩을 처음 접하고, M5에서 고급 패턴까지 배운 여정을 시각화. '정말 많이 배웠죠?' 하고 참가자 공감 유도.">
+<p class="s-label">Journey</p>
+<h2 class="s-title">M1–M5 여정 되짚기</h2>
+<div class="s-body">
+<div class="flow-wrap">
+<div class="flow-step"><div class="flow-step-icon">🎶</div><div class="flow-step-label">M1 바이브 코딩</div><div class="flow-step-desc">개념과 Antigravity 소개</div></div>
+<div class="flow-arrow">→</div>
+<div class="flow-step"><div class="flow-step-icon">🧠</div><div class="flow-step-label">M2 Context</div><div class="flow-step-desc">AI에게 프로젝트 가르치기</div></div>
+<div class="flow-arrow">→</div>
+<div class="flow-step"><div class="flow-step-icon">💬</div><div class="flow-step-label">M3 Prompt</div><div class="flow-step-desc">프롬프트 엔지니어링</div></div>
+</div>
+<div class="flow-wrap" style="margin-top:12px">
+<div class="flow-step"><div class="flow-step-icon">🔧</div><div class="flow-step-label">M4 코드 생성</div><div class="flow-step-desc">Plan → Build → Review</div></div>
+<div class="flow-arrow">→</div>
+<div class="flow-step"><div class="flow-step-icon">🔌</div><div class="flow-step-label">M5 MCP & Skills</div><div class="flow-step-desc">AI 확장과 외부 연동</div></div>
+<div class="flow-arrow">→</div>
+<div class="flow-step"><div class="flow-step-icon">🎯</div><div class="flow-step-label"><span class="hl">M6 실전!</span></div><div class="flow-step-desc">오늘 배울 것</div></div>
+</div>
+</div>
+</div>
+
+<!-- 4. M1–M5 여정 되짚기 (2) — 핵심 요약 -->
+<div class="slide s-white" data-theme="light" data-section="리뷰" data-notes="각 모듈의 핵심 키워드를 테이블로 정리. 이것만 기억하면 된다는 식으로 가볍게 복습. 오늘은 이 모든 것을 실전에서 써먹는다고 강조.">
+<p class="s-label">Recap</p>
+<h2 class="s-title">지금까지 배운 핵심</h2>
+<div class="s-body">
+<table class="cmp-table">
+<thead><tr><th>모듈</th><th>핵심 주제</th><th>기억할 것</th></tr></thead>
+<tbody>
+<tr><td>M1</td><td class="old">바이브 코딩 개론</td><td class="new">자연어 → 코드</td></tr>
+<tr><td>M2</td><td class="old">Context Engineering</td><td class="new">AI에게 컨텍스트를 주자</td></tr>
+<tr><td>M3</td><td class="old">프롬프트 엔지니어링</td><td class="new">구체적이고 단계적으로</td></tr>
+<tr><td>M4</td><td class="old">에이전틱 코드 생성</td><td class="new">Plan → Build → Review</td></tr>
+<tr><td>M5</td><td class="old">MCP & Agent Skills</td><td class="new">AI의 능력을 확장</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<!-- 5. M1–M5 여정 되짚기 (3) — 오늘의 목표 -->
+<div class="slide s-dark" data-theme="dark" data-section="리뷰" data-notes="오늘의 목표를 명확히 선언. 배운 것을 종합하여 실제 프로젝트를 완성하는 것. 두려워하지 말라고 격려. AI가 옆에 있으니 실패해도 괜찮다는 점 강조.">
+<p class="s-label">Goal</p>
+<h2 class="s-title">오늘의 목표</h2>
+<div class="s-body">
+<p class="t-main">지금까지 배운 모든 기술을 동원해<br><span class="hl">하나의 완성된 웹 앱</span>을 만듭니다.</p>
+<p class="t-sub" style="margin-top:20px">바이브 코딩 · Context Engineering · 프롬프트 · Skills · MCP — 오늘 다 씁니다.</p>
+<div class="hl-box success" style="margin-top:24px">
+<div class="hl-box-icon">✅</div>
+<div class="hl-box-content">
+<div class="hl-box-title">핵심 마인드</div>
+<div class="hl-box-desc">완벽하지 않아도 괜찮습니다. 끝까지 밀고 나가는 게 목표입니다.</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- 6. 섹션 구분: 프로젝트 시작하기 -->
+<div class="slide s-gradient centered" data-theme="dark" data-section="프로젝트 시작" data-notes="첫 번째 본 섹션인 '프로젝트 시작하기'로 전환. 설계 단계의 중요성을 강조. 코딩부터 시작하지 말고, 먼저 무엇을 만들지 정하자고 안내.">
+<p class="s-label">Section 1</p>
+<h2 class="s-title">프로젝트 <span class="hl">시작하기</span></h2>
+<div class="s-body">
+<p class="t-main">무엇을 만들지 정하고, 환경을 구축합니다.</p>
+<p class="t-sub">코딩은 나중. 먼저 설계부터.</p>
+</div>
+</div>
+
+<!-- 7. 프로젝트 선택: 웹 앱 + Firebase -->
+<div class="slide s-light" data-theme="light" data-section="프로젝트 시작" data-notes="오늘 만들 프로젝트 소개. Firebase 기반 웹 앱. 이유: Antigravity와 Firebase의 통합이 좋고, 수강생들이 가장 실용적으로 느낄 수 있는 주제. '할 일 관리 앱'이나 '미니 SNS' 중 하나를 선택하도록 가이드.">
+<p class="s-label">Project</p>
+<h2 class="s-title">어떤 프로젝트를 만들까?</h2>
+<div class="s-body">
+<div class="grid-2">
+<div class="card"><div class="card-icon">📋</div><div class="card-title">추천: 할 일 관리 앱</div><div class="card-desc">CRUD + 인증 + 실시간 동기화 — 모든 기능을 골고루 경험</div></div>
+<div class="card"><div class="card-icon">💬</div><div class="card-title">대안: 미니 게시판</div><div class="card-desc">게시글 작성, 댓글, 사용자 프로필 — Firebase Firestore 활용</div></div>
+</div>
+<div class="hl-box info" style="margin-top:20px">
+<div class="hl-box-icon">ℹ️</div>
+<div class="hl-box-content">
+<div class="hl-box-title">왜 Firebase?</div>
+<div class="hl-box-desc">Antigravity와 네이티브 통합. 서버리스. 실시간 DB. 배포까지 한 번에.</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- 8. AI와 함께 요구사항 정의 -->
+<div class="slide s-white" data-theme="light" data-section="프로젝트 시작" data-notes="요구사항을 AI와 함께 정의하는 방법 소개. Agent에게 '이런 앱을 만들고 싶어'라고 말하면, AI가 요구사항을 정리해 준다는 것을 실제 프롬프트로 보여주며 설명.">
+<p class="s-label">Requirements</p>
+<h2 class="s-title">AI와 함께 요구사항 정의하기</h2>
+<div class="s-body">
+<p class="t-main">Agent에게 프로젝트 아이디어를 이야기하면,<br><span class="hl">요구사항 명세서</span>를 작성해 줍니다.</p>
+<div class="hl-box info" style="margin-top:20px">
+<div class="hl-box-icon">💬</div>
+<div class="hl-box-content">
+<div class="hl-box-title">프롬프트 예시</div>
+<div class="hl-box-desc">"Firebase 기반 할 일 관리 앱을 만들고 싶어. 사용자 인증, CRUD, 카테고리 분류, 마감일 설정 기능이 필요해. 요구사항을 정리해줘."</div>
+</div>
+</div>
+<p class="t-sub" style="margin-top:12px">→ AI가 기능 명세, 사용자 스토리, 기술 스택까지 제안</p>
+</div>
+</div>
+
+<!-- 9. Antigravity에서 프로젝트 세팅 -->
+<div class="slide s-light" data-theme="light" data-section="프로젝트 시작" data-notes="실제로 Antigravity에서 프로젝트를 세팅하는 방법. Firebase 프로젝트 생성, Antigravity에서 폴더 열기, Firebase 연동까지의 과정을 단계별로 안내.">
+<p class="s-label">Setup</p>
+<h2 class="s-title">Antigravity에서 프로젝트 세팅</h2>
+<div class="s-body">
+<ul class="num-list">
+<li>Firebase Console에서 새 프로젝트 생성</li>
+<li>Authentication · Firestore 활성화</li>
+<li>Antigravity에서 프로젝트 폴더 열기</li>
+<li><code>firebase init</code>로 Firebase SDK 연동</li>
+<li>.env 파일에 Firebase 설정값 추가</li>
+</ul>
+</div>
+</div>
+
+<!-- 10. Skills & MCP 설치 -->
+<div class="slide s-white" data-theme="light" data-section="프로젝트 시작" data-notes="프로젝트에 필요한 Skills와 MCP 서버를 설치하는 방법. Firebase MCP가 핵심. M4에서 배운 것을 실전에 적용하는 단계.">
+<p class="s-label">Skills & MCP</p>
+<h2 class="s-title">Skills & MCP 설치하기</h2>
+<div class="s-body">
+<div class="grid-2">
+<div class="card"><div class="card-icon">🔥</div><div class="card-title">Firebase MCP</div><div class="card-desc">Firestore CRUD, Auth, Hosting을 Agent에서 직접 제어</div></div>
+<div class="card"><div class="card-icon">🎨</div><div class="card-title">Frontend UI Skill</div><div class="card-desc">AI가 UI 컴포넌트를 더 잘 만들도록 지원</div></div>
+</div>
+<div class="hl-box warning" style="margin-top:20px">
+<div class="hl-box-icon">⚠️</div>
+<div class="hl-box-content">
+<div class="hl-box-title">MCP 설정 팁</div>
+<div class="hl-box-desc">mcp_config.json에 Firebase MCP 설정을 추가하세요. 설정 파일은 공유 GitHub에 있습니다.</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- 11. AI 친화적 프로젝트 구조 -->
+<div class="slide s-dark" data-theme="dark" data-section="프로젝트 시작" data-notes="AI가 이해하기 쉬운 프로젝트 구조의 중요성 설명. CLAUDE.md, AGENTS.md 같은 컨텍스트 파일의 역할. 폴더 구조를 체계적으로 잡으면 AI가 더 잘 도와준다는 점 강조.">
+<p class="s-label">Structure</p>
+<h2 class="s-title">AI 친화적 프로젝트 구조</h2>
+<div class="s-body">
+<ul class="chk-list">
+<li><strong>CLAUDE.md / AGENTS.md</strong> — 프로젝트 설명과 규칙</li>
+<li><strong>src/</strong> — 명확한 폴더 구조 (components, hooks, lib, types)</li>
+<li><strong>README.md</strong> — AI가 먼저 읽는 파일</li>
+<li><strong>.env.example</strong> — 환경변수 템플릿</li>
+<li><strong>명명 규칙</strong> — 일관된 파일/폴더 이름</li>
+</ul>
+<div class="hl-box success" style="margin-top:20px">
+<div class="hl-box-icon">💡</div>
+<div class="hl-box-content">
+<div class="hl-box-title">M2에서 배운 것</div>
+<div class="hl-box-desc">Context Engineering의 핵심: AI가 프로젝트를 이해하기 쉽게 만들기</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- 12. 섹션 구분: 레거시 코드 분석 -->
+<div class="slide s-gradient centered" data-theme="dark" data-section="레거시 분석" data-notes="두 번째 섹션 전환. 레거시 코드 분석은 실무에서 가장 많이 하는 작업 중 하나. 새 프로젝트만 하는 게 아니라, 기존 코드를 이해하고 수정하는 게 진짜 실력이라고 강조.">
+<p class="s-label">Section 2</p>
+<h2 class="s-title">레거시 코드 <span class="hl">분석</span></h2>
+<div class="s-body">
+<p class="t-main">이미 있는 코드를 AI와 함께 이해합니다.</p>
+<p class="t-sub">실무에서 가장 많이 하는 작업</p>
+</div>
+</div>
+
+<!-- 13. 기존 프로젝트 열기 -->
+<div class="slide s-light" data-theme="light" data-section="레거시 분석" data-notes="기존 프로젝트를 Antigravity에서 여는 방법. 준비된 레거시 프로젝트를 열어서 분석 실습을 진행. 파일 탐색기 구조를 보며 전체 구조를 파악하는 방법 설명.">
+<p class="s-label">Open</p>
+<h2 class="s-title">기존 프로젝트 열기</h2>
+<div class="s-body">
+<p class="t-main">준비된 <span class="hl">샘플 레거시 프로젝트</span>를 열어보겠습니다.</p>
+<div class="grid-3" style="margin-top:20px">
+<div class="card"><div class="card-icon">📂</div><div class="card-title">파일 탐색기</div><div class="card-desc">폴더 구조로 전체 아키텍처 파악</div></div>
+<div class="card"><div class="card-icon">🔍</div><div class="card-title">Search</div><div class="card-desc">키워드 검색으로 의존성 추적</div></div>
+<div class="card"><div class="card-icon">📊</div><div class="card-title">Agent 분석</div><div class="card-desc">AI에게 아키텍처 설명 요청</div></div>
+</div>
+</div>
+</div>
+
+<!-- 14. "아키텍처 설명해줘" 프롬프트 -->
+<div class="slide s-white" data-theme="light" data-section="레거시 분석" data-notes="실제 프롬프트를 보여주며 Agent에게 아키텍처 설명을 요청하는 방법 시연. AI가 폴더 구조, 의존성, 데이터 흐름을 분석해 주는 것을 보여줌.">
+<p class="s-label">Prompt</p>
+<h2 class="s-title">"이 프로젝트 아키텍처를 설명해줘"</h2>
+<div class="s-body">
+<div class="hl-box info">
+<div class="hl-box-icon">💬</div>
+<div class="hl-box-content">
+<div class="hl-box-title">프롬프트</div>
+<div class="hl-box-desc">"이 프로젝트의 아키텍처를 분석해줘. 폴더 구조, 주요 모듈, 데이터 흐름, 사용한 기술 스택을 정리해줘."</div>
+</div>
+</div>
+<p class="t-sub" style="margin-top:16px">→ AI가 전체 구조를 읽고 다이어그램 형태로 정리</p>
+<div class="hl-box success" style="margin-top:16px">
+<div class="hl-box-icon">✅</div>
+<div class="hl-box-content">
+<div class="hl-box-title">실습</div>
+<div class="hl-box-desc">직접 Agent Pane에 입력해 보세요. AI가 프로젝트를 어떻게 이해하는지 확인합니다.</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- 15. 의존성 시각화 -->
+<div class="slide s-light" data-theme="light" data-section="레거시 분석" data-notes="AI가 분석한 의존성을 시각화하는 방법. Agent에게 다이어그램을 그려달라고 요청하면, Mermaid나 텍스트 기반 다이어그램으로 보여줌. 이걸 보면 프로젝트가 한눈에 보인다는 점 강조.">
+<p class="s-label">Dependencies</p>
+<h2 class="s-title">의존성 시각화하기</h2>
+<div class="s-body">
+<p class="t-main">Agent에게 <span class="hl">의존성 다이어그램</span>을 그려달라고 요청하세요.</p>
+<div class="hl-box info" style="margin-top:16px">
+<div class="hl-box-icon">💬</div>
+<div class="hl-box-content">
+<div class="hl-box-title">프롬프트 예시</div>
+<div class="hl-box-desc">"이 프로젝트의 모듈 간 의존성을 Mermaid 다이어그램으로 그려줘."</div>
+</div>
+</div>
+<div class="grid-2" style="margin-top:16px">
+<div class="card"><div class="card-icon">📊</div><div class="card-title">모듈 의존성</div><div class="card-desc">어떤 모듈이 어떤 모듈을 참조하는지 한눈에</div></div>
+<div class="card"><div class="card-icon">🔗</div><div class="card-title">API 호출 흐름</div><div class="card-desc">프론트엔드 → API → DB 흐름 파악</div></div>
+</div>
+</div>
+</div>
+
+<!-- 16. 패턴과 안티패턴 식별 -->
+<div class="slide s-white" data-theme="light" data-section="레거시 분석" data-notes="AI가 코드의 패턴과 안티패턴을 찾아내는 방법. 좋은 구조와 나쁜 구조를 구분하는 능력이 AI에겐 강력하다는 점. 개선 제안까지 받을 수 있다는 것을 보여줌.">
+<p class="s-label">Patterns</p>
+<h2 class="s-title">패턴과 안티패턴 식별</h2>
+<div class="s-body">
+<table class="cmp-table">
+<thead><tr><th>영역</th><th>좋은 패턴 ✅</th><th>안티패턴 ❌</th></tr></thead>
+<tbody>
+<tr><td>상태 관리</td><td class="new">중앙 집중형 (Zustand)</td><td class="old">Props Drilling</td></tr>
+<tr><td>API 호출</td><td class="new">Custom Hook 캡슐화</td><td class="old">컴포넌트 내 직접 호출</td></tr>
+<tr><td>에러 처리</td><td class="new">Error Boundary + Toast</td><td class="old">console.log만</td></tr>
+<tr><td>타입 정의</td><td class="new">공유 타입 (types/)</td><td class="old">any 남용</td></tr>
+</tbody>
+</table>
+<div class="hl-box warning" style="margin-top:16px">
+<div class="hl-box-icon">⚠️</div>
+<div class="hl-box-content">
+<div class="hl-box-title">실습</div>
+<div class="hl-box-desc">Agent에게 "이 코드에서 개선할 점을 찾아줘"라고 물어보세요.</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- 17. 분석 결과로 문서 만들기 -->
+<div class="slide s-light" data-theme="light" data-section="레거시 분석" data-notes="분석 결과를 문서로 만드는 방법. Agent가 자동으로 README나 아키텍처 문서를 작성해 줌. 이 문서는 팀원과 공유하거나 나중에 참고할 수 있음.">
+<p class="s-label">Document</p>
+<h2 class="s-title">분석 결과로 문서 만들기</h2>
+<div class="s-body">
+<div class="flow-wrap">
+<div class="flow-step"><div class="flow-step-icon">🔍</div><div class="flow-step-label">분석</div><div class="flow-step-desc">코드 읽기</div></div>
+<div class="flow-arrow">→</div>
+<div class="flow-step"><div class="flow-step-icon">📝</div><div class="flow-step-label">문서화</div><div class="flow-step-desc">자동 생성</div></div>
+<div class="flow-arrow">→</div>
+<div class="flow-step"><div class="flow-step-icon">✅</div><div class="flow-step-label">리뷰</div><div class="flow-step-desc">내용 확인</div></div>
+<div class="flow-arrow">→</div>
+<div class="flow-step"><div class="flow-step-icon">📚</div><div class="flow-step-label">공유</div><div class="flow-step-desc">팀과 공유</div></div>
+</div>
+<p class="t-sub" style="margin-top:20px">AI가 생성한 문서를 반드시 검토하고 수정하는 습관을 들이세요.</p>
+</div>
+</div>
+
+<!-- 18. 섹션 구분: 기능 구현 전체 사이클 -->
+<div class="slide s-accent centered" data-theme="dark" data-section="기능 구현" data-notes="세 번째이자 가장 핵심적인 섹션으로 전환. 오늘의 하이라이트. 하나의 기능을 처음부터 끝까지 구현하는 전체 사이클을 경험할 것이라고 안내.">
+<p class="s-label">Section 3</p>
+<h2 class="s-title">기능 구현 <span class="hl">전체 사이클</span></h2>
+<div class="s-body">
+<p class="t-main">하나의 기능을 처음부터 끝까지 만들어 봅니다.</p>
+<p class="t-sub">정의 → 설계 → 구현 → 테스트 → 리뷰</p>
+</div>
+</div>
+
+<!-- 19. 기능 정의 with Agent -->
+<div class="slide s-light" data-theme="light" data-section="기능 구현" data-notes="기능 정의 단계. Agent와 함께 어떤 기능을 만들지 구체화. 사용자 스토리 형태로 정의하는 방법 소개. AI가 엣지 케이스도 제안해 준다는 점 강조.">
+<p class="s-label">Define</p>
+<h2 class="s-title">Step 1: 기능 정의</h2>
+<div class="s-body">
+<p class="t-main">Agent와 함께 <span class="hl">무엇을 만들지</span> 구체화합니다.</p>
+<div class="hl-box info" style="margin-top:16px">
+<div class="hl-box-icon">💬</div>
+<div class="hl-box-content">
+<div class="hl-box-title">프롬프트 예시</div>
+<div class="hl-box-desc">"사용자가 할 일을 추가할 수 있는 기능을 만들고 싶어. 제목, 설명, 카테고리, 마감일 필드가 필요해. 사용자 스토리와 엣지 케이스를 정리해줘."</div>
+</div>
+</div>
+<p class="t-sub" style="margin-top:12px">→ AI가 사용자 스토리, 예외 상황, UI 흐름까지 제안</p>
+</div>
+</div>
+
+<!-- 20. 구현 계획 (Planning Mode) -->
+<div class="slide s-white" data-theme="light" data-section="기능 구현" data-notes="Planning Mode 원칙 설명. 바로 코딩하지 말고, 먼저 설계를 하자는 것. Agent에게 구현 계획을 먼저 세워달라고 요청. 이게 바로 M3에서 배운 단계적 프롬프트의 실전 적용.">
+<p class="s-label">Plan</p>
+<h2 class="s-title">Step 2: 구현 계획 (Planning Mode)</h2>
+<div class="s-body">
+<div class="hl-box warning">
+<div class="hl-box-icon">🚨</div>
+<div class="hl-box-content">
+<div class="hl-box-title">Planning Mode 원칙</div>
+<div class="hl-box-desc">코드부터 짜지 마세요. 먼저 "어떻게 만들지" 계획을 세우세요.</div>
+</div>
+</div>
+<div class="hl-box info" style="margin-top:14px">
+<div class="hl-box-icon">💬</div>
+<div class="hl-box-content">
+<div class="hl-box-title">프롬프트 예시</div>
+<div class="hl-box-desc">"할 일 추가 기능을 구현하려고 해. 컴포넌트 구조, 상태 관리, API 호출 흐름을 먼저 계획해줘. 코드는 아직 작성하지 마."</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- 21. 점진적 코드 생성 -->
+<div class="slide s-light" data-theme="light" data-section="기능 구현" data-notes="점진적으로 코드를 생성하는 방법. 한번에 전체를 만들지 말고, 컴포넌트 → 훅 → API 순으로 나누어 요청. 이렇게 하면 오류도 적고, AI의 답변 품질도 높아짐.">
+<p class="s-label">Generate</p>
+<h2 class="s-title">Step 3: 점진적 코드 생성</h2>
+<div class="s-body">
+<div class="flow-wrap">
+<div class="flow-step"><div class="flow-step-icon">🧱</div><div class="flow-step-label">타입 정의</div><div class="flow-step-desc">types/todo.ts</div></div>
+<div class="flow-arrow">→</div>
+<div class="flow-step"><div class="flow-step-icon">🔗</div><div class="flow-step-label">API 계층</div><div class="flow-step-desc">lib/firestore.ts</div></div>
+<div class="flow-arrow">→</div>
+<div class="flow-step"><div class="flow-step-icon">🪝</div><div class="flow-step-label">Custom Hook</div><div class="flow-step-desc">hooks/useTodos.ts</div></div>
+<div class="flow-arrow">→</div>
+<div class="flow-step"><div class="flow-step-icon">🎨</div><div class="flow-step-label">UI 컴포넌트</div><div class="flow-step-desc">components/</div></div>
+</div>
+<div class="hl-box success" style="margin-top:20px">
+<div class="hl-box-icon">💡</div>
+<div class="hl-box-content">
+<div class="hl-box-title">핵심</div>
+<div class="hl-box-desc">한 번에 전체를 요청하지 마세요. 작은 단위로 나누어 요청하면 품질이 올라갑니다.</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- 22. Agent가 테스트 작성 -->
+<div class="slide s-white" data-theme="light" data-section="기능 구현" data-notes="Agent에게 테스트 코드를 작성해 달라고 요청하는 방법. 단위 테스트, 통합 테스트를 AI가 자동으로 만들어 줌. 테스트 코드 작성이 귀찮아서 안 하는 문제를 AI가 해결해 준다는 점 강조.">
+<p class="s-label">Test</p>
+<h2 class="s-title">Step 4: 테스트 작성 (Agent-generated)</h2>
+<div class="s-body">
+<p class="t-main">Agent에게 <span class="hl">테스트 코드를 작성</span>해 달라고 요청하세요.</p>
+<div class="hl-box info" style="margin-top:16px">
+<div class="hl-box-icon">💬</div>
+<div class="hl-box-content">
+<div class="hl-box-title">프롬프트 예시</div>
+<div class="hl-box-desc">"useTodos 훅에 대한 단위 테스트를 작성해줘. 추가, 삭제, 완료 처리 케이스를 모두 포함해줘."</div>
+</div>
+</div>
+<p class="t-sub" style="margin-top:12px">→ AI가 테스트 파일을 생성하고, 엣지 케이스까지 커버</p>
+</div>
+</div>
+
+<!-- 23. 디버그 & 수정 -->
+<div class="slide s-coral" data-theme="light" data-section="기능 구현" data-notes="AI 코드에도 버그가 있다는 점을 솔직하게 말하기. 에러가 나면 Agent에게 에러 메시지를 그대로 복사해서 붙여넣으라고 안내. 디버깅도 AI와 함께하는 것이 바이브 코딩의 장점.">
+<p class="s-label">Debug</p>
+<h2 class="s-title">Step 5: 디버그 & 수정</h2>
+<div class="s-body">
+<ul class="num-list">
+<li><strong>에러 메시지를 Agent에게 전달</strong> — 복사해서 그대로 붙여넣기</li>
+<li><strong>원인 분석 요청</strong> — "이 에러의 원인이 뭐야?"</li>
+<li><strong>수정 제안 받기</strong> — "이 에러를 고쳐줘"</li>
+<li><strong>수정 후 재확인</strong> — 테스트를 다시 실행</li>
+</ul>
+<div class="hl-box warning" style="margin-top:16px">
+<div class="hl-box-icon">⚠️</div>
+<div class="hl-box-content">
+<div class="hl-box-title">현실적인 조언</div>
+<div class="hl-box-desc">AI 코드에도 버그가 있습니다. 당황하지 말고, Agent에게 에러를 보여주세요.</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- 24. Agent와 코드 리뷰 -->
+<div class="slide s-light" data-theme="light" data-section="기능 구현" data-notes="AI에게 코드 리뷰를 요청하는 방법. M3에서 배운 프롬프트 기법을 활용. 성능, 보안, 가독성 관점에서 리뷰를 요청하면 더 구체적인 피드백을 받을 수 있음.">
+<p class="s-label">Review</p>
+<h2 class="s-title">Step 6: Agent와 코드 리뷰</h2>
+<div class="s-body">
+<div class="hl-box info">
+<div class="hl-box-icon">💬</div>
+<div class="hl-box-content">
+<div class="hl-box-title">프롬프트 예시</div>
+<div class="hl-box-desc">"방금 작성한 코드를 리뷰해줘. 성능, 보안, 가독성 관점에서 개선점을 알려줘."</div>
+</div>
+</div>
+<div class="grid-3" style="margin-top:20px">
+<div class="card"><div class="card-icon">⚡</div><div class="card-title">성능</div><div class="card-desc">불필요한 리렌더링, 메모리 누수</div></div>
+<div class="card"><div class="card-icon">🔒</div><div class="card-title">보안</div><div class="card-desc">XSS, 인증 우회, 데이터 노출</div></div>
+<div class="card"><div class="card-icon">📖</div><div class="card-title">가독성</div><div class="card-desc">네이밍, 구조, 주석</div></div>
+</div>
+</div>
+</div>
+
+<!-- 25. 실전 예시: 사용자 인증 -->
+<div class="slide s-dark" data-theme="dark" data-section="기능 구현" data-notes="사용자 인증 기능을 실제로 구현하는 예시. Firebase Auth를 사용한 로그인/회원가입 흐름을 Agent와 함께 만드는 과정을 보여줌. 실제 프롬프트와 결과를 시연.">
+<p class="s-label">Example</p>
+<h2 class="s-title">실전 예시: <span class="hl">사용자 인증</span></h2>
+<div class="s-body">
+<div class="flow-wrap">
+<div class="flow-step"><div class="flow-step-icon">📝</div><div class="flow-step-label">정의</div><div class="flow-step-desc">이메일/비번 로그인 + 구글 OAuth</div></div>
+<div class="flow-arrow">→</div>
+<div class="flow-step"><div class="flow-step-icon">🏗️</div><div class="flow-step-label">구현</div><div class="flow-step-desc">AuthContext + Login UI</div></div>
+<div class="flow-arrow">→</div>
+<div class="flow-step"><div class="flow-step-icon">🧪</div><div class="flow-step-label">테스트</div><div class="flow-step-desc">로그인/로그아웃 시나리오</div></div>
+</div>
+<p class="t-sub" style="margin-top:20px">Firebase Auth MCP를 활용하면 에뮬레이터에서 바로 테스트 가능</p>
+</div>
+</div>
+
+<!-- 26. 실전 예시: Firestore 데이터 계층 -->
+<div class="slide s-white" data-theme="light" data-section="기능 구현" data-notes="Firestore 데이터 계층 구현 예시. 컬렉션 구조 설계부터 CRUD 함수 생성까지 Agent와 함께 진행하는 과정. 실시간 리스너 설정도 AI가 자동으로 해 줌.">
+<p class="s-label">Example</p>
+<h2 class="s-title">실전 예시: <span class="hl">Firestore 데이터 계층</span></h2>
+<div class="s-body">
+<div class="flow-wrap">
+<div class="flow-step"><div class="flow-step-icon">📐</div><div class="flow-step-label">스키마 설계</div><div class="flow-step-desc">todos 컬렉션 구조</div></div>
+<div class="flow-arrow">→</div>
+<div class="flow-step"><div class="flow-step-icon">🔌</div><div class="flow-step-label">CRUD 함수</div><div class="flow-step-desc">add/get/update/delete</div></div>
+<div class="flow-arrow">→</div>
+<div class="flow-step"><div class="flow-step-icon">📡</div><div class="flow-step-label">실시간 리스너</div><div class="flow-step-desc">onSnapshot 연동</div></div>
+</div>
+<div class="hl-box info" style="margin-top:20px">
+<div class="hl-box-icon">💬</div>
+<div class="hl-box-content">
+<div class="hl-box-title">프롬프트 예시</div>
+<div class="hl-box-desc">"todos 컬렉션의 CRUD 함수를 만들어줘. 실시간 업데이트를 위해 onSnapshot을 사용하고, 타입 안전성을 보장해줘."</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- 27. 섹션 구분: 테스트 자동 생성 -->
+<div class="slide s-gradient centered" data-theme="dark" data-section="테스트" data-notes="마지막 섹션인 테스트 자동 생성으로 전환. 테스트는 선택이 아닌 필수. 특히 AI가 만든 코드는 테스트로 검증하는 것이 중요하다고 강조.">
+<p class="s-label">Section 4</p>
+<h2 class="s-title">테스트 <span class="hl">자동 생성</span></h2>
+<div class="s-body">
+<p class="t-main">AI 코드는 반드시 테스트로 검증합니다.</p>
+<p class="t-sub">테스트는 선택이 아닌 필수</p>
+</div>
+</div>
+
+<!-- 28. AI 코드에 테스트가 중요한 이유 -->
+<div class="slide s-light" data-theme="light" data-section="테스트" data-notes="AI가 작성한 코드를 테스트해야 하는 이유를 3가지로 설명. AI는 의도와 다른 코드를 작성할 수 있고, 엣지 케이스를 놓칠 수 있으며, 리팩토링 시 회귀를 방지해야 함.">
+<p class="s-label">Why Test</p>
+<h2 class="s-title">AI 코드에 테스트가 중요한 이유</h2>
+<div class="s-body">
+<div class="grid-3">
+<div class="card"><div class="card-icon">🎯</div><div class="card-title">의도 검증</div><div class="card-desc">AI가 내 의도대로 코드를 작성했는지 확인</div></div>
+<div class="card"><div class="card-icon">🔍</div><div class="card-title">엣지 케이스</div><div class="card-desc">AI가 놓친 예외 상황을 테스트로 발견</div></div>
+<div class="card"><div class="card-icon">🛡️</div><div class="card-title">회귀 방지</div><div class="card-desc">수정해도 기존 기능이 깨지지 않는지 보장</div></div>
+</div>
+<div class="hl-box warning" style="margin-top:20px">
+<div class="hl-box-icon">⚠️</div>
+<div class="hl-box-content">
+<div class="hl-box-title">핵심 원칙</div>
+<div class="hl-box-desc">AI를 믿되, 테스트로 검증하세요. Trust, but verify.</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- 29. Agent로 단위 테스트 생성 -->
+<div class="slide s-white" data-theme="light" data-section="테스트" data-notes="Agent에게 단위 테스트를 작성해 달라고 요청하는 구체적인 방법. Jest/Vitest 설정부터 실제 테스트 코드까지. AI가 mock까지 자동으로 만들어 준다는 점 강조.">
+<p class="s-label">Unit Tests</p>
+<h2 class="s-title">Agent로 단위 테스트 생성하기</h2>
+<div class="s-body">
+<div class="hl-box info">
+<div class="hl-box-icon">💬</div>
+<div class="hl-box-content">
+<div class="hl-box-title">프롬프트 예시</div>
+<div class="hl-box-desc">"hooks/useTodos.ts에 대한 단위 테스트를 Vitest로 작성해줘. 추가, 삭제, 토글, 필터링 기능을 모두 테스트하고, Firebase 모킹도 설정해줘."</div>
+</div>
+</div>
+<div class="grid-2" style="margin-top:16px">
+<div class="card"><div class="card-icon">✅</div><div class="card-title">정상 케이스</div><div class="card-desc">할 일 추가 → 목록에 표시</div></div>
+<div class="card"><div class="card-icon">❌</div><div class="card-title">예외 케이스</div><div class="card-desc">빈 제목, 네트워크 오류</div></div>
+</div>
+</div>
+</div>
+
+<!-- 30. Test-Driven Vibe Coding -->
+<div class="slide s-dark" data-theme="dark" data-section="테스트" data-notes="Test-Driven Vibe Coding 개념 소개. TDD의 장점을 바이브 코딩에 적용. 먼저 테스트를 작성하고, AI가 그 테스트를 통과하는 코드를 작성하는 방식. 이게 진짜 효과적이라는 점 강조.">
+<p class="s-label">TDVC</p>
+<h2 class="s-title">Test-Driven <span class="hl">Vibe Coding</span></h2>
+<div class="s-body">
+<div class="flow-wrap">
+<div class="flow-step"><div class="flow-step-icon">📝</div><div class="flow-step-label">테스트 먼저</div><div class="flow-step-desc">Agent가 테스트 작성</div></div>
+<div class="flow-arrow">→</div>
+<div class="flow-step"><div class="flow-step-icon">🤖</div><div class="flow-step-label">코드 생성</div><div class="flow-step-desc">테스트를 통과하는 코드</div></div>
+<div class="flow-arrow">→</div>
+<div class="flow-step"><div class="flow-step-icon">✅</div><div class="flow-step-label">검증</div><div class="flow-step-desc">테스트 통과 확인</div></div>
+<div class="flow-arrow">→</div>
+<div class="flow-step"><div class="flow-step-icon">🔄</div><div class="flow-step-label">리팩토링</div><div class="flow-step-desc">안전하게 개선</div></div>
+</div>
+<p class="t-sub" style="margin-top:20px">테스트가 있으니까, AI가 코드를 마음껏 수정해도 안전합니다.</p>
+</div>
+</div>
+
+<!-- 31. Antigravity에서 테스트 실행 -->
+<div class="slide s-light" data-theme="light" data-section="테스트" data-notes="Antigravity에서 테스트를 실행하는 방법. 터미널에서 Vitest를 실행하고, 결과를 확인. Agent에게 테스트 실패 원인을 분석해 달라고 요청하는 방법까지 소개.">
+<p class="s-label">Run Tests</p>
+<h2 class="s-title">Antigravity에서 테스트 실행하기</h2>
+<div class="s-body">
+<ul class="num-list">
+<li>터미널에서 <code>npm run test</code> 또는 <code>npx vitest</code> 실행</li>
+<li>테스트 결과를 Agent Pane에 복사</li>
+<li>실패한 테스트에 대해 "원인 분석해줘" 요청</li>
+<li>Agent가 수정 코드를 제안 → 수락 → 재실행</li>
+</ul>
+<div class="hl-box success" style="margin-top:16px">
+<div class="hl-box-icon">✅</div>
+<div class="hl-box-content">
+<div class="hl-box-title">워크플로우</div>
+<div class="hl-box-desc">테스트 실패 → Agent 분석 → 수정 → 재실행 → 통과. 이 사이클이 바이브 코딩의 핵심입니다.</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- 32. 팀 실습 안내 -->
+<div class="slide s-accent" data-theme="dark" data-section="실습" data-notes="팀 실습 시작. 2~3명씩 팀을 구성하여 프로젝트를 진행. 각 팀이 하나의 기능을 맡아서 전체 사이클을 경험. 30~40분 실습 시간.">
+<p class="s-label">Team Exercise</p>
+<h2 class="s-title">팀 실습: <span class="hl">기능 하나 완성하기</span></h2>
+<div class="s-body">
+<p class="t-main">2~3명 팀으로 하나의 기능을 처음부터 끝까지 만들어 보세요.</p>
+<p class="t-sub" style="margin-top:14px">정의 → 설계 → 구현 → 테스트 → 리뷰 전체 사이클 경험</p>
+<div class="grid-3" style="margin-top:20px">
+<div class="card" style="background:rgba(255,255,255,.12)"><div class="card-icon">A팀</div><div class="card-title" style="color:#fff">할 일 추가/수정</div><div class="card-desc" style="color:rgba(255,255,255,.7)">CRUD + 폼 UI</div></div>
+<div class="card" style="background:rgba(255,255,255,.12)"><div class="card-icon">B팀</div><div class="card-title" style="color:#fff">사용자 인증</div><div class="card-desc" style="color:rgba(255,255,255,.7)">로그인/회원가입</div></div>
+<div class="card" style="background:rgba(255,255,255,.12)"><div class="card-icon">C팀</div><div class="card-title" style="color:#fff">실시간 동기화</div><div class="card-desc" style="color:rgba(255,255,255,.7)">Firestore 리스너</div></div>
+</div>
+</div>
+</div>
+
+<!-- 33. 오늘의 핵심 정리 -->
+<div class="slide s-white" data-theme="light" data-section="정리" data-notes="오늘 배운 내용을 한 장으로 요약. 프로젝트 시작, 레거시 분석, 기능 구현 사이클, 테스트 자동 생성 네 가지를 복습.">
+<p class="s-label">Summary</p>
+<h2 class="s-title">오늘의 핵심</h2>
+<div class="s-body">
+<div class="grid-2">
+<div class="card"><div class="card-icon">🚀</div><div class="card-title">프로젝트 시작</div><div class="card-desc">AI와 함께 요구사항 정의하고 환경 구축</div></div>
+<div class="card"><div class="card-icon">🔍</div><div class="card-title">레거시 분석</div><div class="card-desc">Agent에게 아키텍처 설명 요청하고 시각화</div></div>
+<div class="card"><div class="card-icon">⚙️</div><div class="card-title">기능 구현 사이클</div><div class="card-desc">정의 → 설계 → 구현 → 테스트 → 리뷰</div></div>
+<div class="card"><div class="card-icon">🧪</div><div class="card-title">테스트 자동 생성</div><div class="card-desc">AI가 테스트 작성, Test-Driven Vibe Coding</div></div>
+</div>
+</div>
+</div>
+
+<!-- 34. 다음 시간 예고 -->
+<div class="slide s-dark" data-theme="dark" data-section="정리" data-notes="다음 시간 M7 예고. 실전 프로젝트 II에서는 오늘 만든 것을 더 발전시키고, 배포까지 진행. 오늘 배운 것을 바탕으로 더 복잡한 기능에 도전할 것.">
+<p class="s-label">Next</p>
+<h2 class="s-title">다음 시간: <span class="hl">실전 프로젝트 II</span></h2>
+<div class="s-body">
+<p class="t-main">M7 — 고급 기능 구현과 배포</p>
+<p class="t-sub">성능 최적화, CI/CD, Firebase Hosting 배포</p>
+</div>
+</div>
+
+<!-- 35. 마무리 -->
+<div class="slide s-dark cover" data-theme="dark" data-section="정리" data-notes="마무리 인사. 오늘 직접 프로젝트를 완성한 것을 축하. 경쟁이 아닌 상생이라는 모두의연구소 가치 재확인. 다음 주에 만나자고 안내.">
+<div class="cover-brand">모두의연구소 · Antigravity 과정</div>
+<h1 class="s-title" style="margin-top:16px">만들면서 <span class="hl">배운다</span></h1>
+<p class="cover-sub">오늘 여러분은 진짜 프로젝트를 완성했습니다</p>
+<p class="cover-sub dim">M6 완료 · 다음 주 M7에서 만나요 👋</p>
+</div>
+
+</div>
+<script>
+(function(){
+const slides=document.querySelectorAll('.slide');
+const nav=document.getElementById('nav');
+const numEl=document.getElementById('slideNum');
+const sectionsBar=document.getElementById('sectionsBar');
+const total=slides.length;
+let current=0;
+slides.forEach((_,i)=>{const dot=document.createElement('button');dot.className='nav-dot';dot.title=`Slide ${i+1}`;dot.addEventListener('click',()=>go(i));nav.appendChild(dot)});
+const dots=nav.querySelectorAll('.nav-dot');
+const sections=[];
+const sectionSet=new Set();
+slides.forEach((s,i)=>{const sec=s.dataset.section||'';if(sec&&!sectionSet.has(sec)){sectionSet.add(sec);sections.push({name:sec,startSlide:i})}});
+sections.forEach(sec=>{const chip=document.createElement('button');chip.className='section-chip';chip.textContent=sec.name;chip.addEventListener('click',()=>go(sec.startSlide));sectionsBar.appendChild(chip)});
+const chips=sectionsBar.querySelectorAll('.section-chip');
+let sectionsBarVisible=false;
+function toggleSectionsBar(){sectionsBarVisible=!sectionsBarVisible;sectionsBar.classList.toggle('visible',sectionsBarVisible)}
+function go(index){if(index<0||index>=total)return;if(index===current)return;slides[current].classList.remove('active');dots[current].classList.remove('active');current=index;slides[current].classList.add('active');dots[current].classList.add('active');const theme=slides[current].dataset.theme;document.body.classList.toggle('light-slide',theme==='light');numEl.textContent=`${current+1} / ${total}`;const currentSection=slides[current].dataset.section||'';chips.forEach(chip=>{chip.classList.toggle('active',chip.textContent===currentSection)});if(window._slideChannel){window._slideChannel.postMessage({type:'slideChange',slide:current+1,total:total})}}
+function handleHash(){const hash=parseInt(window.location.hash.slice(1));if(!isNaN(hash)&&hash>=1&&hash<=total){go(hash-1)}}
+window.addEventListener('hashchange',handleHash);
+if(window.location.hash.slice(1)){handleHash()}else{go(0)}
+document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key===' '){e.preventDefault();go(current+1)}if(e.key==='ArrowLeft'||e.key==='ArrowUp'){e.preventDefault();go(current-1)}if(e.key==='Home'){e.preventDefault();go(0)}if(e.key==='End'){e.preventDefault();go(total-1)}if(e.key==='f'||e.key==='F'){if(!document.fullscreenElement)document.documentElement.requestFullscreen();else document.exitFullscreen()}if(e.key==='s'||e.key==='S'){toggleSectionsBar()}});
+document.addEventListener('click',e=>{const el=e.target;if(el.classList.contains('spotlight-active'))return;el.classList.add('spotlight-active');el.addEventListener('animationend',()=>el.classList.remove('spotlight-active'),{once:true})});
+if(window===window.top){try{const channel=new BroadcastChannel('presentation-sync');window._slideChannel=channel;channel.onmessage=(e)=>{const d=e.data;if(d.type==='slideChange'&&typeof d.slide==='number'){go(d.slide-1)}else if(d.type==='goToSlide'){go(d.index)}else if(d.type==='penStroke'){if(window._penOverlay)window._penOverlay.receiveStroke(d)}else if(d.type==='penClear'){if(window._penOverlay)window._penOverlay.clearAll()}}}catch(err){}}
+})();
+</script>
+<script>
+(function(){
+const canvas=document.getElementById('penOverlay');
+if(!canvas)return;
+const ctx=canvas.getContext('2d');
+let drawing=false;
+let penActive=false;
+let penMode='pen';
+const penColor='#F7585C';
+const highlighterColor='rgba(255,230,0,0.3)';
+let currentSlideStrokes={};
+function resize(){canvas.width=window.innerWidth;canvas.height=window.innerHeight;redrawStrokes()}
+window.addEventListener('resize',resize);resize();
+function getSlideKey(){const active=document.querySelector('.slide.active');return active?active.dataset.section||'default':'default'}
+function redrawStrokes(){ctx.clearRect(0,0,canvas.width,canvas.height);const key=getSlideKey();const strokes=currentSlideStrokes[key]||[];strokes.forEach(drawStroke)}
+function drawStroke(stroke){if(stroke.points.length<2)return;ctx.beginPath();ctx.strokeStyle=stroke.color;ctx.lineWidth=stroke.width;ctx.lineCap='round';ctx.lineJoin='round';ctx.globalCompositeOperation=stroke.eraser?'destination-out':'source-over';ctx.moveTo(stroke.points[0].x,stroke.points[0].y);for(let i=1;i<stroke.points.length;i++){ctx.lineTo(stroke.points[i].x,stroke.points[i].y)}ctx.stroke();ctx.globalCompositeOperation='source-over'}
+let currentStroke=null;
+canvas.addEventListener('pointerdown',e=>{if(!penActive)return;drawing=true;const isEraser=penMode==='eraser';const color=penMode==='highlighter'?highlighterColor:penColor;const width=penMode==='pen'?3:penMode==='highlighter'?20:30;currentStroke={points:[{x:e.clientX,y:e.clientY}],color,width,eraser:isEraser}});
+canvas.addEventListener('pointermove',e=>{if(!drawing||!currentStroke)return;currentStroke.points.push({x:e.clientX,y:e.clientY});redrawStrokes();drawStroke(currentStroke)});
+canvas.addEventListener('pointerup',()=>{if(!drawing||!currentStroke)return;drawing=false;const key=getSlideKey();if(!currentSlideStrokes[key])currentSlideStrokes[key]=[];currentSlideStrokes[key].push(currentStroke);if(window._slideChannel){window._slideChannel.postMessage({type:'penStroke',slideKey:key,stroke:currentStroke})}currentStroke=null});
+document.addEventListener('keydown',e=>{if(e.key==='p'||e.key==='P'){if(document.activeElement&&document.activeElement.tagName==='INPUT')return;penActive=!penActive;canvas.classList.toggle('active',penActive)}if(penActive){if(e.key==='1')penMode='pen';if(e.key==='2')penMode='highlighter';if(e.key==='3')penMode='eraser';if(e.key==='c'||e.key==='C'){const key=getSlideKey();currentSlideStrokes[key]=[];redrawStrokes()}}});
+window._penOverlay={receiveStroke:function(data){const key=data.slideKey||getSlideKey();if(!currentSlideStrokes[key])currentSlideStrokes[key]=[];currentSlideStrokes[key].push(data.stroke);if(key===getSlideKey())redrawStrokes()}};
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Antigravity로 시작하는 바이브 코딩 | M1 | 모두의연구소</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@latest/dist/web/static/pretendard.min.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;font-family:'Pretendard',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#030712;-webkit-font-smoothing:antialiased}
+.nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;justify-content:center;gap:3px;padding:10px 40px;opacity:0.15;transition:opacity .4s}
+.nav:hover{opacity:0.85}
+.nav-dot{width:28px;height:3px;background:rgba(255,255,255,.25);border-radius:2px;border:none;cursor:pointer;transition:all .25s;flex-shrink:0}
+.nav-dot.active{background:#F7585C;width:36px}
+.nav-dot:hover{background:rgba(247,88,92,.6)}
+body.light-slide .nav-dot{background:rgba(0,0,0,.12)}
+body.light-slide .nav-dot.active{background:#F7585C}
+body.light-slide .nav-dot:hover{background:rgba(247,88,92,.5)}
+.slide-num{position:fixed;bottom:24px;right:36px;font-size:.75rem;color:rgba(255,255,255,.15);z-index:100;font-variant-numeric:tabular-nums;letter-spacing:1px;transition:color .5s}
+body.light-slide .slide-num{color:rgba(0,0,0,.12)}
+.deck{width:100%;height:100%;position:relative}
+.slide{position:absolute;inset:0;display:flex;flex-direction:column;padding:72px 96px 56px;opacity:0;transition:opacity .45s ease;pointer-events:none;overflow:hidden}
+.slide.active{opacity:1;pointer-events:auto}
+.s-white{background:#fff;color:#030712}
+.s-light{background:#F4F6F8;color:#030712}
+.s-dark{background:#030712;color:#fff}
+.s-accent{background:#F7585C;color:#fff}
+.s-coral{background:#FFF2F2;color:#030712}
+.s-gradient{background:linear-gradient(135deg,#030712 0%,#1a1f2e 100%);color:#fff}
+.s-label{font-size:.78rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#F7585C;margin-bottom:14px}
+.s-dark .s-label,.s-gradient .s-label,.s-accent .s-label{color:rgba(255,255,255,.45)}
+.s-title{font-size:2.6rem;font-weight:700;line-height:1.35;margin-bottom:36px;max-width:80%;word-break:keep-all}
+.s-body{flex:1;display:flex;flex-direction:column;justify-content:flex-start}
+.t-main{font-size:1.45rem;line-height:1.75;color:#2E3339;max-width:75%;word-break:keep-all}
+.s-dark .t-main,.s-gradient .t-main{color:rgba(255,255,255,.82)}
+.s-accent .t-main{color:rgba(255,255,255,.92)}
+.t-sub{font-size:1.05rem;line-height:1.65;color:#5F656C;margin-top:14px;max-width:70%;word-break:keep-all}
+.s-dark .t-sub,.s-gradient .t-sub{color:rgba(255,255,255,.4)}
+.s-accent .t-sub{color:rgba(255,255,255,.6)}
+.t-quote{font-size:1.5rem;line-height:1.8;border-left:4px solid #F7585C;padding-left:24px;margin:16px 0;max-width:72%;word-break:keep-all}
+.s-dark .t-quote{border-left-color:rgba(255,255,255,.2)}
+.t-huge{font-size:9rem;font-weight:800;line-height:1;color:#F7585C;letter-spacing:-4px}
+.t-big{font-size:3rem;font-weight:700;line-height:1.4;word-break:keep-all}
+.t-emphasis{font-size:2rem;font-weight:700;line-height:1.55;word-break:keep-all}
+.hl{color:#F7585C}
+.s-accent .hl{color:#fff;text-decoration:underline;text-decoration-thickness:3px;text-underline-offset:4px}
+.dim{opacity:.45}
+.slide.cover{justify-content:center;padding-top:0}
+.cover .s-title{font-size:3.2rem;max-width:72%;margin-bottom:20px}
+.cover-sub{font-size:1.15rem;color:#5F656C;margin-bottom:6px}
+.s-dark .cover-sub{color:rgba(255,255,255,.4)}
+.cover-brand{font-size:.85rem;color:#F7585C;font-weight:700;letter-spacing:1.5px;margin-top:12px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:24px;max-width:92%}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;max-width:95%}
+.card{padding:28px 30px;border-radius:14px;background:#F4F6F8}
+.s-dark .card,.s-gradient .card{background:rgba(255,255,255,.06)}
+.s-light .card{background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.04)}
+.card-icon{font-size:1.8rem;margin-bottom:14px}
+.card-title{font-size:1.15rem;font-weight:700;margin-bottom:8px;line-height:1.4}
+.card-desc{font-size:.95rem;line-height:1.6;color:#5F656C}
+.s-dark .card-desc,.s-gradient .card-desc{color:rgba(255,255,255,.55)}
+.cmp-table{width:90%;border-collapse:collapse;margin-top:8px}
+.cmp-table th{text-align:left;padding:14px 18px;font-size:.82rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#5F656C;border-bottom:2px solid #E5E7EB}
+.cmp-table td{padding:16px 18px;font-size:1.05rem;line-height:1.5;border-bottom:1px solid #F0F0F0}
+.cmp-table td:first-child{font-weight:600;color:#030712;width:30%}
+.cmp-table .old{color:#9198A1}
+.cmp-table .new{color:#F7585C;font-weight:700}
+.num-list{list-style:none;padding:0;counter-reset:item}
+.num-list li{font-size:1.3rem;line-height:1.5;padding:12px 0 12px 50px;position:relative;counter-increment:item;word-break:keep-all}
+.num-list li::before{content:counter(item);position:absolute;left:0;top:12px;width:34px;height:34px;border-radius:50%;background:#F7585C;color:#fff;display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:700}
+.chk-list{list-style:none;padding:0}
+.chk-list li{font-size:1.35rem;line-height:1.5;padding:10px 0 10px 40px;position:relative;word-break:keep-all}
+.chk-list li::before{content:'';position:absolute;left:0;top:16px;width:18px;height:18px;border-radius:50%;background:#F7585C}
+.demo-tag{display:inline-block;padding:6px 16px;background:#F7585C;color:#fff;border-radius:6px;font-size:.8rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:20px}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.slide.active .s-label{animation:fadeUp .45s ease .08s both}
+.slide.active .s-title{animation:fadeUp .45s ease .16s both}
+.slide.active .s-body>*{animation:fadeUp .45s ease .28s both}
+.slide.active .s-body>*:nth-child(2){animation-delay:.36s}
+.slide.active .s-body>*:nth-child(3){animation-delay:.42s}
+@keyframes spotlightGlow{0%{box-shadow:0 0 0 0 rgba(247,88,92,.4)}50%{box-shadow:0 0 20px 10px rgba(247,88,92,.2)}100%{box-shadow:0 0 0 0 rgba(247,88,92,0)}}
+.spotlight-active{animation:spotlightGlow .6s ease-out;border-radius:8px}
+.slide.centered{align-items:center;text-align:center}
+.centered .s-title{max-width:90%;text-align:center}
+.centered .t-main{max-width:80%;text-align:center;margin:0 auto}
+.centered .t-sub{max-width:70%;text-align:center;margin:14px auto 0}
+.flow-wrap{display:flex;align-items:center;gap:0;max-width:95%;margin:16px 0}
+.flow-step{display:flex;flex-direction:column;align-items:center;gap:8px;padding:18px 22px;border-radius:12px;background:#F4F6F8;min-width:120px;text-align:center;flex:1}
+.s-dark .flow-step,.s-gradient .flow-step{background:rgba(255,255,255,.06)}
+.flow-step-icon{font-size:1.6rem}
+.flow-step-label{font-size:.92rem;font-weight:700;line-height:1.4}
+.flow-step-desc{font-size:.78rem;color:#5F656C;line-height:1.4}
+.s-dark .flow-step-desc,.s-gradient .flow-step-desc{color:rgba(255,255,255,.5)}
+.flow-arrow{font-size:1.4rem;color:#F7585C;flex-shrink:0;padding:0 4px;font-weight:700}
+.s-dark .flow-arrow{color:rgba(255,255,255,.35)}
+.hl-box{padding:20px 24px;border-radius:10px;border-left:4px solid;margin:14px 0;max-width:85%;display:flex;gap:14px;align-items:flex-start}
+.hl-box-icon{font-size:1.3rem;flex-shrink:0;margin-top:2px}
+.hl-box-content{flex:1}
+.hl-box-title{font-size:1rem;font-weight:700;margin-bottom:4px}
+.hl-box-desc{font-size:.92rem;line-height:1.6;opacity:.85}
+.hl-box.info{background:rgba(59,130,246,.08);border-left-color:#3B82F6}
+.hl-box.info .hl-box-title{color:#2563EB}
+.hl-box.warning{background:rgba(245,158,11,.08);border-left-color:#F59E0B}
+.hl-box.warning .hl-box-title{color:#D97706}
+.hl-box.success{background:rgba(16,185,129,.08);border-left-color:#10B981}
+.hl-box.success .hl-box-title{color:#059669}
+.sections-bar{position:fixed;bottom:0;left:0;right:0;z-index:150;display:flex;justify-content:center;gap:8px;padding:12px 40px;background:rgba(3,7,18,.85);backdrop-filter:blur(10px);opacity:0;transition:opacity .4s;pointer-events:none}
+.sections-bar.visible{opacity:1;pointer-events:auto}
+.section-chip{padding:6px 16px;border-radius:20px;font-size:.78rem;font-weight:600;cursor:pointer;transition:all .25s;border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.5);background:transparent}
+.section-chip.active{background:#F7585C;color:#fff;border-color:#F7585C}
+.section-chip:hover{border-color:rgba(247,88,92,.5);color:rgba(255,255,255,.8)}
+.pen-overlay{position:fixed;top:0;left:0;width:100%;height:100%;z-index:300;pointer-events:none;cursor:default}
+.pen-overlay.active{pointer-events:auto;cursor:crosshair}
+@media(max-width:1100px){.slide{padding:56px 56px 40px}.s-title{font-size:2.1rem}.cover .s-title{font-size:2.6rem}.t-huge{font-size:6.5rem}.t-main{font-size:1.25rem}.grid-2,.grid-3{max-width:100%}}
+@page{size:254mm 142.875mm;margin:0}
+@media print{html,body{margin:0;padding:0;background:white!important;height:auto!important}.nav,.slide-num,.sections-bar,.pen-overlay{display:none!important}.deck{position:static!important;height:auto!important;overflow:visible!important}.slide{position:relative!important;inset:auto!important;opacity:1!important;pointer-events:auto!important;page-break-after:always;break-after:page;width:254mm;height:142.875mm;overflow:hidden;box-sizing:border-box}}
+</style>
+</head>
+<body class="light-slide">
+<div class="nav" id="nav"></div>
+<div class="slide-num" id="slideNum"></div>
+<div class="sections-bar" id="sectionsBar"></div>
+<canvas class="pen-overlay" id="penOverlay"></canvas>
+<div class="deck" id="deck">
+
+<!-- 1. 커버 -->
+<div class="slide s-dark cover" data-theme="dark" data-section="시작" data-notes="수강생들 환영. 오늘부터 7주간 Antigravity로 바이브 코딩을 배울 것이라고 소개. 가벼운 마음으로 시작하자고 분위기 풀기.">
+<div class="cover-brand">모두의연구소 · Antigravity 과정</div>
+<h1 class="s-title" style="margin-top:16px">Antigravity로 시작하는<br><span class="hl">바이브 코딩</span></h1>
+<p class="cover-sub">M1 — 개발의 중력을 거스르다</p>
+<p class="cover-sub dim">모두의연구소 · 2026</p>
+</div>
+
+<!-- 2. 오늘의 아젠다 -->
+<div class="slide s-light" data-theme="light" data-section="시작" data-notes="오늘 2시간 동안 배울 내용을 한눈에 보여주기. 4개 섹션으로 구성되어 있고, 중간에 실습 시간이 충분히 있다는 점 강조.">
+<p class="s-label">Today</p>
+<h2 class="s-title">오늘 배울 것</h2>
+<div class="s-body">
+<div class="grid-2">
+<div class="card"><div class="card-icon">🎶</div><div class="card-title">바이브 코딩이란?</div><div class="card-desc">AI와 함께 코딩하는 새로운 패러다임</div></div>
+<div class="card"><div class="card-icon">🚀</div><div class="card-title">Antigravity 소개</div><div class="card-desc">Google의 agent-first IDE</div></div>
+<div class="card"><div class="card-icon">⚙️</div><div class="card-title">설치 및 환경 설정</div><div class="card-desc">개발 환경을 구축해 봅시다</div></div>
+<div class="card"><div class="card-icon">💬</div><div class="card-title">첫 실습</div><div class="card-desc">Agent와 대화하며 코드 수정하기</div></div>
+</div>
+</div>
+</div>
+
+<!-- 3. 바이브 코딩이란 -->
+<div class="slide s-gradient" data-theme="dark" data-section="바이브 코딩" data-notes="Karpathy의 트윗을 인용하며 바이브 코딩 개념을 소개. 너무 심각하게 받아들이지 말고, 핵심은 '자연어로 코딩한다'는 것이라고 설명.">
+<p class="s-label">Vibe Coding</p>
+<h2 class="s-title">바이브 코딩이란?</h2>
+<div class="s-body">
+<p class="t-quote">"I just talk to the AI and it writes the code. I barely even read it anymore. I just vibe."<br><span class="dim">— Andrej Karpathy, 2025</span></p>
+<p class="t-sub">자연어로 의도를 전달하고, AI가 코드를 생성하는 새로운 개발 방식</p>
+</div>
+</div>
+
+<!-- 4. 전통 vs 바이브 코딩 -->
+<div class="slide s-white" data-theme="light" data-section="바이브 코딩" data-notes="비교 테이블로 확실히 차이를 보여주기. 바이브 코딩이 코딩을 안 한다는 게 아니라, 방식이 달라진 것이라고 강조. 여전히 개발자의 판단력이 핵심.">
+<p class="s-label">Comparison</p>
+<h2 class="s-title">전통적 코딩 vs 바이브 코딩</h2>
+<div class="s-body">
+<table class="cmp-table">
+<thead><tr><th>영역</th><th>전통적 코딩</th><th>바이브 코딩</th></tr></thead>
+<tbody>
+<tr><td>입력</td><td class="old">직접 타이핑</td><td class="new">자연어 프롬프트</td></tr>
+<tr><td>디버깅</td><td class="old">직접 원인 분석</td><td class="new">AI와 함께 원인 파악</td></tr>
+<tr><td>학습</td><td class="old">문서 검색 → 적용</td><td class="new">AI가 컨텍스트 제공</td></tr>
+<tr><td>역할</td><td class="old">코드 작성자</td><td class="new">아키텍트 + 리뷰어</td></tr>
+<tr><td>핵심 역량</td><td class="old">문법 암기</td><td class="new">의사소통 + 판단력</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<!-- 5. 토론: 개발자 vs 비개발자 -->
+<div class="slide s-dark centered" data-theme="dark" data-section="바이브 코딩" data-notes="수강생들에게 질문을 던져서 토론 유도. 손들어보라고 하기. 개발자가 더 잘할 것 같은지, 비개발자가 더 잘할 것 같은지. 정답은 없지만, 힌트를 줌: 개발자는 'AI가 틀렸을 때 알아챌 수 있는 능력'이 강함. 비개발자는 '제약 없이 자연어로 요청하는 능력'이 강함.">
+<p class="s-label">💬 Discussion</p>
+<h2 class="s-title" style="font-size:1.8rem">바이브 코딩, <span class="hl">개발자</span>가 더 잘할까?<br><span class="hl">비개발자</span>가 더 잘할까?</h2>
+<div class="s-body" style="text-align:center">
+<div class="grid-2" style="max-width:600px;margin:0 auto">
+<div class="card"><div class="card-icon">👨‍💻</div><div class="card-title">개발자</div><div class="card-desc">AI가 틀린 걸 알아채고<br>방향을 수정할 수 있다</div></div>
+<div class="card"><div class="card-icon">🎨</div><div class="card-title">비개발자</div><div class="card-desc">제약 없이 자연어로<br>원하는 걸 표현한다</div></div>
+</div>
+<p class="t-sub" style="margin-top:24px;font-style:italic">잠시 생각해보고, 손들어주세요!</p>
+</div>
+</div>
+
+<!-- 6. 왜 지금 바이브 코딩인가 -->
+<div class="slide s-light" data-theme="light" data-section="바이브 코딩" data-notes="2026년 현재 AI 코딩 도구가 폭발적으로 성장한 배경 설명. 모델 성능 향상, 컨텍스트 윈도우 확대, 도구 성숙도 증가 세 가지 요인 강조.">
+<p class="s-label">Why Now</p>
+<h2 class="s-title">왜 지금 바이브 코딩인가?</h2>
+<div class="s-body">
+<div class="grid-3">
+<div class="card"><div class="card-icon">🧠</div><div class="card-title">모델 성능 향상</div><div class="card-desc">Gemini, Claude, GPT — 코딩 능력이 비약적으로 발전</div></div>
+<div class="card"><div class="card-icon">📏</div><div class="card-title">컨텍스트 확대</div><div class="card-desc">수백만 토큰 컨텍스트로 프로젝트 전체 이해 가능</div></div>
+<div class="card"><div class="card-icon">🔧</div><div class="card-title">도구 성숙</div><div class="card-desc">Cursor, Claude Code, Antigravity — 전문 도구 등장</div></div>
+</div>
+</div>
+</div>
+
+<!-- 6. 바이브 코딩에서 스펙으로 -->
+<div class="slide s-coral" data-theme="light" data-section="바이브 코딩" data-notes="2025년 바이브 코딩 대유행 이후, 2026년은 스펙 주도 개발(SDD)로 전환 중. 핵심 메시지: 바이브 코딩은 탐색에 좋지만 프로덕션에서는 한계가 있음. 스펙이 단일 진실 공급원이 되는 패러다임.">
+<p class="s-label">Trend 2026</p>
+<h2 class="s-title">바이브 코딩 → <span class="hl">스펙 주도 개발</span></h2>
+<div class="s-body">
+<div class="grid-2">
+<div class="card"><div class="card-icon">🎯</div><div class="card-title">바이브 코딩 (2025)</div><div class="card-desc">자연어로 코드 생성<br>빠른 프로토타이핑에 적합<br>하지만 3개월 이후 기술 부채 폭발</div></div>
+<div class="card"><div class="card-icon">📐</div><div class="card-title">스펙 주도 개발 (2026)</div><div class="card-desc"><span class="hl">머신리더블 스펙</span>을 먼저 작성<br>스펙이 코드·테스트·문서의 단일 진실원<br>GitHub, AWS, Augment Code가 동시 출시</div></div>
+</div>
+<div class="hl-box info" style="margin-top:20px">
+<div class="hl-box-icon">⚡</div>
+<div class="hl-box-content">
+<div class="hl-box-title">2026년의 정석</div>
+<div class="hl-box-desc">짧은 탐색은 바이브로, 긴 수명의 코드는 스펙으로. 두 방식의 접착제는 최소한의 영속 문서.</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- 7. SDD 생태계 -->
+<div class="slide s-white" data-theme="light" data-section="바이브 코딩" data-notes="2026년 초에 SDD 도구들이 한꺼번에 출시된 상황 설명. GitHub Spec Kit이 90K 스타. AWS Kiro, Augment Code Intent도 확인. ETH Zurich 연구에서 LLM이 생성한 컨텍스트 파일은 오히려 성능 저하라는 점도 언급.">
+<p class="s-label">Ecosystem</p>
+<h2 class="s-title">SDD <span class="hl">생태계 도구들</span></h2>
+<div class="s-body">
+<table class="cmp-table" style="font-size:.85rem">
+<thead><tr><th>도구</th><th>특징</th><th>규모</th></tr></thead>
+<tbody>
+<tr><td><strong>GitHub Spec Kit</strong></td><td class="new">공식 오픈소스 SDD 툴킷, 60+ 확장</td><td>90K ⭐</td></tr>
+<tr><td><strong>AWS Kiro</strong></td><td class="new">스펙 주도 IDE, EARS 요구사항 자동 생성</td><td>3.5K ⭐</td></tr>
+<tr><td><strong>Augment Code Intent</strong></td><td class="new">리빙 스펙 + 멀티에이전트 오케스트레이션</td><td>공개 베타</td></tr>
+<tr><td><strong>Tessl</strong></td><td class="new">에이전트 활성화 플랫폼, 스펙 레지스트리</td><td>초기 단계</td></tr>
+<tr><td><strong>OpenSpec</strong></td><td class="new">오픈소스 SDD 프레임워크</td><td>42K ⭐</td></tr>
+</tbody>
+</table>
+<div class="hl-box" style="margin-top:16px;background:rgba(247,88,92,.08);border-color:#F7585C">
+<div class="hl-box-icon">🔬</div>
+<div class="hl-box-content">
+<div class="hl-box-title">ETH Zurich 연구 (2026.02)</div>
+<div class="hl-box-desc">LLM이 생성한 컨텍스트 파일은 성능 −3%, 비용 +20%. 최소한의 인간 작성 파일만 +4% 효과. → "장황한 에이전트 설정 파일은 오히려 독" (arXiv:2602.11988)</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- 8. AI 코딩 도구 비교 — 객관적 비교 -->
+<div class="slide s-white" data-theme="light" data-section="바이브 코딩" data-notes="도구별 장단점을 객관적으로 비교. 장점만 말하지 말고 단점도 솔직하게 공유. Antigravity도 장단점이 있다는 걸 인정하면 신뢰도가 올라감. 커뮤니티에서 실제로 나오는 평가를 반영.">
+<p class="s-label">Landscape</p>
+<h2 class="s-title">AI 코딩 도구 <span class="hl">솔직 비교</span></h2>
+<div class="s-body">
+<table class="cmp-table">
+<thead><tr><th>도구</th><th>강점</th><th>약점</th></tr></thead>
+<tbody>
+<tr><td><strong>Cursor</strong></td><td class="new">가장 성숙, 18% 채택률</td><td>유료($20/월), 리소스 무거움</td></tr>
+<tr><td><strong>Copilot</strong></td><td class="new">최다 채택(29%), VS Code 내장</td><td>에이전트 기능 약함, 성장 정체</td></tr>
+<tr><td><strong>Claude Code</strong></td><td class="new">만족도 1위(91%), 18% 채택률</td><td>CLI 전용, Anthropic 종속</td></tr>
+<tr><td><strong>Codex</strong></td><td class="new">ChatGPT 구독 통합, 오픈소스 CLI</td><td>속도 제한, 컨텍스트 윈도우 한계</td></tr>
+<tr><td><strong>OpenCode</strong></td><td class="new">오픈소스(148k⭐), 멀티 제공자, LSP 내장</td><td>터미널 중심, 학습 곡선</td></tr>
+<tr><td><strong>OpenClaude</strong></td><td class="new">200+ 모델 지원, 오픈소스</td><td>커뮤니티 포크, 장기성 불확실</td></tr>
+<tr><td><strong>Crush</strong></td><td class="new">15+ 제공자, 로컬 모델 지원, 무료</td><td>터미널 전용, 아직 v0.x</td></tr>
+<tr><td><strong>Windsurf</strong></td><td class="new">Cascade 에이전트, 완전 무료</td><td>커뮤니티 작음, 복잡 작업 한계</td></tr>
+<tr><td><strong>OpenClaw</strong></td><td class="new">363k⭐, 개인 AI 어시스턴트, 5400+ 스킬</td><td>코딩 전용 아님, 범용 도구</td></tr>
+<tr><td><strong>Antigravity</strong></td><td class="new">멀티모델, Firebase 통합, 무료</td><td>초기 단계, 버그·쿼터 제한</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<!-- 7. AI 모델 순위표 — 챗봇 아레나 기준 -->
+<div class="slide s-gradient" data-theme="dark" data-section="바이브 코딩" data-notes="챗봇 아레나(arena.ai) 기준 최신 AI 모델 순위를 소개. Claude가 코딩 분야 1위라는 점 강조. 'Thinking' 모델이 일반 모델보다 점수가 높다는 트렌드도 언급. 데이터는 arena.ai에서 실시간 업데이트됨.">
+<p class="s-label">Leaderboard</p>
+<h2 class="s-title">AI 모델 랭킹 <span class="hl">코딩 부문 Top 10</span></h2>
+<div class="s-body">
+<p class="t-sub" style="margin-bottom:16px">Chatbot Arena (arena.ai) 기준 — 2026년 4월</p>
+<table class="cmp-table" style="font-size:.88rem">
+<thead><tr><th>#</th><th>모델</th><th>점수</th><th>제공자</th></tr></thead>
+<tbody>
+<tr><td>1</td><td class="new"><strong>Claude Opus 4.7 (Thinking)</strong></td><td>1576</td><td>Anthropic</td></tr>
+<tr><td>2</td><td class="new"><strong>Claude Opus 4.7</strong></td><td>1566</td><td>Anthropic</td></tr>
+<tr><td>3</td><td class="new"><strong>Claude Opus 4.6 (Thinking)</strong></td><td>1552</td><td>Anthropic</td></tr>
+<tr><td>4</td><td class="new"><strong>Claude Opus 4.6</strong></td><td>1545</td><td>Anthropic</td></tr>
+<tr><td>5</td><td>GLM-5.1</td><td>1534</td><td>THUDM</td></tr>
+<tr><td>6</td><td>Kimi K2.6</td><td>1529</td><td>Moonshot</td></tr>
+<tr><td>7</td><td>Claude Sonnet 4.6</td><td>1526</td><td>Anthropic</td></tr>
+<tr><td>8</td><td>Muse Spark</td><td>1513</td><td>Meta</td></tr>
+<tr><td>9</td><td>Claude Opus 4.5 (Thinking)</td><td>1491</td><td>Anthropic</td></tr>
+<tr><td>10</td><td>Qwen 3.6 Plus</td><td>1471</td><td>Alibaba</td></tr>
+</tbody>
+</table>
+<div class="hl-box info" style="margin-top:16px">
+<div class="hl-box-icon">💡</div>
+<div class="hl-box-content">
+<div class="hl-box-title">핵심 인사이트</div>
+<div class="hl-box-desc">Claude가 코딩 부문 Top 4를 독점. 중국 모델(GLM-5.1, Kimi, Qwen)도 강력한 경쟁자. 'Thinking' 모델이 일반 모델보다 consistently 높은 점수.</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- 8. AI 모델 종합 순위 — 챗봇 아레나 기준 -->
+<div class="slide s-light" data-theme="light" data-section="바이브 코딩" data-notes="챗봇 아레나 종합(Text) 순위. 코딩과 달리 Google, Meta, xAI도 상위권에 포진. Anthropic이 강세지만 경쟁이 치열하다는 점 강조. 점수 차이가 작아서 순위가 자주 바뀜.">
+<p class="s-label">Leaderboard</p>
+<h2 class="s-title">AI 모델 랭킹 <span class="hl">종합 Top 10</span></h2>
+<div class="s-body">
+<p class="t-sub" style="margin-bottom:16px">Chatbot Arena — Text (Overall) 기준 — 2026년 4월</p>
+<table class="cmp-table" style="font-size:.88rem">
+<thead><tr><th>#</th><th>모델</th><th>점수</th><th>제공자</th></tr></thead>
+<tbody>
+<tr><td>1</td><td class="new"><strong>Claude Opus 4.7 (Thinking)</strong></td><td>1503</td><td>Anthropic</td></tr>
+<tr><td>2</td><td class="new"><strong>Claude Opus 4.6 (Thinking)</strong></td><td>1502</td><td>Anthropic</td></tr>
+<tr><td>3</td><td><strong>Claude Opus 4.6</strong></td><td>1496</td><td>Anthropic</td></tr>
+<tr><td>4</td><td><strong>Claude Opus 4.7</strong></td><td>1494</td><td>Anthropic</td></tr>
+<tr><td>5</td><td>Gemini 3.1 Pro Preview</td><td>1493</td><td>Google</td></tr>
+<tr><td>6</td><td>Muse Spark</td><td>1490</td><td>Meta</td></tr>
+<tr><td>7</td><td>Gemini 3 Pro</td><td>1486</td><td>Google</td></tr>
+<tr><td>8</td><td>Grok 4.20 beta1</td><td>1482</td><td>xAI</td></tr>
+<tr><td>9</td><td>GPT-5.4 High</td><td>1482</td><td>OpenAI</td></tr>
+<tr><td>10</td><td>Grok 4.20 Reasoning</td><td>1480</td><td>xAI</td></tr>
+</tbody>
+</table>
+<div class="hl-box info" style="margin-top:16px">
+<div class="hl-box-icon">📊</div>
+<div class="hl-box-content">
+<div class="hl-box-title">비교 포인트</div>
+<div class="hl-box-desc">종합 순위는 Anthropic이 리드하지만 Google, Meta, xAI, OpenAI가 근접. 반면 코딩은 Claude가 압도적 — 도구 선택 시 사용 목적에 따라 모델이 달라져야 함.</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- 9. Antigravity의 현주소 — 솔직하게 -->
+<div class="slide s-dark" data-theme="dark" data-section="바이브 코딩" data-notes="Antigravity의 장점과 한계를 솔직하게 설명. 커뮤니티 평가를 인용하며, 무료라는 장점과 초기 단계라는 한계를 같이 말하기. '이 수업에서 Antigravity를 쓰는 이유'를 명확히 설명.">
+<p class="s-label">Honest Look</p>
+<h2 class="s-title">Antigravity, <span class="hl">솔직히 말하면</span></h2>
+<div class="s-body">
+<div class="grid-2">
+<div class="card"><div class="card-icon">👍</div><div class="card-title">장점</div><div class="card-desc">• 에이전트 매니저 워크플로우<br>• Gemini, Claude, GPT 모델 선택<br>• <span class="hl">이미지 생성</span> (Nano Banana Pro)<br>• Firebase 생태계 통합<br>• 현재 무료 프리뷰<br>• MCP & Agent Skills 확장</div></div>
+<div class="card"><div class="card-icon">👎</div><div class="card-title">한계</div><div class="card-desc">• 2025.11 출시 — 아직 초기 단계<br>• 버그와 입력 지연 보고<br>• 확장 프로그램 호환성 제한<br>• 사용량 쿼터 (Pro: 5시간/주)<br>• Cursor만큼 안정적이지 않음</div></div>
+</div>
+<div class="hl-box info" style="margin-top:20px">
+<div class="hl-box-icon">💬</div>
+<div class="hl-box-content">
+<div class="hl-box-title">커뮤니티 평가</div>
+<div class="hl-box-desc">"올해 가장 유망한 소프트웨어이자, 동시에 가장 좌절스러운 에디터" — DEV Community</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- 8. Antigravity란 -->
+<div class="slide s-light" data-theme="light" data-section="Antigravity 소개" data-notes="공식 정의를 전달. 핵심은 'agent-first'와 'local IDE'. 클라우드가 아니라 로컬에서 돈다는 점, 그래서 더 빠르고 프라이빗하다는 장점 설명.">
+<p class="s-label">Overview</p>
+<h2 class="s-title">Google Antigravity란?</h2>
+<div class="s-body">
+<p class="t-main">Google이 개발한 <span class="hl">agent-first 로컬 IDE</span></p>
+<p class="t-sub">Firebase Studio에서 축적된 노하우를 바탕으로, 더 강력하고 자유로운 로컬 개발 환경을 제공합니다.</p>
+<div class="hl-box info" style="margin-top:24px">
+<div class="hl-box-icon">ℹ️</div>
+<div class="hl-box-content">
+<div class="hl-box-title">다운로드</div>
+<div class="hl-box-desc">antigravity.google/download</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- 9. Firebase Studio → Antigravity -->
+<div class="slide s-white" data-theme="light" data-section="Antigravity 소개" data-notes="Firebase Studio가 2027년에 종료되고, 그 노하우가 Antigravity로 이전되었다는 스토리. 마이그레이션 가이드도 있다는 점 언급.">
+<p class="s-label">Evolution</p>
+<h2 class="s-title">Firebase Studio → Antigravity</h2>
+<div class="s-body">
+<div class="flow-wrap">
+<div class="flow-step"><div class="flow-step-icon">☁️</div><div class="flow-step-label">Firebase Studio</div><div class="flow-step-desc">클라우드 IDE (2027 sunset)</div></div>
+<div class="flow-arrow">→</div>
+<div class="flow-step"><div class="flow-step-icon">🖥️</div><div class="flow-step-label">Antigravity</div><div class="flow-step-desc">로컬 agent-first IDE</div></div>
+<div class="flow-arrow">→</div>
+<div class="flow-step"><div class="flow-step-icon">🚀</div><div class="flow-step-label">더 강력한 개발</div><div class="flow-step-desc">멀티모델 + MCP + Skills</div></div>
+</div>
+<p class="t-sub" style="margin-top:20px">Firebase Studio에서 Antigravity로의 마이그레이션을 @fbs-to-agy-export 에이전트로 자동 지원합니다.</p>
+</div>
+</div>
+
+<!-- 10. 주요 기능 -->
+<div class="slide s-light" data-theme="light" data-section="Antigravity 소개" data-notes="4대 핵심 기능을 카드로 소개. 아직 설치 전이므로 개념적으로만 설명하고, 뒤에서 직접 실습할 것이라고 안내.">
+<p class="s-label">Features</p>
+<h2 class="s-title">핵심 기능</h2>
+<div class="s-body">
+<div class="grid-2">
+<div class="card"><div class="card-icon">💬</div><div class="card-title">Agent Pane</div><div class="card-desc">자연어로 AI와 대화하며 코드를 작성하고 수정합니다</div></div>
+<div class="card"><div class="card-icon">🔀</div><div class="card-title">Multi-Model</div><div class="card-desc">Gemini, Claude, GPT-OSS 중 상황에 맞는 모델을 선택</div></div>
+<div class="card"><div class="card-icon">🔌</div><div class="card-title">MCP Server</div><div class="card-desc">Firebase 등 외부 서비스와 직접 연동</div></div>
+<div class="card"><div class="card-icon">📚</div><div class="card-title">Agent Skills</div><div class="card-desc">전문 지식 모듈로 AI의 능력을 확장</div></div>
+</div>
+</div>
+</div>
+
+<!-- 11. 아키텍처 -->
+<div class="slide s-gradient" data-theme="dark" data-section="Antigravity 소개" data-notes="아키텍처 다이어그램을 간단히 설명. Editor는 코드를, Agent Pane은 AI를, MCP는 외부 연결을 담당. 이 세 가지가 유기적으로 연결되는 게 핵심.">
+<p class="s-label">Architecture</p>
+<h2 class="s-title">Antigravity 아키텍처</h2>
+<div class="s-body">
+<div class="flow-wrap">
+<div class="flow-step"><div class="flow-step-icon">📝</div><div class="flow-step-label">Editor</div><div class="flow-step-desc">코드 편집</div></div>
+<div class="flow-arrow">↔</div>
+<div class="flow-step"><div class="flow-step-icon">🤖</div><div class="flow-step-label">Agent Pane</div><div class="flow-step-desc">AI 어시스턴트</div></div>
+<div class="flow-arrow">↔</div>
+<div class="flow-step"><div class="flow-step-icon">🔌</div><div class="flow-step-label">MCP / Skills</div><div class="flow-step-desc">외부 연동</div></div>
+</div>
+<p class="t-sub" style="margin-top:20px">세 가지 컴포넌트가 유기적으로 연결되어, AI가 코드를 읽고, 이해하고, 수정하고, 외부 서비스와 상호작용합니다.</p>
+</div>
+</div>
+
+<!-- 12. 지원 모델 -->
+<div class="slide s-white" data-theme="light" data-section="Antigravity 소개" data-notes="모델별 장단점을 설명. Flash는 빠르고 저렴, Pro는 복잡한 작업에 적합. Claude와 GPT-OSS도 필요에 따라 선택 가능하다는 점 강조.">
+<p class="s-label">Models</p>
+<h2 class="s-title">지원 AI 모델</h2>
+<div class="s-body">
+<div class="grid-3">
+<div class="card"><div class="card-icon">⚡</div><div class="card-title">Gemini Flash</div><div class="card-desc">빠르고 효율적인 일상 코딩에 추천</div></div>
+<div class="card"><div class="card-icon">🧠</div><div class="card-title">Gemini Pro</div><div class="card-desc">복잡한 설계와 아키텍처에 적합</div></div>
+<div class="card"><div class="card-icon">🔀</div><div class="card-title">Claude / GPT-OSS</div><div class="card-desc">상황에 따라 최적의 모델 선택</div></div>
+</div>
+<div class="hl-box success" style="margin-top:20px">
+<div class="hl-box-icon">✅</div>
+<div class="hl-box-content">
+<div class="hl-box-title">실습 팁</div>
+<div class="hl-box-desc">처음에는 Gemini Flash로 시작하고, 복잡한 작업에서 Pro로 전환해 보세요.</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- 13. 사전 준비 -->
+<div class="slide s-light" data-theme="light" data-section="설치" data-notes="설치 전 필요한 것들을 확인. Node.js가 설치되어 있는지, 구글 계정이 있는지 체크. 설치되지 않은 분은 옆 사람과 페어 프로그래밍하도록 안내.">
+<p class="s-label">Prerequisites</p>
+<h2 class="s-title">설치 전 준비물</h2>
+<div class="s-body">
+<ul class="num-list">
+<li>Node.js 20 이상 설치</li>
+<li>Google 계정 (Gemini API 접근용)</li>
+<li>Firebase CLI v15.10.0+ (선택)</li>
+<li>안정적인 인터넷 연결</li>
+</ul>
+</div>
+</div>
+
+<!-- 14. 다운로드 및 설치 -->
+<div class="slide s-white" data-theme="light" data-section="설치" data-notes="실제 설치를 안내하며 화면을 보여주기. antigravity.google/download에 접속해서 플랫폼에 맞는 버전을 다운로드. 설치 시간은 2-3분.">
+<p class="s-label">Install</p>
+<h2 class="s-title">다운로드 및 설치</h2>
+<div class="s-body">
+<div class="flow-wrap">
+<div class="flow-step"><div class="flow-step-icon">🌐</div><div class="flow-step-label">접속</div><div class="flow-step-desc">antigravity.google/download</div></div>
+<div class="flow-arrow">→</div>
+<div class="flow-step"><div class="flow-step-icon">📦</div><div class="flow-step-label">다운로드</div><div class="flow-step-desc">OS에 맞는 버전</div></div>
+<div class="flow-arrow">→</div>
+<div class="flow-step"><div class="flow-step-icon">⚙️</div><div class="flow-step-label">설치</div><div class="flow-step-desc">안내에 따라 설치</div></div>
+<div class="flow-arrow">→</div>
+<div class="flow-step"><div class="flow-step-icon">🚀</div><div class="flow-step-label">실행</div><div class="flow-step-desc">첫 실행</div></div>
+</div>
+</div>
+</div>
+
+<!-- 15. 첫 실행 -->
+<div class="slide s-light" data-theme="light" data-section="설치" data-notes="처음 실행하면 보이는 화면을 설명. Agent Pane 위치, 에디터 영역, 상단 메뉴 구조 등. 익숙한 VS Code 느낌이라는 점도 언급.">
+<p class="s-label">First Launch</p>
+<h2 class="s-title">첫 실행 화면 살펴보기</h2>
+<div class="s-body">
+<div class="grid-2">
+<div class="card"><div class="card-icon">📝</div><div class="card-title">에디터 영역</div><div class="card-desc">VS Code 기반의 친숙한 코드 편집기</div></div>
+<div class="card"><div class="card-icon">🤖</div><div class="card-title">Agent Pane</div><div class="card-desc">오른쪽 패널에서 AI와 대화</div></div>
+<div class="card"><div class="card-icon">📂</div><div class="card-title">파일 탐색기</div><div class="card-desc">프로젝트 파일 구조 탐색</div></div>
+<div class="card"><div class="card-icon">▶️</div><div class="card-title">Run and Debug</div><div class="card-desc">로컬 개발 서버 실행</div></div>
+</div>
+</div>
+</div>
+
+<!-- 16. 모델 선택 -->
+<div class="slide s-white" data-theme="light" data-section="설치" data-notes="Agent Pane에서 모델을 선택하는 방법을 보여주기. 드롭다운이나 설정에서 모델을 변경할 수 있다는 점 설명.">
+<p class="s-label">Model Selection</p>
+<h2 class="s-title">AI 모델 선택하기</h2>
+<div class="s-body">
+<p class="t-main">Agent Pane 상단에서 <span class="hl">모델을 전환</span>할 수 있습니다.</p>
+<div class="hl-box warning" style="margin-top:20px">
+<div class="hl-box-icon">⚠️</div>
+<div class="hl-box-content">
+<div class="hl-box-title">모델 선택 가이드</div>
+<div class="hl-box-desc">일반적인 코딩 → Gemini Flash (빠르고 저렴)<br>복잡한 설계/리팩토링 → Gemini Pro (깊은 추론)</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- 17. 프로젝트 열기 -->
+<div class="slide s-light" data-theme="light" data-section="설치" data-notes="실제로 프로젝트를 열어보는 실습 안내. 준비된 샘플 프로젝트를 열거나, 빈 폴더를 열어서 시작할 수 있다고 설명.">
+<p class="s-label">Open Project</p>
+<h2 class="s-title">첫 프로젝트 열기</h2>
+<div class="s-body">
+<ul class="num-list">
+<li>File → Open Folder로 프로젝트 폴더 선택</li>
+<li>또는 터미널에서 <code>antigravity .</code> 실행</li>
+<li>Agent Pane이 프로젝트 파일을 자동으로 인식</li>
+</ul>
+<p class="t-sub" style="margin-top:16px">💡 준비된 샘플 프로젝트를 열어보겠습니다.</p>
+</div>
+</div>
+
+<!-- 18. 실습 안내 -->
+<div class="slide s-accent" data-theme="dark" data-section="실습" data-notes="실습 시작 신호. 30분 정도 실습 시간을 줄 것이라고 안내. 에이전트와의 대화가 익숙해지는 것이 오늘의 목표.">
+<p class="s-label">Hands-on</p>
+<h2 class="s-title">실습: Agent와 대화하기</h2>
+<div class="s-body">
+<p class="t-main">Agent Pane을 열고, AI에게 질문해 봅시다.</p>
+<p class="t-sub" style="margin-top:16px">목표: Agent Pane이 익숙해지기</p>
+</div>
+</div>
+
+<!-- 19. Agent Pane 기본 -->
+<div class="slide s-white" data-theme="light" data-section="실습" data-notes="Agent Pane의 기본 사용법을 단계별로 안내. 채팅창에 메시지를 입력하고, AI의 응답을 확인하는 기본 흐름.">
+<p class="s-label">Agent Pane</p>
+<h2 class="s-title">Agent Pane 기본 사용법</h2>
+<div class="s-body">
+<ul class="num-list">
+<li>오른쪽 패널의 Agent Pane 클릭</li>
+<li>채팅 입력창에 질문 입력</li>
+<li>AI가 코드를 생성하거나 설명</li>
+<li>제안된 변경사항 수락 또는 수정</li>
+</ul>
+</div>
+</div>
+
+<!-- 20. 코드 설명 요청 -->
+<div class="slide s-light" data-theme="light" data-section="실습" data-notes="첫 번째 실습 과제. Agent에게 코드를 설명해 달라고 요청해보기. 실제 파일을 열고 '이 코드를 설명해줘'라고 입력해 보라고 안내.">
+<p class="s-label">Exercise 1</p>
+<h2 class="s-title">실습 1: 코드 설명받기</h2>
+<div class="s-body">
+<p class="t-main">프로젝트의 파일을 하나 열고, Agent Pane에 입력:</p>
+<div class="hl-box info" style="margin-top:16px">
+<div class="hl-box-icon">💬</div>
+<div class="hl-box-content">
+<div class="hl-box-title">프롬프트 예시</div>
+<div class="hl-box-desc">"이 파일의 코드를 설명해줘. 주요 기능이 뭐야?"</div>
+</div>
+</div>
+<p class="t-sub">→ AI가 코드를 분석하고 구조를 설명해 줍니다</p>
+</div>
+</div>
+
+<!-- 21. 코드 수정 요청 -->
+<div class="slide s-white" data-theme="light" data-section="실습" data-notes="두 번째 실습 과제. Agent에게 코드 수정을 요청해보기. 구체적인 변경사항을 자연어로 전달하는 연습.">
+<p class="s-label">Exercise 2</p>
+<h2 class="s-title">실습 2: 코드 수정하기</h2>
+<div class="s-body">
+<p class="t-main">Agent Pane에 구체적인 수정 요청을 입력해 보세요:</p>
+<div class="hl-box info" style="margin-top:16px">
+<div class="hl-box-icon">💬</div>
+<div class="hl-box-content">
+<div class="hl-box-title">프롬프트 예시</div>
+<div class="hl-box-desc">"버튼의 색상을 빨간색에서 파란색으로 변경해줘"<br>"이 함수에 에러 처리를 추가해줘"</div>
+</div>
+</div>
+<p class="t-sub">→ AI가 변경사항을 제안하고, 수락하면 코드가 수정됩니다</p>
+</div>
+</div>
+
+<!-- 22. 효과적인 Agent 사용법 -->
+<div class="slide s-light" data-theme="light" data-section="실습" data-notes="초보자들이 자주 하는 실수를 미리 방지. 구체적으로 질문할수록 좋은 결과를 얻는다는 점을 강조.">
+<p class="s-label">Tips</p>
+<h2 class="s-title">Agent Pane 사용 팁</h2>
+<div class="s-body">
+<div class="grid-2">
+<div class="card"><div class="card-icon">✅</div><div class="card-title">좋은 프롬프트</div><div class="card-desc">"src/components/Button.tsx의 onClick 핸들러에 로딩 상태를 추가해줘"</div></div>
+<div class="card"><div class="card-icon">❌</div><div class="card-title">나쁜 프롬프트</div><div class="card-desc">"이거 좀 고쳐줘"</div></div>
+</div>
+<div class="hl-box success" style="margin-top:20px">
+<div class="hl-box-icon">💡</div>
+<div class="hl-box-content">
+<div class="hl-box-title">핵심 원칙</div>
+<div class="hl-box-desc">구체적일수록 좋습니다. 파일명, 함수명, 원하는 동작을 명확히 전달하세요.</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- 23. 자주하는 실수 -->
+<div class="slide s-coral" data-theme="light" data-section="실습" data-notes="초보자들이 바이브 코딩에서 자주 하는 3가지 실수를 설명. AI를 너무 맹신하지 말 것, 한번에 너무 많이 요청하지 말 것, 결과를 무조건 검증할 것.">
+<p class="s-label">Common Mistakes</p>
+<h2 class="s-title">자주하는 실수 TOP 3</h2>
+<div class="s-body">
+<ul class="num-list">
+<li><strong>AI를 맹신하기</strong> — 생성된 코드를 반드시 검증하세요</li>
+<li><strong>한번에 너무 많이 요청</strong> — 작은 단위로 나누어 요청하세요</li>
+<li><strong>컨텍스트 없이 질문</strong> — 관련 파일을 먼저 열어두세요</li>
+</ul>
+</div>
+</div>
+
+<!-- 24. 실습 자유시간 -->
+<div class="slide s-gradient centered" data-theme="dark" data-section="실습" data-notes="실습 자유 시간. 15-20분 정도. 참가자들이 자유롭게 Agent Pane을 사용해보도록. 문제가 있으면 순회하며 도와주기.">
+<p class="s-label">Practice</p>
+<h2 class="s-title">자유 실습 시간 🛠️</h2>
+<div class="s-body">
+<p class="t-main">Agent Pane에 자유롭게 질문하고 코드를 수정해 보세요.</p>
+<p class="t-sub">막히면 손들어 주세요! 도와드리겠습니다.</p>
+</div>
+</div>
+
+<!-- 25. 오늘의 핵심 정리 -->
+<div class="slide s-white" data-theme="light" data-section="정리" data-notes="오늘 배운 내용을 한 장으로 요약. 바이브 코딩의 개념, Antigravity의 특징, 기본 사용법 세 가지를 복습.">
+<p class="s-label">Summary</p>
+<h2 class="s-title">오늘의 핵심</h2>
+<div class="s-body">
+<div class="grid-3">
+<div class="card"><div class="card-icon">🎶</div><div class="card-title">바이브 코딩</div><div class="card-desc">자연어로 AI와 협업하는 새로운 개발 방식</div></div>
+<div class="card"><div class="card-icon">🚀</div><div class="card-title">Antigravity</div><div class="card-desc">Google의 agent-first IDE, 멀티모델 지원</div></div>
+<div class="card"><div class="card-icon">💬</div><div class="card-title">Agent Pane</div><div class="card-desc">구체적인 프롬프트로 효과적인 코드 생성</div></div>
+</div>
+</div>
+</div>
+
+<!-- 26. 다음 시간 예고 -->
+<div class="slide s-dark" data-theme="dark" data-section="정리" data-notes="다음 시간 M2 예고. Context Engineering은 AI에게 내 프로젝트를 이해시키는 방법. 오늘의 기본 사용법을 넘어, 더 효과적으로 AI를 활용하는 방법을 배울 것.">
+<p class="s-label">Next</p>
+<h2 class="s-title">다음 시간: <span class="hl">Context Engineering</span></h2>
+<div class="s-body">
+<p class="t-main">M2 — 에이전트에게 내 프로젝트를 가르치는 법</p>
+<p class="t-sub">Agent Skills, MCP Server, 프로젝트 컨텍스트 설정</p>
+</div>
+</div>
+
+<!-- 27. 마무리 -->
+<div class="slide s-dark cover" data-theme="dark" data-section="정리" data-notes="마무리 인사. 경쟁이 아닌 상생이라는 모두의연구소 슬로건 강조. 다음 주에 만나자고 안내.">
+<div class="cover-brand">모두의연구소 · Antigravity 과정</div>
+<h1 class="s-title" style="margin-top:16px">경쟁이 아닌 <span class="hl">상생</span></h1>
+<p class="cover-sub">함께 배우고 성장하는 7주간의 여정</p>
+<p class="cover-sub dim">M1 완료 · 다음 주 M2에서 만나요 👋</p>
+</div>
+
+</div>
+<script>
+(function(){
+const slides=document.querySelectorAll('.slide');
+const nav=document.getElementById('nav');
+const numEl=document.getElementById('slideNum');
+const sectionsBar=document.getElementById('sectionsBar');
+const total=slides.length;
+let current=0;
+slides.forEach((_,i)=>{const dot=document.createElement('button');dot.className='nav-dot';dot.title=`Slide ${i+1}`;dot.addEventListener('click',()=>go(i));nav.appendChild(dot)});
+const dots=nav.querySelectorAll('.nav-dot');
+const sections=[];
+const sectionSet=new Set();
+slides.forEach((s,i)=>{const sec=s.dataset.section||'';if(sec&&!sectionSet.has(sec)){sectionSet.add(sec);sections.push({name:sec,startSlide:i})}});
+sections.forEach(sec=>{const chip=document.createElement('button');chip.className='section-chip';chip.textContent=sec.name;chip.addEventListener('click',()=>go(sec.startSlide));sectionsBar.appendChild(chip)});
+const chips=sectionsBar.querySelectorAll('.section-chip');
+let sectionsBarVisible=false;
+function toggleSectionsBar(){sectionsBarVisible=!sectionsBarVisible;sectionsBar.classList.toggle('visible',sectionsBarVisible)}
+function go(index){if(index<0||index>=total)return;if(index===current)return;slides[current].classList.remove('active');dots[current].classList.remove('active');current=index;slides[current].classList.add('active');dots[current].classList.add('active');const theme=slides[current].dataset.theme;document.body.classList.toggle('light-slide',theme==='light');numEl.textContent=`${current+1} / ${total}`;const currentSection=slides[current].dataset.section||'';chips.forEach(chip=>{chip.classList.toggle('active',chip.textContent===currentSection)});if(window._slideChannel){window._slideChannel.postMessage({type:'slideChange',slide:current+1,total:total})}}
+function handleHash(){const hash=parseInt(window.location.hash.slice(1));if(!isNaN(hash)&&hash>=1&&hash<=total){go(hash-1)}}
+window.addEventListener('hashchange',handleHash);
+if(window.location.hash.slice(1)){handleHash()}else{go(0)}
+document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key===' '){e.preventDefault();go(current+1)}if(e.key==='ArrowLeft'||e.key==='ArrowUp'){e.preventDefault();go(current-1)}if(e.key==='Home'){e.preventDefault();go(0)}if(e.key==='End'){e.preventDefault();go(total-1)}if(e.key==='f'||e.key==='F'){if(!document.fullscreenElement)document.documentElement.requestFullscreen();else document.exitFullscreen()}if(e.key==='s'||e.key==='S'){toggleSectionsBar()}});
+document.addEventListener('click',e=>{const el=e.target;if(el.classList.contains('spotlight-active'))return;el.classList.add('spotlight-active');el.addEventListener('animationend',()=>el.classList.remove('spotlight-active'),{once:true})});
+if(window===window.top){try{const channel=new BroadcastChannel('presentation-sync');window._slideChannel=channel;channel.onmessage=(e)=>{const d=e.data;if(d.type==='slideChange'&&typeof d.slide==='number'){go(d.slide-1)}else if(d.type==='goToSlide'){go(d.index)}else if(d.type==='penStroke'){if(window._penOverlay)window._penOverlay.receiveStroke(d)}else if(d.type==='penClear'){if(window._penOverlay)window._penOverlay.clearAll()}}}catch(err){}}
+})();
+</script>
+<script>
+(function(){
+const canvas=document.getElementById('penOverlay');
+if(!canvas)return;
+const ctx=canvas.getContext('2d');
+let drawing=false;
+let penActive=false;
+let penMode='pen';
+const penColor='#F7585C';
+const highlighterColor='rgba(255,230,0,0.3)';
+let currentSlideStrokes={};
+function resize(){canvas.width=window.innerWidth;canvas.height=window.innerHeight;redrawStrokes()}
+window.addEventListener('resize',resize);resize();
+function getSlideKey(){const active=document.querySelector('.slide.active');return active?active.dataset.section||'default':'default'}
+function redrawStrokes(){ctx.clearRect(0,0,canvas.width,canvas.height);const key=getSlideKey();const strokes=currentSlideStrokes[key]||[];strokes.forEach(drawStroke)}
+function drawStroke(stroke){if(stroke.points.length<2)return;ctx.beginPath();ctx.strokeStyle=stroke.color;ctx.lineWidth=stroke.width;ctx.lineCap='round';ctx.lineJoin='round';ctx.globalCompositeOperation=stroke.eraser?'destination-out':'source-over';ctx.moveTo(stroke.points[0].x,stroke.points[0].y);for(let i=1;i<stroke.points.length;i++){ctx.lineTo(stroke.points[i].x,stroke.points[i].y)}ctx.stroke();ctx.globalCompositeOperation='source-over'}
+let currentStroke=null;
+canvas.addEventListener('pointerdown',e=>{if(!penActive)return;drawing=true;const isEraser=penMode==='eraser';const color=penMode==='highlighter'?highlighterColor:penColor;const width=penMode==='pen'?3:penMode==='highlighter'?20:30;currentStroke={points:[{x:e.clientX,y:e.clientY}],color,width,eraser:isEraser}});
+canvas.addEventListener('pointermove',e=>{if(!drawing||!currentStroke)return;currentStroke.points.push({x:e.clientX,y:e.clientY});redrawStrokes();drawStroke(currentStroke)});
+canvas.addEventListener('pointerup',()=>{if(!drawing||!currentStroke)return;drawing=false;const key=getSlideKey();if(!currentSlideStrokes[key])currentSlideStrokes[key]=[];currentSlideStrokes[key].push(currentStroke);if(window._slideChannel){window._slideChannel.postMessage({type:'penStroke',slideKey:key,stroke:currentStroke})}currentStroke=null});
+document.addEventListener('keydown',e=>{if(e.key==='p'||e.key==='P'){if(document.activeElement&&document.activeElement.tagName==='INPUT')return;penActive=!penActive;canvas.classList.toggle('active',penActive)}if(penActive){if(e.key==='1')penMode='pen';if(e.key==='2')penMode='highlighter';if(e.key==='3')penMode='eraser';if(e.key==='c'||e.key==='C'){const key=getSlideKey();currentSlideStrokes[key]=[];redrawStrokes()}}});
+window._penOverlay={receiveStroke:function(data){const key=data.slideKey||getSlideKey();if(!currentSlideStrokes[key])currentSlideStrokes[key]=[];currentSlideStrokes[key].push(data.stroke);if(key===getSlideKey())redrawStrokes()}};
+})();
+</script>
+</body>
+</html>

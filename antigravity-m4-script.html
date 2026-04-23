@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>발표자 노트 | Antigravity M4 | 모두의연구소</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@latest/dist/web/static/pretendard.min.css">
+<style>
+:root{--bg:#0f1117;--bg-secondary:#161822;--bg-tertiary:#1c1f2e;--bg-card:#1e2132;--border:rgba(255,255,255,.06);--text:#e4e6eb;--text-secondary:rgba(255,255,255,.55);--text-dim:rgba(255,255,255,.3);--accent:#F7585C;--accent-dim:rgba(247,88,92,.15);--green:#10B981;--yellow:#F59E0B;--red:#EF4444;--blue:#3B82F6;--radius:8px;--radius-sm:5px}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
+.app{display:flex;flex-direction:column;height:100vh}
+.header{display:flex;align-items:center;gap:16px;padding:8px 16px;background:var(--bg-secondary);border-bottom:1px solid var(--border);flex-shrink:0;z-index:10;height:44px}
+.slide-indicator{font-size:.82rem;font-weight:700;color:var(--text);font-variant-numeric:tabular-nums;min-width:60px}
+.slide-indicator span{color:var(--accent)}
+.header-sep{width:1px;height:20px;background:var(--border)}
+.timer-controls{display:flex;align-items:center;gap:8px}
+.timer-display{font-size:1.1rem;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:1px;min-width:70px}
+.timer-btn{width:26px;height:26px;border:none;border-radius:var(--radius-sm);background:rgba(255,255,255,.06);color:var(--text-secondary);cursor:pointer;font-size:.7rem;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.timer-btn:hover{background:rgba(255,255,255,.12);color:var(--text)}
+.timer-btn.active{background:var(--accent-dim);color:var(--accent)}
+.target-input{width:48px;height:26px;border:1px solid var(--border);border-radius:var(--radius-sm);background:rgba(255,255,255,.04);color:var(--text);text-align:center;font-size:.78rem;font-family:inherit;font-variant-numeric:tabular-nums;outline:none}
+.target-input:focus{border-color:var(--accent)}
+.header-spacer{flex:1}
+.header-toggle{height:26px;padding:0 10px;border:1px solid var(--border);border-radius:var(--radius-sm);background:rgba(255,255,255,.04);color:var(--text-secondary);cursor:pointer;font-size:.72rem;font-family:inherit;font-weight:600;letter-spacing:.5px;transition:all .15s;display:flex;align-items:center;gap:5px}
+.header-toggle:hover{background:rgba(255,255,255,.08);color:var(--text)}
+.header-toggle.active{background:var(--accent-dim);color:var(--accent);border-color:rgba(247,88,92,.3)}
+.sync-status{display:flex;align-items:center;gap:5px;font-size:.72rem;color:var(--text-dim)}
+.sync-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.pace-bar-area{display:flex;align-items:center;gap:12px;padding:6px 16px;background:var(--bg-secondary);border-bottom:1px solid var(--border);flex-shrink:0;font-size:.7rem}
+.pace-bars{flex:1;display:flex;gap:8px;align-items:center}
+.pace-bar-group{flex:1}
+.pace-bar-label{font-size:.65rem;color:var(--text-dim);margin-bottom:3px;display:flex;justify-content:space-between}
+.pace-bar-track{height:4px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden}
+.pace-bar-fill{height:100%;border-radius:2px;transition:width .5s ease}
+.pace-bar-fill.time{background:var(--blue)}
+.pace-bar-fill.slide{background:var(--accent)}
+.pace-status{display:flex;align-items:center;gap:4px;min-width:80px;justify-content:flex-end}
+.pace-status-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.pace-status-text{color:var(--text-secondary);font-weight:600}
+.main{display:flex;flex:1;min-height:0;overflow:hidden}
+.preview-panel{flex:3;display:flex;flex-direction:column;position:relative;background:#000;border-right:1px solid var(--border)}
+.preview-container{flex:1;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.preview-frame-wrap{position:relative;width:100%;height:100%;overflow:hidden}
+.preview-frame-wrap iframe{position:absolute;width:1920px;height:1080px;border:none;transform-origin:0 0;pointer-events:none;background:#030712}
+.pen-canvas{position:absolute;top:0;left:0;width:100%;height:100%;z-index:5;pointer-events:none}
+.pen-canvas.active{pointer-events:auto;cursor:crosshair}
+.preview-controls{display:flex;align-items:center;gap:8px;padding:6px 12px;background:rgba(0,0,0,.6);border-top:1px solid var(--border);flex-shrink:0}
+.preview-controls .pen-btn{height:24px;padding:0 8px;border:1px solid var(--border);border-radius:var(--radius-sm);background:rgba(255,255,255,.04);color:var(--text-secondary);cursor:pointer;font-size:.68rem;font-family:inherit;transition:all .15s}
+.preview-controls .pen-btn:hover{background:rgba(255,255,255,.1)}
+.preview-controls .pen-btn.active{background:var(--accent-dim);color:var(--accent);border-color:rgba(247,88,92,.3)}
+.next-preview{flex-shrink:0;border-top:1px solid var(--border);background:var(--bg-tertiary);display:flex;flex-direction:column}
+.next-preview-header{display:flex;align-items:center;justify-content:space-between;padding:4px 10px;font-size:.65rem;color:var(--text-dim)}
+.next-preview-num{font-weight:700;color:var(--accent);font-variant-numeric:tabular-nums}
+.next-preview-frame-wrap{position:relative;overflow:hidden;background:#000;aspect-ratio:16/9;margin:0 6px 6px;border-radius:var(--radius-sm)}
+.next-preview-frame-wrap iframe{position:absolute;width:1920px;height:1080px;border:none;transform-origin:0 0;pointer-events:none;background:#030712;border-radius:var(--radius-sm)}
+.script-panel{flex:1;display:flex;flex-direction:column;background:var(--bg-secondary);min-width:280px;max-width:400px}
+.script-header{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-bottom:1px solid var(--border);flex-shrink:0}
+.script-header-label{font-size:.72rem;font-weight:700;letter-spacing:1px;color:var(--text-dim);text-transform:uppercase}
+.font-controls{display:flex;align-items:center;gap:4px}
+.font-btn{width:24px;height:24px;border:1px solid var(--border);border-radius:var(--radius-sm);background:rgba(255,255,255,.04);color:var(--text-secondary);cursor:pointer;font-size:.8rem;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.font-btn:hover{background:rgba(255,255,255,.1);color:var(--text)}
+.script-cards{flex:1;overflow-y:auto;padding:8px;scroll-behavior:smooth}
+.script-cards::-webkit-scrollbar{width:4px}
+.script-cards::-webkit-scrollbar-track{background:transparent}
+.script-cards::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:2px}
+.script-card{padding:10px 12px;border-radius:var(--radius);border:1px solid transparent;margin-bottom:6px;cursor:pointer;transition:all .2s;display:none}
+.script-card:hover{background:rgba(255,255,255,.03)}
+.script-card.active{background:var(--bg-card);border-color:var(--accent);display:block}
+.script-meta{display:flex;align-items:flex-start;gap:8px;margin-bottom:6px}
+.script-number{width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700;flex-shrink:0;color:var(--text-secondary)}
+.script-card.active .script-number{background:var(--accent);color:#fff}
+.script-info{flex:1;min-width:0}
+.script-section{font-size:.65rem;font-weight:600;color:var(--text-dim);letter-spacing:.5px;text-transform:uppercase;margin-bottom:2px}
+.script-title{font-size:.82rem;font-weight:700;color:var(--text);line-height:1.35;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.script-body{padding-left:30px}
+.script-text{font-size:.78rem;line-height:1.65;color:var(--text-secondary);word-break:keep-all}
+.script-ref{font-size:.68rem;color:var(--text-dim);margin-top:4px;padding-top:4px;border-top:1px solid var(--border);display:none}
+.script-card.active .script-ref{display:block}
+.bottom-bar{display:flex;align-items:center;gap:12px;padding:8px 16px;background:var(--bg-secondary);border-top:1px solid var(--border);flex-shrink:0}
+.progress-track{flex:1;height:4px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden;cursor:pointer}
+.progress-fill{height:100%;background:var(--accent);border-radius:2px;transition:width .3s ease}
+.nav-btn{height:30px;padding:0 16px;border:none;border-radius:var(--radius-sm);font-size:.82rem;font-weight:700;cursor:pointer;transition:all .15s;font-family:inherit}
+.nav-btn.prev{background:rgba(255,255,255,.06);color:var(--text)}
+.nav-btn.prev:hover{background:rgba(255,255,255,.12)}
+.nav-btn.next{background:var(--accent);color:#fff}
+.nav-btn.next:hover{background:#e04448}
+.nav-btn:disabled{opacity:.3;cursor:not-allowed}
+body.teleprompter .header,body.teleprompter .pace-bar-area,body.teleprompter .preview-panel,body.teleprompter .bottom-bar{display:none}
+body.teleprompter .main{flex-direction:column}
+body.teleprompter .script-panel{max-width:100%;flex:1}
+body.teleprompter .script-card{display:none}
+body.teleprompter .script-card.active{display:block;padding:24px 48px}
+body.teleprompter .script-card.active .script-title{font-size:1.6rem;margin-bottom:12px;white-space:normal}
+body.teleprompter .script-card.active .script-text{font-size:1.4rem;line-height:2}
+body.teleprompter .script-card.active .script-number{width:36px;height:36px;font-size:1rem}
+body.teleprompter .script-card.active .script-section{font-size:.85rem;margin-bottom:6px}
+body.teleprompter .script-card.active .script-meta{margin-bottom:12px}
+body.teleprompter .script-header{position:sticky;top:0;z-index:5;background:var(--bg-secondary)}
+body.fullscreen-script .preview-panel{display:none}
+body.fullscreen-script .script-panel{max-width:100%;flex:1}
+.timer-overtime .timer-display{color:var(--red)}
+.timer-overtime .timer-display::after{content:' \26A0';font-size:.8rem}
+@media print{.header,.pace-bar-area,.preview-panel,.bottom-bar{display:none}.script-panel{max-width:100%}.script-card{break-inside:avoid}}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="header">
+<div class="slide-indicator"><span id="slideNum">1</span> / <span id="totalNum">35</span></div>
+<div class="header-sep"></div>
+<div class="timer-controls">
+<button class="timer-btn" id="btnTimerStart" title="시작/일시정지">▶</button>
+<button class="timer-btn" id="btnTimerReset" title="초기화">↺</button>
+<div class="timer-display" id="timerDisplay">00:00</div>
+<span style="font-size:.7rem;color:var(--text-dim)">/</span>
+<input type="number" class="target-input" id="targetMinutes" value="120" min="1" max="999" title="목표 시간(분)">
+<span style="font-size:.7rem;color:var(--text-dim)">분</span>
+</div>
+<div class="header-spacer"></div>
+<a class="header-toggle" id="btnOpenTab" target="_blank" title="새 탭에서 프레젠테이션 열기">🔗 새 탭에서 열기</a>
+<button class="header-toggle" id="btnTeleprompter" title="텔레프롬프터 모드 (T)">🎤 텔레프롬프터</button>
+<button class="header-toggle" id="btnFullscreenScript" title="전체 스크립트 (F)">📜 전체보기</button>
+<div class="header-sep"></div>
+<div class="sync-status"><div class="sync-dot"></div> 동기화</div>
+</div>
+<div class="pace-bar-area">
+<div class="pace-bars">
+<div class="pace-bar-group"><div class="pace-bar-label"><span>시간 진행률</span><span id="timePercent">0%</span></div><div class="pace-bar-track"><div class="pace-bar-fill time" id="timeBar"></div></div></div>
+<div class="pace-bar-group"><div class="pace-bar-label"><span>슬라이드 진행률</span><span id="slidePercent">0%</span></div><div class="pace-bar-track"><div class="pace-bar-fill slide" id="slideBar"></div></div></div>
+</div>
+<div class="pace-status"><div class="pace-status-dot" id="paceDot"></div><div class="pace-status-text" id="paceText">대기</div></div>
+</div>
+<div class="main">
+<div class="preview-panel">
+<div class="preview-container"><div class="preview-frame-wrap"><iframe id="previewIframe" src="./antigravity-m4-presentation.html#1"></iframe><canvas class="pen-canvas" id="penCanvas"></canvas></div></div>
+<div class="preview-controls">
+<button class="pen-btn" id="btnPenToggle" title="펜 모드 (P)">✏️ 펜</button>
+<button class="pen-btn" id="btnPenColor" title="색상 변경">🔴</button>
+<button class="pen-btn" id="btnHighlighter" title="형광펜 (H)">🖍️</button>
+<button class="pen-btn" id="btnEraser" title="지우개 (E)">🧹</button>
+<button class="pen-btn" id="btnPenClear" title="모두 지우기 (C)">🗑️</button>
+<div style="flex:1"></div>
+<span style="font-size:.65rem;color:var(--text-dim)">P: 펜 · 1/2/3: 모드 · C: 지우기</span>
+</div>
+</div>
+<div class="script-panel">
+<div class="script-header">
+<div class="script-header-label">스크립트</div>
+<div class="font-controls">
+<button class="font-btn" id="btnFontMinus" title="글자 작게">A-</button>
+<button class="font-btn" id="btnFontPlus" title="글자 크게">A+</button>
+</div>
+</div>
+<div class="script-cards" id="scriptCards">
+
+<div class="script-card active" data-slide="1"><div class="script-meta"><div class="script-number">1</div><div class="script-info"><div class="script-section">시작</div><div class="script-title">커버 — AI와 함께 코드 짜기</div></div></div><div class="script-body"><div class="script-text">수강생들 환영. M4 에이전틱 코드 생성 시작. M3에서 프롬프트 엔지니어링을 배웠으니, 이제 실제로 AI가 코드를 어떻게 생성하고 우리가 어떻게 관리하는지 배울 것이라고 안내. "지난주에 대본을 쓰는 법을 배웠죠? 오늘은 실제로 연기를 해볼 겁니다."</div><div class="script-ref">data-section: 시작 | 테마: dark | 커버 슬라이드</div></div></div>
+
+<div class="script-card" data-slide="2"><div class="script-meta"><div class="script-number">2</div><div class="script-info"><div class="script-section">시작</div><div class="script-title">오늘 배울 것</div></div></div><div class="script-body"><div class="script-text">오늘 2시간 동안 6개 카테고리를 배울 것이라고 안내. 코드 생성 워크플로우부터 시작해서 품질 관리, 변경 추적, 고급 패턴, 실습까지. 마지막에 실습이 있다는 점 강조. "오늘이 가장 손이 많이 가는 시간입니다. 직접 코드를 만들어볼 거거든요."</div><div class="script-ref">data-section: 시작 | 테마: light</div></div></div>
+
+<div class="script-card" data-slide="3"><div class="script-meta"><div class="script-number">3</div><div class="script-info"><div class="script-section">복습</div><div class="script-title">M3 복습: 프롬프트 엔지니어링</div></div></div><div class="script-body"><div class="script-text">M3에서 배운 핵심 내용을 간단히 복습. 역할 부여, 단계별 지시, 출력 형식 지정 세 가지를 되짚기. "지난주에 AI에게 어떻게 말을 거는지 배웠죠? 기억나시죠?"</div><div class="script-ref">data-section: 복습 | 테마: gradient</div></div></div>
+
+<div class="script-card" data-slide="4"><div class="script-meta"><div class="script-number">4</div><div class="script-info"><div class="script-section">복습</div><div class="script-title">M3 → M4 연결: 프롬프트 → 코드</div></div></div><div class="script-body"><div class="script-text">M3가 대본 작성, M4가 실제 공연이라는 비유로 연결. 프롬프트가 좋아야 코드도 좋다는 연결 고리 강조. 오늘의 핵심 질문 제시. "대본이 준비되었으니, 이제 무대 위에서 실제로 코드를 짜보겠습니다."</div><div class="script-ref">data-section: 복습 | 테마: white</div></div></div>
+
+<div class="script-card" data-slide="5"><div class="script-meta"><div class="script-number">5</div><div class="script-info"><div class="script-section">코드 생성 워크플로우</div><div class="script-title">Plan → Build → Review 사이클</div></div></div><div class="script-body"><div class="script-text">에이전틱 코드 생성의 핵심 사이클 소개. Plan → Build → Review → Iterate의 반복. 한 번에 완벽한 코드가 나오는 게 아니라는 점 강조. "이 사이클이 오늘의 전부입니다. 이것만 기억하시면 됩니다."</div><div class="script-ref">data-section: 코드 생성 워크플로우 | 테마: dark</div></div></div>
+
+<div class="script-card" data-slide="6"><div class="script-meta"><div class="script-number">6</div><div class="script-info"><div class="script-section">코드 생성 워크플로우</div><div class="script-title">Agent Pane이 코드를 생성하는 방식</div></div></div><div class="script-body"><div class="script-text">Agent Pane이 컨텍스트를 읽고 의도를 파악하고 코드를 생성하는 과정 설명. 관련 파일들을 함께 생성한다는 점 강조. "Agent Pane은 코드 하나만 짜주는 게 아니라, 필요한 파일들을 알아서 만들어줍니다."</div><div class="script-ref">data-section: 코드 생성 워크플로우 | 테마: light</div></div></div>
+
+<div class="script-card" data-slide="7"><div class="script-meta"><div class="script-number">7</div><div class="script-info"><div class="script-section">코드 생성 워크플로우</div><div class="script-title">⚠️ 생성된 코드를 반드시 이해하세요</div></div></div><div class="script-body"><div class="script-text">가장 중요한 슬라이드. 이해하지 못한 코드는 절대 수락하지 말라고 경고. 파일 구조 파악, 임포트 추적, 보안 검토의 중요성. "AI가 짠 코드도 결국 내 코드입니다. 이해 못하면 배포 못합니다."</div><div class="script-ref">data-section: 코드 생성 워크플로우 | 테마: coral</div></div></div>
+
+<div class="script-card" data-slide="8"><div class="script-meta"><div class="script-number">8</div><div class="script-info"><div class="script-section">코드 생성 워크플로우</div><div class="script-title">점진적 개발 vs 한 방에 다 만들기</div></div></div><div class="script-body"><div class="script-text">점진적 생성과 빅뱅 생성의 비교. 초보자에게는 점진적 방식을 추천. 테이블로 리스크, 이해도, 추천 여부를 비교. "한 입에 다 먹지 말고, 한 숟가락씩 맛보면서 드세요."</div><div class="script-ref">data-section: 코드 생성 워크플로우 | 테마: white</div></div></div>
+
+<div class="script-card" data-slide="9"><div class="script-meta"><div class="script-number">9</div><div class="script-info"><div class="script-section">코드 생성 워크플로우</div><div class="script-title">수락 / 수정 / 거부 판단 기준</div></div></div><div class="script-body"><div class="script-text">AI 제안에 대한 세 가지 선택지 설명. 부분 수락도 가능. 거부해도 AI는 상처받지 않는다는 점을 유머러스하게 강조. "거부해도 괜찮아요. AI는 상처받지 않습니다. 저도 리뷰에서 매일 거부당하거든요."</div><div class="script-ref">data-section: 코드 생성 워크플로우 | 테마: light</div></div></div>
+
+<div class="script-card" data-slide="10"><div class="script-meta"><div class="script-number">10</div><div class="script-info"><div class="script-section">코드 생성 워크플로우</div><div class="script-title">상황에 맞는 AI 모델 선택</div></div></div><div class="script-body"><div class="script-text">Antigravity의 멀티 모델 지원 설명. Gemini Flash, Pro, Claude, GPT-OSS 비교. 빠른 반복에는 Flash, 중요한 로직에는 Pro나 Claude. "모델 선택도 도구 선택과 같습니다. 드라이버에는 드라이버, 망치에는 망치."</div><div class="script-ref">data-section: 코드 생성 워크플로우 | 테마: gradient</div></div></div>
+
+<div class="script-card" data-slide="11"><div class="script-meta"><div class="script-number">11</div><div class="script-info"><div class="script-section">코드 품질 관리</div><div class="script-title">AI 코드는 프로덕션 레디가 아닙니다</div></div></div><div class="script-body"><div class="script-text">강력한 메시지. AI 코드는 초안일 뿐. 80%는 좋지만 나머지 20%가 문제. 자주 누락되는 것과 프로덕션에 필요한 것을 비교. "여러분이 리뷰어입니다. AI는 작성자고, 여러분이 최종 승인자입니다."</div><div class="script-ref">data-section: 코드 품질 관리 | 테마: accent</div></div></div>
+
+<div class="script-card" data-slide="12"><div class="script-meta"><div class="script-number">12</div><div class="script-info"><div class="script-section">코드 품질 관리</div><div class="script-title">AI 코드 리뷰 체크리스트</div></div></div><div class="script-body"><div class="script-text">기능적 검증과 품질적 검증으로 나눈 체크리스트. AI에게도 리뷰를 요청할 수 있다는 팁. "이 체크리스트를 습관화하면 좋습니다. 인쇄해서 모니터 옆에 붙여놓으세요."</div><div class="script-ref">data-section: 코드 품질 관리 | 테마: white</div></div></div>
+
+<div class="script-card" data-slide="13"><div class="script-meta"><div class="script-number">13</div><div class="script-info"><div class="script-section">코드 품질 관리</div><div class="script-title">AI가 자주 하는 실수 TOP 6</div></div></div><div class="script-body"><div class="script-text">허구 API, 잘못된 임포트, 잘못된 패턴, 보안 누락, 성능 무시, 과도한 추상화. 이런 패턴을 알면 리뷰가 빨라짐. "이거 다 실제로 봤어요. 제가 직접 겪은 패턴들입니다."</div><div class="script-ref">data-section: 코드 품질 관리 | 테마: coral</div></div></div>
+
+<div class="script-card" data-slide="14"><div class="script-meta"><div class="script-number">14</div><div class="script-info"><div class="script-section">코드 품질 관리</div><div class="script-title">Agent Pane으로 리팩토링하기</div></div></div><div class="script-body"><div class="script-text">구체적 지적, 패턴 적용, 품질 요청의 세 가지 리팩토링 프롬프트 패턴. 문제를 구체적으로 설명할수록 품질이 올라감. "AI가 만든 코드를 AI가 다시 개선하게 만드는 게 마법 같죠?"</div><div class="script-ref">data-section: 코드 품질 관리 | 테마: light</div></div></div>
+
+<div class="script-card" data-slide="15"><div class="script-meta"><div class="script-number">15</div><div class="script-info"><div class="script-section">코드 품질 관리</div><div class="script-title">타입 안전성과 에러 처리</div></div></div><div class="script-body"><div class="script-text">AI 코드에서 취약한 타입 안전성과 에러 처리. 위험한 코드 vs 안전한 코드 비교. API 호출 시 에러 처리, null 체크, 경계값 검증 세 가지 항상 확인. "이 세 가지가 없으면 런타임에 폭탄이 터집니다."</div><div class="script-ref">data-section: 코드 품질 관리 | 테마: white</div></div></div>
+
+<div class="script-card" data-slide="16"><div class="script-meta"><div class="script-number">16</div><div class="script-info"><div class="script-section">코드 품질 관리</div><div class="script-title">프로젝트 컨벤션 따르기</div></div></div><div class="script-body"><div class="script-text">네이밍, 설정 파일, CLAUDE.md, 예시 코드, 리뷰 시 확인의 5가지 전략. AI에게 컨벤션을 명시적으로 알려주는 것이 중요. "AI는 '일반적인' 코드를 짭니다. 여러분의 프로젝트 스타일을 알려주세요."</div><div class="script-ref">data-section: 코드 품질 관리 | 테마: light</div></div></div>
+
+<div class="script-card" data-slide="17"><div class="script-meta"><div class="script-number">17</div><div class="script-info"><div class="script-section">변경 추적과 디버깅</div><div class="script-title">Git으로 AI 변경사항 추적하기</div></div></div><div class="script-body"><div class="script-text">작업 전 커밋 → AI 코드 생성 → Diff 확인 → 커밋의 워크플로우. 커밋을 자주 하고 AI 작업 전후로 상태를 확인하는 습관 권장. "AI가 뭘 바꿨는지 모르면, 버그가 나도 찾을 수 없습니다."</div><div class="script-ref">data-section: 변경 추적과 디버깅 | 테마: dark</div></div></div>
+
+<div class="script-card" data-slide="18"><div class="script-meta"><div class="script-number">18</div><div class="script-info"><div class="script-section">변경 추적과 디버깅</div><div class="script-title">Diff 리뷰: 무엇이 바뀌었는가?</div></div></div><div class="script-body"><div class="script-text">추가/삭제/수정된 코드를 주의 깊게 보는 방법. 요청하지 않은 임포트나 파일 수정이 있는지 확인. "Diff를 꼼꼼히 확인하는 습관, 이게 실무에서 진짜 중요합니다."</div><div class="script-ref">data-section: 변경 추적과 디버깅 | 테마: white</div></div></div>
+
+<div class="script-card" data-slide="19"><div class="script-meta"><div class="script-number">19</div><div class="script-info"><div class="script-section">변경 추적과 디버깅</div><div class="script-title">AI 코드 디버깅 전략</div></div></div><div class="script-body"><div class="script-text">에러 발견 → 복사 → Agent Pane에 전달 → 수정 제안의 4단계. 에러 메시지 + 관련 코드를 함께 주면 정확도 UP. "에러 메시지를 그대로 복붙하세요. AI가 제일 잘하는 게 에러 분석입니다."</div><div class="script-ref">data-section: 변경 추적과 디버깅 | 테마: light</div></div></div>
+
+<div class="script-card" data-slide="20"><div class="script-meta"><div class="script-number">20</div><div class="script-info"><div class="script-section">변경 추적과 디버깅</div><div class="script-title">반복 수정 사이클</div></div></div><div class="script-body"><div class="script-text">Prompt → Code → Test → Fix 사이클. 간단한 기능은 2-3회, 복잡한 건 5-7회. 실패는 과정의 일부. "포기하지 마세요. 매 반복마다 코드가 나아집니다. AI도 같이 배우고 있거든요."</div><div class="script-ref">data-section: 변경 추적과 디버깅 | 테마: gradient</div></div></div>
+
+<div class="script-card" data-slide="21"><div class="script-meta"><div class="script-number">21</div><div class="script-info"><div class="script-section">변경 추적과 디버깅</div><div class="script-title">Antigravity Run and Debug 활용</div></div></div><div class="script-body"><div class="script-text">Run 메뉴 기능과 Debug 도구 설명. 에러 하이라이트, 스택 트레이스, Agent 연동. 코드 생성 → Run → 에러 → Agent Pane → 수정 → 다시 Run의 실전 워크플로우. "이게 Antigravity의 진짜 편리한 점입니다."</div><div class="script-ref">data-section: 변경 추적과 디버깅 | 테마: white</div></div></div>
+
+<div class="script-card" data-slide="22"><div class="script-meta"><div class="script-number">22</div><div class="script-info"><div class="script-section">변경 추적과 디버깅</div><div class="script-title">AI 코드 품질 모니터링 루틴</div></div></div><div class="script-body"><div class="script-text">Lint → Test → Build의 필수 루틴. AI가 코드를 수정할 때마다 이 세 가지를 실행하는 습관. "이거 세 가지만 하면 90%의 문제를 잡을 수 있습니다."</div><div class="script-ref">data-section: 변경 추적과 디버깅 | 테마: light</div></div></div>
+
+<div class="script-card" data-slide="23"><div class="script-meta"><div class="script-number">23</div><div class="script-info"><div class="script-section">고급 코드 생성 패턴</div><div class="script-title">풀피처 엔드투엔드 생성</div></div></div><div class="script-body"><div class="script-text">DB 스키마 → API → UI → 테스트의 계층별 생성 전략. "전체를 만들어줘"라고 하면 AI가 구조를 짬. 하지만 각 단계 검토 필수. "집 지을 때 뼈대부터 올리죠. 코드도 마찬가지입니다."</div><div class="script-ref">data-section: 고급 코드 생성 패턴 | 테마: dark</div></div></div>
+
+<div class="script-card" data-slide="24"><div class="script-meta"><div class="script-number">24</div><div class="script-info"><div class="script-section">고급 코드 생성 패턴</div><div class="script-title">테스트와 함께 코드 생성하기</div></div></div><div class="script-body"><div class="script-text">테스트 우선 요청과 코드+테스트 동시 생성의 두 가지 패턴. 테스트가 있으면 수정 시 기존 동작 검증 가능. "테스트는 AI 코드의 안전망입니다. 없으면 맨몸으로 싸우는 거예요."</div><div class="script-ref">data-section: 고급 코드 생성 패턴 | 테마: light</div></div></div>
+
+<div class="script-card" data-slide="25"><div class="script-meta"><div class="script-number">25</div><div class="script-info"><div class="script-section">고급 코드 생성 패턴</div><div class="script-title">AI로 문서도 생성하기</div></div></div><div class="script-body"><div class="script-text">JSDoc, README, API 문서를 AI에게 생성시키는 패턴. 코드 생성 직후에 바로 문서 생성 요청하면 컨텍스트가 유지되어 품질 UP. "문서도 코드처럼 AI에게 맡기되, 꼭 확인하세요."</div><div class="script-ref">data-section: 고급 코드 생성 패턴 | 테마: white</div></div></div>
+
+<div class="script-card" data-slide="26"><div class="script-meta"><div class="script-number">26</div><div class="script-info"><div class="script-section">고급 코드 생성 패턴</div><div class="script-title">API 통합 코드 생성</div></div></div><div class="script-body"><div class="script-text">API 스펙 제공 → 타입 정의 → 클라이언트 → 에러 처리의 순서. MCP 활용하면 API 직접 호출 테스트 가능. 보안 주의: API 키 하드코딩 금지. "API 스펙만 주면 AI가 다 만들어줍니다. 대신 키는 환경 변수로!"</div><div class="script-ref">data-section: 고급 코드 생성 패턴 | 테마: gradient</div></div></div>
+
+<div class="script-card" data-slide="27"><div class="script-meta"><div class="script-number">27</div><div class="script-info"><div class="script-section">고급 코드 생성 패턴</div><div class="script-title">기존 코드베이스에서 AI 사용하기</div></div></div><div class="script-body"><div class="script-text">기존 프로젝트에 새 기능 추가 시 전략. 관련 파일 열기, 아키텍처 설명, 수정 범위 명시, 기존 패턴 참조. 기존 코드를 많이 보여줄수록 일관성 UP. "기존 코드를 건드릴 때는 더 조심해야 합니다."</div><div class="script-ref">data-section: 고급 코드 생성 패턴 | 테마: light</div></div></div>
+
+<div class="script-card" data-slide="28"><div class="script-meta"><div class="script-number">28</div><div class="script-info"><div class="script-section">고급 코드 생성 패턴</div><div class="script-title">Code to Cloud — "Publish my app"</div></div></div><div class="script-body"><div class="script-text">코드 작성 → 테스트 → "Publish my app" → Firebase 배포의 원스톱 흐름. Firebase Hosting, Cloud Functions, Firestore. Agent Skill로 한 줄 배포. "다음 시간에 이걸 직접 해봅니다."</div><div class="script-ref">data-section: 고급 코드 생성 패턴 | 테마: dark</div></div></div>
+
+<div class="script-card" data-slide="29"><div class="script-meta"><div class="script-number">29</div><div class="script-info"><div class="script-section">실습</div><div class="script-title">실습: Plan → Build → Review</div></div></div><div class="script-body"><div class="script-text">실습 시작 안내. 할 일 관리 앱에 "새 할 일 추가" 기능을 4단계로 만들 것. 35분 진행. "이제 직접 해볼 시간입니다. 오늘 배운 사이클을 꼭 적용해보세요."</div><div class="script-ref">data-section: 실습 | 테마: accent | 강조 슬라이드</div></div></div>
+
+<div class="script-card" data-slide="30"><div class="script-meta"><div class="script-number">30</div><div class="script-info"><div class="script-section">실습</div><div class="script-title">Step 1: 기능 기획하기 (5분)</div></div></div><div class="script-body"><div class="script-text">Agent Pane에 명확한 요구사항 작성. 제목, 설명, 우선순위, 마감일, 에러 처리까지 명시. 구체적일수록 좋음. "프롬프트를 쓰는 시간이 아깝다고 생각하지 마세요. 5분 투자가 30분을 아껴줍니다."</div><div class="script-ref">data-section: 실습 | 테마: white</div></div></div>
+
+<div class="script-card" data-slide="31"><div class="script-meta"><div class="script-number">31</div><div class="script-info"><div class="script-section">실습</div><div class="script-title">Step 2: 코드 생성 & 점진적 확장 (15분)</div></div></div><div class="script-body"><div class="script-text">생성물 검토 → 에러 처리 추가 → 스타일 조정 → 테스트 생성의 4단계. 각 단계에서 생성 → 검토 → 수정 사이클. "조급해하지 마세요. 한 단계씩 확실하게!"</div><div class="script-ref">data-section: 실습 | 테마: light</div></div></div>
+
+<div class="script-card" data-slide="32"><div class="script-meta"><div class="script-number">32</div><div class="script-info"><div class="script-section">실습</div><div class="script-title">Step 3: 리뷰 & 수정</div></div></div><div class="script-body"><div class="script-text">리뷰 체크리스트 적용. 요구사항, 에러 처리, 컨벤션, 보안 확인. Agent Pane에 리뷰 요청. "이 단계에서 진짜 실력이 늘어요. 코드를 읽는 눈이 생깁니다."</div><div class="script-ref">data-section: 실습 | 테마: white</div></div></div>
+
+<div class="script-card" data-slide="33"><div class="script-meta"><div class="script-number">33</div><div class="script-info"><div class="script-section">실습</div><div class="script-title">Step 4: 테스트 & 배포 (15분)</div></div></div><div class="script-body"><div class="script-text">Run and Debug로 실행, 에러 콘솔 확인, 모든 기능 테스트. 문제 있으면 Agent Pane에 에러 전달. 만족하면 Git 커밋, 시간 되면 "Publish my app". "에러가 나면 당황하지 말고 에러 메시지를 복사해서 Agent에게!"</div><div class="script-ref">data-section: 실습 | 테마: light</div></div></div>
+
+<div class="script-card" data-slide="34"><div class="script-meta"><div class="script-number">34</div><div class="script-info"><div class="script-section">정리</div><div class="script-title">오늘의 핵심 정리</div></div></div><div class="script-body"><div class="script-text">5가지 핵심 복습: Plan → Build → Review, 코드 리뷰 필수, Git 추적, 테스트 함께, 점진적 생성. 다 외울 필요 없고 원칙만 기억. "이 다섯 가지만 기억하시면 오늘 100점입니다."</div><div class="script-ref">data-section: 정리 | 테마: white</div></div></div>
+
+<div class="script-card" data-slide="35"><div class="script-meta"><div class="script-number">35</div><div class="script-info"><div class="script-section">정리</div><div class="script-title">마무리 & M5 예고</div></div></div><div class="script-body"><div class="script-text">마무리 인사. M5 MCP & Agent Skills 예고. 오늘 배운 코드 생성 기술을 실제 프로덕션 환경에 적용. "수고하셨습니다! 다음 주에는 만든 코드를 세상에 공개해봅니다."</div><div class="script-ref">data-section: 정리 | 테마: dark | 커버 슬라이드</div></div></div>
+
+</div>
+<div class="next-preview" id="nextPreview">
+<div class="next-preview-header"><span class="next-preview-label">다음 슬라이드</span><span class="next-preview-num" id="nextSlideNum">2</span></div>
+<div class="next-preview-frame-wrap"><iframe id="nextPreviewIframe" src="./antigravity-m4-presentation.html#2"></iframe></div>
+</div>
+</div>
+</div>
+<div class="bottom-bar">
+<button class="nav-btn prev" id="btnPrev">◀ 이전</button>
+<div class="progress-track" id="progressTrack"><div class="progress-fill" id="progressFill"></div></div>
+<button class="nav-btn next" id="btnNext">다음 ▶</button>
+</div>
+</div>
+<script>
+(function(){
+var TOTAL_SLIDES=35;
+var IFRAME_SRC='./antigravity-m4-presentation.html';
+var CHANNEL_NAME='presentation-sync';
+var currentSlide=1;
+var iframeCurrentHash=1;
+var timerRunning=false;
+var timerStart=0;
+var timerElapsed=0;
+var timerInterval=null;
+var scriptFontSize=14;
+var $=function(id){return document.getElementById(id)};
+var iframe=$('previewIframe');
+var nextPreviewIframe=$('nextPreviewIframe');
+var penCanvas=$('penCanvas');
+var penCtx=penCanvas.getContext('2d');
+var cards=document.querySelectorAll('.script-card');
+var scriptCardsEl=$('scriptCards');
+var channel=null;
+try{channel=new BroadcastChannel(CHANNEL_NAME);channel.onmessage=function(e){var d=e.data;if(d.type==='slideChange'){goToSlide(d.slide,true)}}}catch(err){}
+function broadcast(slideNum){if(channel){channel.postMessage({type:'slideChange',slide:slideNum,total:TOTAL_SLIDES})}}
+function goToSlide(num,fromRemote){if(num<1||num>TOTAL_SLIDES)return;currentSlide=num;if(num!==iframeCurrentHash){try{iframe.contentWindow.location.hash=String(num)}catch(e){iframe.src=IFRAME_SRC+'#'+num}iframeCurrentHash=num}if(!fromRemote){broadcast(num)}updateNextPreview();$('slideNum').textContent=num;for(var i=0;i<cards.length;i++){var s=parseInt(cards[i].getAttribute('data-slide'));cards[i].classList.toggle('active',s===num)}var activeCard=scriptCardsEl.querySelector('.script-card.active');if(activeCard){activeCard.scrollIntoView({behavior:'smooth',block:'nearest'})}var pct=(num/TOTAL_SLIDES)*100;$('progressFill').style.width=pct+'%';$('btnPrev').disabled=num<=1;$('btnNext').disabled=num>=TOTAL_SLIDES;updatePace()}
+function updateNextPreview(){var nextNum=currentSlide+1;if(nextNum>TOTAL_SLIDES){$('nextPreview').style.display='none';return}$('nextPreview').style.display='flex';$('nextSlideNum').textContent=nextNum;try{nextPreviewIframe.contentWindow.location.hash=String(nextNum)}catch(e){nextPreviewIframe.src=IFRAME_SRC+'#'+nextNum}}
+function prevSlide(){goToSlide(currentSlide-1)}
+function nextSlide(){goToSlide(currentSlide+1)}
+$('btnPrev').addEventListener('click',prevSlide);
+$('btnNext').addEventListener('click',nextSlide);
+$('progressTrack').addEventListener('click',function(e){var rect=$('progressTrack').getBoundingClientRect();var pct=(e.clientX-rect.left)/rect.width;var slide=Math.max(1,Math.min(TOTAL_SLIDES,Math.round(pct*TOTAL_SLIDES)));goToSlide(slide)});
+for(var ci=0;ci<cards.length;ci++){cards[ci].addEventListener('click',function(){goToSlide(parseInt(this.getAttribute('data-slide')))})}
+document.addEventListener('keydown',function(e){if(e.target.tagName==='INPUT')return;if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key===' '){e.preventDefault();nextSlide()}if(e.key==='ArrowLeft'||e.key==='ArrowUp'){e.preventDefault();prevSlide()}if(e.key==='Home'){e.preventDefault();goToSlide(1)}if(e.key==='End'){e.preventDefault();goToSlide(TOTAL_SLIDES)}if(e.key==='p'||e.key==='P'){togglePen()}if(penActive){if(e.key==='1')setPenMode('pen');if(e.key==='2')setPenMode('highlighter');if(e.key==='3')setPenMode('eraser');if(e.key==='c'||e.key==='C')clearPen()}if(e.key==='t'||e.key==='T')toggleTeleprompter();if(e.key==='f'||e.key==='F')toggleFullscreenScript()});
+function startTimer(){if(timerRunning){timerElapsed+=Date.now()-timerStart;timerRunning=false;clearInterval(timerInterval);$('btnTimerStart').textContent='\u25B6';$('btnTimerStart').classList.remove('active')}else{timerStart=Date.now();timerRunning=true;$('btnTimerStart').textContent='\u23F8';$('btnTimerStart').classList.add('active');timerInterval=setInterval(updateTimerDisplay,1000)}}
+function resetTimer(){timerRunning=false;timerElapsed=0;timerStart=0;clearInterval(timerInterval);$('btnTimerStart').textContent='\u25B6';$('btnTimerStart').classList.remove('active');$('timerDisplay').textContent='00:00';document.body.classList.remove('timer-overtime')}
+function updateTimerDisplay(){var elapsed=timerElapsed+(timerRunning?Date.now()-timerStart:0);var sec=Math.floor(elapsed/1000);var min=String(Math.floor(sec/60)).padStart(2,'0');var s=String(sec%60).padStart(2,'0');$('timerDisplay').textContent=min+':'+s;var targetMin=parseInt($('targetMinutes').value)||120;var targetSec=targetMin*60;if(sec>targetSec){document.body.classList.add('timer-overtime')}else{document.body.classList.remove('timer-overtime')}updatePace()}
+$('btnTimerStart').addEventListener('click',startTimer);
+$('btnTimerReset').addEventListener('click',resetTimer);
+function updatePace(){var targetMin=parseInt($('targetMinutes').value)||120;var targetSec=targetMin*60;var elapsed=timerElapsed+(timerRunning?Date.now()-timerStart:0);var elapsedSec=Math.floor(elapsed/1000);var timePct=targetSec>0?Math.min(100,(elapsedSec/targetSec)*100):0;var slidePct=(currentSlide/TOTAL_SLIDES)*100;$('timeBar').style.width=timePct+'%';$('slideBar').style.width=slidePct+'%';$('timePercent').textContent=Math.round(timePct)+'%';$('slidePercent').textContent=Math.round(slidePct)+'%';var paceDot=$('paceDot');var paceText=$('paceText');if(elapsedSec===0){paceDot.style.background='var(--text-dim)';paceText.textContent='\uB300\uAE30';paceText.style.color='var(--text-dim)'}else if(slidePct>=timePct-2){paceDot.style.background='var(--green)';paceText.textContent='\uC801\uC808';paceText.style.color='var(--green)'}else{paceDot.style.background='var(--accent)';paceText.textContent='\uC9C0\uC5F0';paceText.style.color='var(--accent)'}}
+$('btnFontMinus').addEventListener('click',function(){scriptFontSize=Math.max(11,scriptFontSize-1);applyFontSize()});
+$('btnFontPlus').addEventListener('click',function(){scriptFontSize=Math.min(24,scriptFontSize+1);applyFontSize()});
+function applyFontSize(){var texts=document.querySelectorAll('.script-text');for(var i=0;i<texts.length;i++){texts[i].style.fontSize=scriptFontSize+'px'}}
+function toggleTeleprompter(){document.body.classList.toggle('teleprompter');$('btnTeleprompter').classList.toggle('active')}
+$('btnTeleprompter').addEventListener('click',toggleTeleprompter);
+function toggleFullscreenScript(){document.body.classList.toggle('fullscreen-script');$('btnFullscreenScript').classList.toggle('active')}
+$('btnFullscreenScript').addEventListener('click',toggleFullscreenScript);
+$('btnOpenTab').addEventListener('click',function(e){e.preventDefault();window.open(IFRAME_SRC+'#'+currentSlide,'_blank')});
+var penActive=false;var penMode='pen';var penDrawing=false;var penStrokes={};var currentPenStroke=null;
+var PEN_COLORS=['#F7585C','#3B82F6','#10B981','#F59E0B','#8B5CF6'];var penColorIdx=0;var penColor=PEN_COLORS[0];
+function togglePen(){penActive=!penActive;penCanvas.classList.toggle('active',penActive);$('btnPenToggle').classList.toggle('active',penActive)}
+function setPenMode(mode){penMode=mode;$('btnHighlighter').classList.toggle('active',mode==='highlighter');$('btnEraser').classList.toggle('active',mode==='eraser')}
+function clearPen(){penStrokes[currentSlide]=[];redrawPen();if(channel)channel.postMessage({type:'penClear'})}
+function resizePenCanvas(){var container=penCanvas.parentElement;penCanvas.width=container.offsetWidth;penCanvas.height=container.offsetHeight;redrawPen()}
+function redrawPen(){penCtx.clearRect(0,0,penCanvas.width,penCanvas.height);var strokes=penStrokes[currentSlide]||[];for(var i=0;i<strokes.length;i++){drawPenStroke(strokes[i])}}
+function drawPenStroke(stroke){if(stroke.points.length<2)return;penCtx.beginPath();penCtx.strokeStyle=stroke.color;penCtx.lineWidth=stroke.width;penCtx.lineCap='round';penCtx.lineJoin='round';penCtx.globalCompositeOperation=stroke.eraser?'destination-out':'source-over';penCtx.moveTo(stroke.points[0].x,stroke.points[0].y);for(var i=1;i<stroke.points.length;i++){penCtx.lineTo(stroke.points[i].x,stroke.points[i].y)}penCtx.stroke();penCtx.globalCompositeOperation='source-over'}
+penCanvas.addEventListener('pointerdown',function(e){if(!penActive)return;penDrawing=true;var rect=penCanvas.getBoundingClientRect();var x=e.clientX-rect.left;var y=e.clientY-rect.top;var isEraser=penMode==='eraser';var color=penMode==='highlighter'?'rgba(255,230,0,0.3)':penColor;var width=penMode==='pen'?3:penMode==='highlighter'?20:30;currentPenStroke={points:[{x:x,y:y}],color:color,width:width,eraser:isEraser}});
+penCanvas.addEventListener('pointermove',function(e){if(!penDrawing||!currentPenStroke)return;var rect=penCanvas.getBoundingClientRect();currentPenStroke.points.push({x:e.clientX-rect.left,y:e.clientY-rect.top});redrawPen();drawPenStroke(currentPenStroke)});
+penCanvas.addEventListener('pointerup',function(){if(!penDrawing||!currentPenStroke)return;penDrawing=false;if(!penStrokes[currentSlide])penStrokes[currentSlide]=[];penStrokes[currentSlide].push(currentPenStroke);if(channel)channel.postMessage({type:'penStroke',slideKey:currentSlide,stroke:currentPenStroke});currentPenStroke=null});
+$('btnPenToggle').addEventListener('click',function(){if(penMode!=='pen')setPenMode('pen');togglePen()});
+$('btnPenColor').addEventListener('click',function(){penColorIdx=(penColorIdx+1)%PEN_COLORS.length;penColor=PEN_COLORS[penColorIdx];$('btnPenColor').textContent=['\uD83D\uDD34','\uD83D\uDD35','\uD83D\uDFE2','\uD83D\uDFE1','\uD83D\uDFE3'][penColorIdx]});
+$('btnHighlighter').addEventListener('click',function(){if(!penActive)togglePen();setPenMode('highlighter')});
+$('btnEraser').addEventListener('click',function(){if(!penActive)togglePen();setPenMode('eraser')});
+$('btnPenClear').addEventListener('click',clearPen);
+function scaleIframe(){var container=iframe.parentElement;var cw=container.offsetWidth;var ch=container.offsetHeight;var scaleX=cw/1920;var scaleY=ch/1080;var scale=Math.min(scaleX,scaleY);iframe.style.transform='scale('+scale+')';iframe.style.transformOrigin='0 0';var scaledW=1920*scale;var scaledH=1080*scale;iframe.style.position='absolute';iframe.style.left=((cw-scaledW)/2)+'px';iframe.style.top=((ch-scaledH)/2)+'px';var nc=nextPreviewIframe.parentElement;var ncw=nc.offsetWidth;var nch=nc.offsetHeight;var nScale=Math.min(ncw/1920,nch/1080);nextPreviewIframe.style.transform='scale('+nScale+')';nextPreviewIframe.style.transformOrigin='0 0';nextPreviewIframe.style.position='absolute';nextPreviewIframe.style.left='0px';nextPreviewIframe.style.top='0px';resizePenCanvas()}
+var ro=new ResizeObserver(function(){scaleIframe()});ro.observe(iframe.parentElement);
+$('totalNum').textContent=TOTAL_SLIDES;scaleIframe();goToSlide(1);updatePace();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>발표자 노트 | Antigravity M7 | 모두의연구소</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@latest/dist/web/static/pretendard.min.css">
+<style>
+:root{--bg:#0f1117;--bg-secondary:#161822;--bg-tertiary:#1c1f2e;--bg-card:#1e2132;--border:rgba(255,255,255,.06);--text:#e4e6eb;--text-secondary:rgba(255,255,255,.55);--text-dim:rgba(255,255,255,.3);--accent:#F7585C;--accent-dim:rgba(247,88,92,.15);--green:#10B981;--yellow:#F59E0B;--red:#EF4444;--blue:#3B82F6;--radius:8px;--radius-sm:5px}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
+.app{display:flex;flex-direction:column;height:100vh}
+.header{display:flex;align-items:center;gap:16px;padding:8px 16px;background:var(--bg-secondary);border-bottom:1px solid var(--border);flex-shrink:0;z-index:10;height:44px}
+.slide-indicator{font-size:.82rem;font-weight:700;color:var(--text);font-variant-numeric:tabular-nums;min-width:60px}
+.slide-indicator span{color:var(--accent)}
+.header-sep{width:1px;height:20px;background:var(--border)}
+.timer-controls{display:flex;align-items:center;gap:8px}
+.timer-display{font-size:1.1rem;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:1px;min-width:70px}
+.timer-btn{width:26px;height:26px;border:none;border-radius:var(--radius-sm);background:rgba(255,255,255,.06);color:var(--text-secondary);cursor:pointer;font-size:.7rem;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.timer-btn:hover{background:rgba(255,255,255,.12);color:var(--text)}
+.timer-btn.active{background:var(--accent-dim);color:var(--accent)}
+.target-input{width:48px;height:26px;border:1px solid var(--border);border-radius:var(--radius-sm);background:rgba(255,255,255,.04);color:var(--text);text-align:center;font-size:.78rem;font-family:inherit;font-variant-numeric:tabular-nums;outline:none}
+.target-input:focus{border-color:var(--accent)}
+.header-spacer{flex:1}
+.header-toggle{height:26px;padding:0 10px;border:1px solid var(--border);border-radius:var(--radius-sm);background:rgba(255,255,255,.04);color:var(--text-secondary);cursor:pointer;font-size:.72rem;font-family:inherit;font-weight:600;letter-spacing:.5px;transition:all .15s;display:flex;align-items:center;gap:5px}
+.header-toggle:hover{background:rgba(255,255,255,.08);color:var(--text)}
+.header-toggle.active{background:var(--accent-dim);color:var(--accent);border-color:rgba(247,88,92,.3)}
+.sync-status{display:flex;align-items:center;gap:5px;font-size:.72rem;color:var(--text-dim)}
+.sync-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.pace-bar-area{display:flex;align-items:center;gap:12px;padding:6px 16px;background:var(--bg-secondary);border-bottom:1px solid var(--border);flex-shrink:0;font-size:.7rem}
+.pace-bars{flex:1;display:flex;gap:8px;align-items:center}
+.pace-bar-group{flex:1}
+.pace-bar-label{font-size:.65rem;color:var(--text-dim);margin-bottom:3px;display:flex;justify-content:space-between}
+.pace-bar-track{height:4px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden}
+.pace-bar-fill{height:100%;border-radius:2px;transition:width .5s ease}
+.pace-bar-fill.time{background:var(--blue)}
+.pace-bar-fill.slide{background:var(--accent)}
+.pace-status{display:flex;align-items:center;gap:4px;min-width:80px;justify-content:flex-end}
+.pace-status-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.pace-status-text{color:var(--text-secondary);font-weight:600}
+.main{display:flex;flex:1;min-height:0;overflow:hidden}
+.preview-panel{flex:3;display:flex;flex-direction:column;position:relative;background:#000;border-right:1px solid var(--border)}
+.preview-container{flex:1;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.preview-frame-wrap{position:relative;width:100%;height:100%;overflow:hidden}
+.preview-frame-wrap iframe{position:absolute;width:1920px;height:1080px;border:none;transform-origin:0 0;pointer-events:none;background:#030712}
+.pen-canvas{position:absolute;top:0;left:0;width:100%;height:100%;z-index:5;pointer-events:none}
+.pen-canvas.active{pointer-events:auto;cursor:crosshair}
+.preview-controls{display:flex;align-items:center;gap:8px;padding:6px 12px;background:rgba(0,0,0,.6);border-top:1px solid var(--border);flex-shrink:0}
+.preview-controls .pen-btn{height:24px;padding:0 8px;border:1px solid var(--border);border-radius:var(--radius-sm);background:rgba(255,255,255,.04);color:var(--text-secondary);cursor:pointer;font-size:.68rem;font-family:inherit;transition:all .15s}
+.preview-controls .pen-btn:hover{background:rgba(255,255,255,.1)}
+.preview-controls .pen-btn.active{background:var(--accent-dim);color:var(--accent);border-color:rgba(247,88,92,.3)}
+.next-preview{flex-shrink:0;border-top:1px solid var(--border);background:var(--bg-tertiary);display:flex;flex-direction:column}
+.next-preview-header{display:flex;align-items:center;justify-content:space-between;padding:4px 10px;font-size:.65rem;color:var(--text-dim)}
+.next-preview-num{font-weight:700;color:var(--accent);font-variant-numeric:tabular-nums}
+.next-preview-frame-wrap{position:relative;overflow:hidden;background:#000;aspect-ratio:16/9;margin:0 6px 6px;border-radius:var(--radius-sm)}
+.next-preview-frame-wrap iframe{position:absolute;width:1920px;height:1080px;border:none;transform-origin:0 0;pointer-events:none;background:#030712;border-radius:var(--radius-sm)}
+.script-panel{flex:1;display:flex;flex-direction:column;background:var(--bg-secondary);min-width:280px;max-width:400px}
+.script-header{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-bottom:1px solid var(--border);flex-shrink:0}
+.script-header-label{font-size:.72rem;font-weight:700;letter-spacing:1px;color:var(--text-dim);text-transform:uppercase}
+.font-controls{display:flex;align-items:center;gap:4px}
+.font-btn{width:24px;height:24px;border:1px solid var(--border);border-radius:var(--radius-sm);background:rgba(255,255,255,.04);color:var(--text-secondary);cursor:pointer;font-size:.8rem;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.font-btn:hover{background:rgba(255,255,255,.1);color:var(--text)}
+.script-cards{flex:1;overflow-y:auto;padding:8px;scroll-behavior:smooth}
+.script-cards::-webkit-scrollbar{width:4px}
+.script-cards::-webkit-scrollbar-track{background:transparent}
+.script-cards::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:2px}
+.script-card{padding:10px 12px;border-radius:var(--radius);border:1px solid transparent;margin-bottom:6px;cursor:pointer;transition:all .2s;display:none}
+.script-card:hover{background:rgba(255,255,255,.03)}
+.script-card.active{background:var(--bg-card);border-color:var(--accent);display:block}
+.script-meta{display:flex;align-items:flex-start;gap:8px;margin-bottom:6px}
+.script-number{width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700;flex-shrink:0;color:var(--text-secondary)}
+.script-card.active .script-number{background:var(--accent);color:#fff}
+.script-info{flex:1;min-width:0}
+.script-section{font-size:.65rem;font-weight:600;color:var(--text-dim);letter-spacing:.5px;text-transform:uppercase;margin-bottom:2px}
+.script-title{font-size:.82rem;font-weight:700;color:var(--text);line-height:1.35;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.script-body{padding-left:30px}
+.script-text{font-size:.78rem;line-height:1.65;color:var(--text-secondary);word-break:keep-all}
+.script-ref{font-size:.68rem;color:var(--text-dim);margin-top:4px;padding-top:4px;border-top:1px solid var(--border);display:none}
+.script-card.active .script-ref{display:block}
+.bottom-bar{display:flex;align-items:center;gap:12px;padding:8px 16px;background:var(--bg-secondary);border-top:1px solid var(--border);flex-shrink:0}
+.progress-track{flex:1;height:4px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden;cursor:pointer}
+.progress-fill{height:100%;background:var(--accent);border-radius:2px;transition:width .3s ease}
+.nav-btn{height:30px;padding:0 16px;border:none;border-radius:var(--radius-sm);font-size:.82rem;font-weight:700;cursor:pointer;transition:all .15s;font-family:inherit}
+.nav-btn.prev{background:rgba(255,255,255,.06);color:var(--text)}
+.nav-btn.prev:hover{background:rgba(255,255,255,.12)}
+.nav-btn.next{background:var(--accent);color:#fff}
+.nav-btn.next:hover{background:#e04448}
+.nav-btn:disabled{opacity:.3;cursor:not-allowed}
+body.teleprompter .header,body.teleprompter .pace-bar-area,body.teleprompter .preview-panel,body.teleprompter .bottom-bar{display:none}
+body.teleprompter .main{flex-direction:column}
+body.teleprompter .script-panel{max-width:100%;flex:1}
+body.teleprompter .script-card{display:none}
+body.teleprompter .script-card.active{display:block;padding:24px 48px}
+body.teleprompter .script-card.active .script-title{font-size:1.6rem;margin-bottom:12px;white-space:normal}
+body.teleprompter .script-card.active .script-text{font-size:1.4rem;line-height:2}
+body.teleprompter .script-card.active .script-number{width:36px;height:36px;font-size:1rem}
+body.teleprompter .script-card.active .script-section{font-size:.85rem;margin-bottom:6px}
+body.teleprompter .script-card.active .script-meta{margin-bottom:12px}
+body.teleprompter .script-header{position:sticky;top:0;z-index:5;background:var(--bg-secondary)}
+body.fullscreen-script .preview-panel{display:none}
+body.fullscreen-script .script-panel{max-width:100%;flex:1}
+.timer-overtime .timer-display{color:var(--red)}
+.timer-overtime .timer-display::after{content:' \26A0';font-size:.8rem}
+@media print{.header,.pace-bar-area,.preview-panel,.bottom-bar{display:none}.script-panel{max-width:100%}.script-card{break-inside:avoid}}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="header">
+<div class="slide-indicator"><span id="slideNum">1</span> / <span id="totalNum">29</span></div>
+<div class="header-sep"></div>
+<div class="timer-controls">
+<button class="timer-btn" id="btnTimerStart" title="시작/일시정지">▶</button>
+<button class="timer-btn" id="btnTimerReset" title="초기화">↺</button>
+<div class="timer-display" id="timerDisplay">00:00</div>
+<span style="font-size:.7rem;color:var(--text-dim)">/</span>
+<input type="number" class="target-input" id="targetMinutes" value="120" min="1" max="999" title="목표 시간(분)">
+<span style="font-size:.7rem;color:var(--text-dim)">분</span>
+</div>
+<div class="header-spacer"></div>
+<a class="header-toggle" id="btnOpenTab" target="_blank" title="새 탭에서 프레젠테이션 열기">🔗 새 탭에서 열기</a>
+<button class="header-toggle" id="btnTeleprompter" title="텔레프롬프터 모드 (T)">🎤 텔레프롬프터</button>
+<button class="header-toggle" id="btnFullscreenScript" title="전체 스크립트 (F)">📜 전체보기</button>
+<div class="header-sep"></div>
+<div class="sync-status"><div class="sync-dot"></div> 동기화</div>
+</div>
+<div class="pace-bar-area">
+<div class="pace-bars">
+<div class="pace-bar-group"><div class="pace-bar-label"><span>시간 진행률</span><span id="timePercent">0%</span></div><div class="pace-bar-track"><div class="pace-bar-fill time" id="timeBar"></div></div></div>
+<div class="pace-bar-group"><div class="pace-bar-label"><span>슬라이드 진행률</span><span id="slidePercent">0%</span></div><div class="pace-bar-track"><div class="pace-bar-fill slide" id="slideBar"></div></div></div>
+</div>
+<div class="pace-status"><div class="pace-status-dot" id="paceDot"></div><div class="pace-status-text" id="paceText">대기</div></div>
+</div>
+<div class="main">
+<div class="preview-panel">
+<div class="preview-container"><div class="preview-frame-wrap"><iframe id="previewIframe" src="./antigravity-m7-presentation.html#1"></iframe><canvas class="pen-canvas" id="penCanvas"></canvas></div></div>
+<div class="preview-controls">
+<button class="pen-btn" id="btnPenToggle" title="펜 모드 (P)">✏️ 펜</button>
+<button class="pen-btn" id="btnPenColor" title="색상 변경">🔴</button>
+<button class="pen-btn" id="btnHighlighter" title="형광펜 (H)">🖍️</button>
+<button class="pen-btn" id="btnEraser" title="지우개 (E)">🧹</button>
+<button class="pen-btn" id="btnPenClear" title="모두 지우기 (C)">🗑️</button>
+<div style="flex:1"></div>
+<span style="font-size:.65rem;color:var(--text-dim)">P: 펜 · 1/2/3: 모드 · C: 지우기</span>
+</div>
+</div>
+<div class="script-panel">
+<div class="script-header">
+<div class="script-header-label">스크립트</div>
+<div class="font-controls">
+<button class="font-btn" id="btnFontMinus" title="글자 작게">A-</button>
+<button class="font-btn" id="btnFontPlus" title="글자 크게">A+</button>
+</div>
+</div>
+<div class="script-cards" id="scriptCards">
+
+<div class="script-card active" data-slide="1"><div class="script-meta"><div class="script-number">1</div><div class="script-info"><div class="script-section">시작</div><div class="script-title">커버 — 실전 프로젝트 II: 고도화부터 배포까지</div></div></div><div class="script-body"><div class="script-text">수강생들 환영. 마지막 모듈이라는 점을 강조. "7주간의 여정이 드디어 마지막이에요. 하지만 오늘이 끝이 아닙니다. 오늘은 그동안 만든 프로젝트를 고도화하고, 실제로 인터넷에 배포까지 해볼 거예요." 분위기를 환기하며 시작.</div><div class="script-ref">data-section: 시작 | 테마: dark | 커버 슬라이드</div></div></div>
+
+<div class="script-card" data-slide="2"><div class="script-meta"><div class="script-number">2</div><div class="script-info"><div class="script-section">시작</div><div class="script-title">오늘 배울 것</div></div></div><div class="script-body"><div class="script-text">오늘 2시간 동안 배울 내용을 한눈에 보여주기. 6개 섹션: M6 복습, 프로젝트 고도화, 배포, 발표, 전체 복습, 다음 단계. "마지막 수업이니까, 그동안 배운 모든 것을 종합해서 써먹을 거예요."</div><div class="script-ref">data-section: 시작 | 테마: light</div></div></div>
+
+<div class="script-card" data-slide="3"><div class="script-meta"><div class="script-number">3</div><div class="script-info"><div class="script-section">M6 복습</div><div class="script-title">M6 실전 프로젝트 I 되짚기</div></div></div><div class="script-body"><div class="script-text">M6에서 배운 기획→설계→구현→테스트 흐름을 복습. "지난 주에 기획부터 구현까지 해봤죠? 오늘은 그 결과물을 한 단계 더 발전시킵니다. 고도화하고, 실제로 배포까지 해볼 거예요."</div><div class="script-ref">data-section: M6 복습 | 테마: white</div></div></div>
+
+<div class="script-card" data-slide="4"><div class="script-meta"><div class="script-number">4</div><div class="script-info"><div class="script-section">M6 복습</div><div class="script-title">M6에서 겪은 도전과 성장</div></div></div><div class="script-body"><div class="script-text">M6에서 자주 발생한 문제와 해결 과정을 공유. 프롬프트 개선, 에러 해결, 설계 역량 세 가지를 정리. "M6의 가장 큰 수확은 'AI에게 어떻게 물어볼 것인가'를 배운 것입니다. 오늘은 그 능력을 한 단계 더 발휘해 봅시다."</div><div class="script-ref">data-section: M6 복습 | 테마: light</div></div></div>
+
+<div class="script-card" data-slide="5"><div class="script-meta"><div class="script-number">5</div><div class="script-info"><div class="script-section">프로젝트 고도화</div><div class="script-title">Agent로 코드 품질 리뷰하기</div></div></div><div class="script-body"><div class="script-text">Agent를 활용한 코드 품질 리뷰 소개. 프롬프트를 직접 보여주며 시연. "Agent한테 '내 코드 리뷰해줘'라고만 해도 꽤 괜찮은 피드백을 줍니다. 파일 간 의존성, 중복 코드, 함수 길이까지 분석해 줘요."</div><div class="script-ref">data-section: 프로젝트 고도화 | 테마: gradient</div></div></div>
+
+<div class="script-card" data-slide="6"><div class="script-meta"><div class="script-number">6</div><div class="script-info"><div class="script-section">프로젝트 고도화</div><div class="script-title">성능 최적화</div></div></div><div class="script-body"><div class="script-text">성능 최적화의 세 가지 핵심 영역: 번들 사이즈, 렌더링 성능, 이미지 최적화. "Lighthouse 점수를 기준으로 Agent에게 최적화를 요청해 보세요. 놀라운 결과를 얻을 거예요."</div><div class="script-ref">data-section: 프로젝트 고도화 | 테마: white</div></div></div>
+
+<div class="script-card" data-slide="7"><div class="script-meta"><div class="script-number">7</div><div class="script-info"><div class="script-section">프로젝트 고도화</div><div class="script-title">보안 베스트 프랙티스</div></div></div><div class="script-body"><div class="script-text">웹 보안의 기본: XSS 방어, 환경 변수 관리, 의존성 감사, 인증 처리. "보안은 선택이 아니라 필수예요. Agent한테 '보안 취약점 찾아줘'라고 요청하면, 놓치기 쉬운 부분을 잡아줍니다."</div><div class="script-ref">data-section: 프로젝트 고도화 | 테마: light</div></div></div>
+
+<div class="script-card" data-slide="8"><div class="script-meta"><div class="script-number">8</div><div class="script-info"><div class="script-section">프로젝트 고도화</div><div class="script-title">접근성 (A11y) 리뷰</div></div></div><div class="script-body"><div class="script-text">웹 접근성의 중요성 강조. 시맨틱 HTML, 키보드 내비게이션, 색상 대비, ARIA 속성. "모두가 사용할 수 있는 웹을 만드는 게 개발자의 책임이에요. Agent가 WCAG 가이드라인 기준으로 검토해 줍니다."</div><div class="script-ref">data-section: 프로젝트 고도화 | 테마: white</div></div></div>
+
+<div class="script-card" data-slide="9"><div class="script-meta"><div class="script-number">9</div><div class="script-info"><div class="script-section">프로젝트 고도화</div><div class="script-title">Agent로 문서 자동 생성</div></div></div><div class="script-body"><div class="script-text">Agent를 활용한 자동 문서 생성. README, API 문서, 코드 주석, 아키텍처 문서까지. "좋은 문서가 프로젝트의 가치를 높여요. Agent에게 'README 작성해줘'라고 하면 깔끔하게 만들어 줍니다."</div><div class="script-ref">data-section: 프로젝트 고도화 | 테마: light</div></div></div>
+
+<div class="script-card" data-slide="10"><div class="script-meta"><div class="script-number">10</div><div class="script-info"><div class="script-section">Code-to-Cloud 배포</div><div class="script-title">배포 개요: Local → Production</div></div></div><div class="script-body"><div class="script-text">로컬에서 프로덕션까지의 배포 파이프라인 소개. 3단계 환경: local → staging → production. "지금까지는 여러분 노트북에서만 돌아갔죠? 오늘은 인터넷에 올려서 누구나 접속할 수 있게 만들 거예요."</div><div class="script-ref">data-section: Code-to-Cloud 배포 | 테마: dark</div></div></div>
+
+<div class="script-card" data-slide="11"><div class="script-meta"><div class="script-number">11</div><div class="script-info"><div class="script-section">Code-to-Cloud 배포</div><div class="script-title">Firebase App Hosting 기본</div></div></div><div class="script-body"><div class="script-text">Firebase App Hosting의 핵심 기능: 글로벌 CDN, 자동 SSL, 커스텀 도메인, 관대한 무료 티어. "Firebase Hosting은 구글이 제공하는 웹 호스팅 서비스예요. 무료 티어만으로도 충분히 실 서비스를 운영할 수 있어요."</div><div class="script-ref">data-section: Code-to-Cloud 배포 | 테마: white</div></div></div>
+
+<div class="script-card" data-slide="12"><div class="script-meta"><div class="script-number">12</div><div class="script-info"><div class="script-section">Code-to-Cloud 배포</div><div class="script-title">Firebase 배포 설정하기</div></div></div><div class="script-body"><div class="script-text">Firebase 설정의 실제 단계를 하나씩 안내. 프로젝트 생성, CLI 설치, 로그인, 초기화, 빌드. "5단계만 거치면 됩니다. 하나씩 따라해 보세요."</div><div class="script-ref">data-section: Code-to-Cloud 배포 | 테마: light</div></div></div>
+
+<div class="script-card" data-slide="13"><div class="script-meta"><div class="script-number">13</div><div class="script-info"><div class="script-section">Code-to-Cloud 배포</div><div class="script-title">"내 앱을 배포해줘" — Agent 배포</div></div></div><div class="script-body"><div class="script-text">실제로 Agent Pane에서 배포를 요청하는 라이브 데모. "이게 바이브 코딩의 궹점이에요. '내 앱을 배포해줘' 한 문장으로 배포가 끝납니다. 한번 해볼게요."</div><div class="script-ref">data-section: Code-to-Cloud 배포 | 테마: accent | Live Demo</div></div></div>
+
+<div class="script-card" data-slide="14"><div class="script-meta"><div class="script-number">14</div><div class="script-info"><div class="script-section">Code-to-Cloud 배포</div><div class="script-title">Firebase CLI 수동 배포</div></div></div><div class="script-body"><div class="script-text">Agent가 자동으로 해주는 것을 이해하기 위해 수동 방법도 설명. firebase deploy 명령어와 주요 옵션 소개. "Agent가 해주는 걸 이해하려면 수동으로도 할 줄 알아야 해요."</div><div class="script-ref">data-section: Code-to-Cloud 배포 | 테마: white</div></div></div>
+
+<div class="script-card" data-slide="15"><div class="script-meta"><div class="script-number">15</div><div class="script-info"><div class="script-section">Code-to-Cloud 배포</div><div class="script-title">환경 변수와 시크릿 관리</div></div></div><div class="script-body"><div class="script-text">환경 변수와 시크릿 관리의 중요성. .env 파일과 Firebase Secrets. "API 키를 코드에 직접 넣으면 절대 안 돼요. GitHub에 올라가면 순식간에 남들이 쓸 수 있어요."</div><div class="script-ref">data-section: Code-to-Cloud 배포 | 테마: light</div></div></div>
+
+<div class="script-card" data-slide="16"><div class="script-meta"><div class="script-number">16</div><div class="script-info"><div class="script-section">프로젝트 발표</div><div class="script-title">팀 발표 가이드</div></div></div><div class="script-body"><div class="script-text">팀별 프로젝트 발표 가이드라인. 5단계 구조: 문제 정의, 솔루션 소개, 라이브 데모, 기술 하이라이트, 배운 점. "기술적 내용도 중요하지만, 과정에서의 배움과 협업 이야기도 꼭 공유해 주세요."</div><div class="script-ref">data-section: 프로젝트 발표 | 테마: gradient</div></div></div>
+
+<div class="script-card" data-slide="17"><div class="script-meta"><div class="script-number">17</div><div class="script-info"><div class="script-section">프로젝트 발표</div><div class="script-title">라이브 데모 워크스루</div></div></div><div class="script-body"><div class="script-text">효과적인 데모 발표 방법. 좋은 데모 vs 주의할 점 비교. "핵심 기능 3개만 집중해서 보여주세요. 모든 걸 보여주려 하지 마세요. 그리고 스크린샷은 항상 준비해 두세요."</div><div class="script-ref">data-section: 프로젝트 발표 | 테마: white</div></div></div>
+
+<div class="script-card" data-slide="18"><div class="script-meta"><div class="script-number">18</div><div class="script-info"><div class="script-section">프로젝트 발표</div><div class="script-title">코드 리뷰 하이라이트</div></div></div><div class="script-body"><div class="script-text">코드 리뷰에서 강조할 만한 포인트. Agent 활용, 설계 결정, 트레이드오프. "코드의 '왜'를 설명하세요. '어떻게'가 아니라. 왜 이 구조를 선택했는지가 더 중요합니다."</div><div class="script-ref">data-section: 프로젝트 발표 | 테마: light</div></div></div>
+
+<div class="script-card" data-slide="19"><div class="script-meta"><div class="script-number">19</div><div class="script-info"><div class="script-section">프로젝트 발표</div><div class="script-title">Lessons Learned</div></div></div><div class="script-body"><div class="script-text">프로젝트 과정에서 얻은 교훈 정리. 명확한 요구사항, 반복 개선, 테스트의 가치, 협업의 힘. "실패도 성장의 일부예요. 빠르게 실패하고 빠르게 배우는 게 중요합니다."</div><div class="script-ref">data-section: 프로젝트 발표 | 테마: white</div></div></div>
+
+<div class="script-card" data-slide="20"><div class="script-meta"><div class="script-number">20</div><div class="script-info"><div class="script-section">프로젝트 발표</div><div class="script-title">What Went Well / Challenges</div></div></div><div class="script-body"><div class="script-text">성공과 도전을 공유하는 시간. 긍정적인 면과 아쉬운 면을 균형 있게. "각 팀에서 가장 자랑스러운 순간과 가장 힘들었던 순간을 하나씩 공유해 주세요. 서로의 경험이 다른 팀에게도 도움이 될 거예요."</div><div class="script-ref">data-section: 프로젝트 발표 | 테마: coral</div></div></div>
+
+<div class="script-card" data-slide="21"><div class="script-meta"><div class="script-number">21</div><div class="script-info"><div class="script-section">전체 과정 복습</div><div class="script-title">M1→M7 7주간의 여정</div></div></div><div class="script-body"><div class="script-text">7주 전체 여정을 타임라인으로 정리. M1 바이브 코딩 소개부터 M7 고도화&배포까지. "7주 전만 해도 AI로 코딩한다는 게 생소했죠? 지금은 Agent와 함께 프로젝트를 배포까지 하고 있어요. 여러분 정말 대단해요."</div><div class="script-ref">data-section: 전체 과정 복습 | 테마: dark</div></div></div>
+
+<div class="script-card" data-slide="22"><div class="script-meta"><div class="script-number">22</div><div class="script-info"><div class="script-section">전체 과정 복습</div><div class="script-title">세 가지 핵심 원칙</div></div></div><div class="script-body"><div class="script-text">과정 전체를 관통하는 세 가지 원칙: Planning Mode, Context Engineering, Incremental Build. "이 세 가지만 기억하셔도, Antigravity 말고 다른 AI 도구를 써도 잘할 수 있어요."</div><div class="script-ref">data-section: 전체 과정 복습 | 테마: white</div></div></div>
+
+<div class="script-card" data-slide="23"><div class="script-meta"><div class="script-number">23</div><div class="script-info"><div class="script-section">전체 과정 복습</div><div class="script-title">AI를 신뢰할 때, 검증할 때</div></div></div><div class="script-body"><div class="script-text">AI를 언제 신뢰하고 언제 직접 검증해야 하는지 가이드라인. 보일러플레이트와 UI는 신뢰, 비즈니스 로직과 보안은 반드시 검증. "건강한 회의론을 가지세요. AI를 의심하지 않는 건 더 위험해요."</div><div class="script-ref">data-section: 전체 과정 복습 | 테마: light</div></div></div>
+
+<div class="script-card" data-slide="24"><div class="script-meta"><div class="script-number">24</div><div class="script-info"><div class="script-section">전체 과정 복습</div><div class="script-title">자주하는 실수와 해결책</div></div></div><div class="script-body"><div class="script-text">7주간 관찰된 자주하는 실수 5가지와 해결책. AI 결과 무조건 수용, 컨텍스트 없이 질문, 한 번에 전체 요청, 테스트 안 함, 배포 불안감. "이 5가지만 피하시면 바이브 코딩 마스터입니다."</div><div class="script-ref">data-section: 전체 과정 복습 | 테마: white</div></div></div>
+
+<div class="script-card" data-slide="25"><div class="script-meta"><div class="script-number">25</div><div class="script-info"><div class="script-section">전체 과정 복습</div><div class="script-title">지속 학습을 위한 리소스</div></div></div><div class="script-body"><div class="script-text">과정 이후에도 계속 학습할 수 있는 리소스. 공식 문서, 튜토리얼, 오픈소스. "가장 좋은 학습법은 직접 프로젝트를 만들어 보는 거예요. 작은 거라도 배포까지 해보세요."</div><div class="script-ref">data-section: 전체 과정 복습 | 테마: light</div></div></div>
+
+<div class="script-card" data-slide="26"><div class="script-meta"><div class="script-number">26</div><div class="script-info"><div class="script-section">다음 단계</div><div class="script-title">Antigravity로 나만의 프로젝트 만들기</div></div></div><div class="script-body"><div class="script-text">과정 이후 자신만의 프로젝트를 만드는 방법. 아이디어 → MVP → 배포 → 확장. "수료는 끝이 아니에요. 여러분의 시작입니다. 일상의 문제에서 아이디어를 찾고, 작게 시작해서 점점 키워보세요."</div><div class="script-ref">data-section: 다음 단계 | 테마: gradient</div></div></div>
+
+<div class="script-card" data-slide="27"><div class="script-meta"><div class="script-number">27</div><div class="script-info"><div class="script-section">다음 단계</div><div class="script-title">더 많은 Agent Skills 탐색하기</div></div></div><div class="script-body"><div class="script-text">Antigravity의 다양한 Agent Skills 소개. 코드 분석, 테스트 생성, 문서화, UI/UX, DevOps, MCP 통합. "오늘 우리가 쓴 건 빙산의 일각이에요. 더 많은 Skills가 있고, 앞으로 계속 늘어날 거예요."</div><div class="script-ref">data-section: 다음 단계 | 테마: white</div></div></div>
+
+<div class="script-card" data-slide="28"><div class="script-meta"><div class="script-number">28</div><div class="script-info"><div class="script-section">다음 단계</div><div class="script-title">함께 성장하는 커뮤니티</div></div></div><div class="script-body"><div class="script-text">학습을 이어갈 수 있는 커뮤니티 안내. 모두의연구소, Firebase Community, 글로벌 커뮤니티. "혼자 배우는 것보다 함께 배우는 게 더 빨라요. 커뮤니티에 참여하세요."</div><div class="script-ref">data-section: 다음 단계 | 테마: light</div></div></div>
+
+<div class="script-card" data-slide="29"><div class="script-meta"><div class="script-number">29</div><div class="script-info"><div class="script-section">마무리</div><div class="script-title">마무리 — 경쟁이 아닌 상생</div></div></div><div class="script-body"><div class="script-text">마지막 슬라이드. 수강생들의 7주간의 노력을 칭찬. 경쟁이 아닌 상생이라는 모두의연구소 가치 재강조. "여러분 정말 수고하셨습니다. 7주 전보다 지금의 여러분이 훨씬 강합니다. 앞으로의 여정을 응원합니다! 🎉"</div><div class="script-ref">data-section: 마무리 | 테마: dark | 커버 슬라이드 | 수료</div></div></div>
+
+</div>
+<div class="next-preview" id="nextPreview">
+<div class="next-preview-header"><span class="next-preview-label">다음 슬라이드</span><span class="next-preview-num" id="nextSlideNum">2</span></div>
+<div class="next-preview-frame-wrap"><iframe id="nextPreviewIframe" src="./antigravity-m7-presentation.html#2"></iframe></div>
+</div>
+</div>
+</div>
+<div class="bottom-bar">
+<button class="nav-btn prev" id="btnPrev">◀ 이전</button>
+<div class="progress-track" id="progressTrack"><div class="progress-fill" id="progressFill"></div></div>
+<button class="nav-btn next" id="btnNext">다음 ▶</button>
+</div>
+</div>
+<script>
+(function(){
+var TOTAL_SLIDES=29;
+var IFRAME_SRC='./antigravity-m7-presentation.html';
+var CHANNEL_NAME='presentation-sync';
+var currentSlide=1;
+var iframeCurrentHash=1;
+var timerRunning=false;
+var timerStart=0;
+var timerElapsed=0;
+var timerInterval=null;
+var scriptFontSize=14;
+var $=function(id){return document.getElementById(id)};
+var iframe=$('previewIframe');
+var nextPreviewIframe=$('nextPreviewIframe');
+var penCanvas=$('penCanvas');
+var penCtx=penCanvas.getContext('2d');
+var cards=document.querySelectorAll('.script-card');
+var scriptCardsEl=$('scriptCards');
+var channel=null;
+try{channel=new BroadcastChannel(CHANNEL_NAME);channel.onmessage=function(e){var d=e.data;if(d.type==='slideChange'){goToSlide(d.slide,true)}}}catch(err){}
+function broadcast(slideNum){if(channel){channel.postMessage({type:'slideChange',slide:slideNum,total:TOTAL_SLIDES})}}
+function goToSlide(num,fromRemote){if(num<1||num>TOTAL_SLIDES)return;currentSlide=num;if(num!==iframeCurrentHash){try{iframe.contentWindow.location.hash=String(num)}catch(e){iframe.src=IFRAME_SRC+'#'+num}iframeCurrentHash=num}if(!fromRemote){broadcast(num)}updateNextPreview();$('slideNum').textContent=num;for(var i=0;i<cards.length;i++){var s=parseInt(cards[i].getAttribute('data-slide'));cards[i].classList.toggle('active',s===num)}var activeCard=scriptCardsEl.querySelector('.script-card.active');if(activeCard){activeCard.scrollIntoView({behavior:'smooth',block:'nearest'})}var pct=(num/TOTAL_SLIDES)*100;$('progressFill').style.width=pct+'%';$('btnPrev').disabled=num<=1;$('btnNext').disabled=num>=TOTAL_SLIDES;updatePace()}
+function updateNextPreview(){var nextNum=currentSlide+1;if(nextNum>TOTAL_SLIDES){$('nextPreview').style.display='none';return}$('nextPreview').style.display='flex';$('nextSlideNum').textContent=nextNum;try{nextPreviewIframe.contentWindow.location.hash=String(nextNum)}catch(e){nextPreviewIframe.src=IFRAME_SRC+'#'+nextNum}}
+function prevSlide(){goToSlide(currentSlide-1)}
+function nextSlide(){goToSlide(currentSlide+1)}
+$('btnPrev').addEventListener('click',prevSlide);
+$('btnNext').addEventListener('click',nextSlide);
+$('progressTrack').addEventListener('click',function(e){var rect=$('progressTrack').getBoundingClientRect();var pct=(e.clientX-rect.left)/rect.width;var slide=Math.max(1,Math.min(TOTAL_SLIDES,Math.round(pct*TOTAL_SLIDES)));goToSlide(slide)});
+for(var ci=0;ci<cards.length;ci++){cards[ci].addEventListener('click',function(){goToSlide(parseInt(this.getAttribute('data-slide')))})}
+document.addEventListener('keydown',function(e){if(e.target.tagName==='INPUT')return;if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key===' '){e.preventDefault();nextSlide()}if(e.key==='ArrowLeft'||e.key==='ArrowUp'){e.preventDefault();prevSlide()}if(e.key==='Home'){e.preventDefault();goToSlide(1)}if(e.key==='End'){e.preventDefault();goToSlide(TOTAL_SLIDES)}if(e.key==='p'||e.key==='P'){togglePen()}if(penActive){if(e.key==='1')setPenMode('pen');if(e.key==='2')setPenMode('highlighter');if(e.key==='3')setPenMode('eraser');if(e.key==='c'||e.key==='C')clearPen()}if(e.key==='t'||e.key==='T')toggleTeleprompter();if(e.key==='f'||e.key==='F')toggleFullscreenScript()});
+function startTimer(){if(timerRunning){timerElapsed+=Date.now()-timerStart;timerRunning=false;clearInterval(timerInterval);$('btnTimerStart').textContent='\u25B6';$('btnTimerStart').classList.remove('active')}else{timerStart=Date.now();timerRunning=true;$('btnTimerStart').textContent='\u23F8';$('btnTimerStart').classList.add('active');timerInterval=setInterval(updateTimerDisplay,1000)}}
+function resetTimer(){timerRunning=false;timerElapsed=0;timerStart=0;clearInterval(timerInterval);$('btnTimerStart').textContent='\u25B6';$('btnTimerStart').classList.remove('active');$('timerDisplay').textContent='00:00';document.body.classList.remove('timer-overtime')}
+function updateTimerDisplay(){var elapsed=timerElapsed+(timerRunning?Date.now()-timerStart:0);var sec=Math.floor(elapsed/1000);var min=String(Math.floor(sec/60)).padStart(2,'0');var s=String(sec%60).padStart(2,'0');$('timerDisplay').textContent=min+':'+s;var targetMin=parseInt($('targetMinutes').value)||120;var targetSec=targetMin*60;if(sec>targetSec){document.body.classList.add('timer-overtime')}else{document.body.classList.remove('timer-overtime')}updatePace()}
+$('btnTimerStart').addEventListener('click',startTimer);
+$('btnTimerReset').addEventListener('click',resetTimer);
+function updatePace(){var targetMin=parseInt($('targetMinutes').value)||120;var targetSec=targetMin*60;var elapsed=timerElapsed+(timerRunning?Date.now()-timerStart:0);var elapsedSec=Math.floor(elapsed/1000);var timePct=targetSec>0?Math.min(100,(elapsedSec/targetSec)*100):0;var slidePct=(currentSlide/TOTAL_SLIDES)*100;$('timeBar').style.width=timePct+'%';$('slideBar').style.width=slidePct+'%';$('timePercent').textContent=Math.round(timePct)+'%';$('slidePercent').textContent=Math.round(slidePct)+'%';var paceDot=$('paceDot');var paceText=$('paceText');if(elapsedSec===0){paceDot.style.background='var(--text-dim)';paceText.textContent='\uB300\uAE30';paceText.style.color='var(--text-dim)'}else if(slidePct>=timePct-2){paceDot.style.background='var(--green)';paceText.textContent='\uC801\uC808';paceText.style.color='var(--green)'}else{paceDot.style.background='var(--accent)';paceText.textContent='\uC9C0\uC5F0';paceText.style.color='var(--accent)'}}
+$('btnFontMinus').addEventListener('click',function(){scriptFontSize=Math.max(11,scriptFontSize-1);applyFontSize()});
+$('btnFontPlus').addEventListener('click',function(){scriptFontSize=Math.min(24,scriptFontSize+1);applyFontSize()});
+function applyFontSize(){var texts=document.querySelectorAll('.script-text');for(var i=0;i<texts.length;i++){texts[i].style.fontSize=scriptFontSize+'px'}}
+function toggleTeleprompter(){document.body.classList.toggle('teleprompter');$('btnTeleprompter').classList.toggle('active')}
+$('btnTeleprompter').addEventListener('click',toggleTeleprompter);
+function toggleFullscreenScript(){document.body.classList.toggle('fullscreen-script');$('btnFullscreenScript').classList.toggle('active')}
+$('btnFullscreenScript').addEventListener('click',toggleFullscreenScript);
+$('btnOpenTab').addEventListener('click',function(e){e.preventDefault();window.open(IFRAME_SRC+'#'+currentSlide,'_blank')});
+var penActive=false;var penMode='pen';var penDrawing=false;var penStrokes={};var currentPenStroke=null;
+var PEN_COLORS=['#F7585C','#3B82F6','#10B981','#F59E0B','#8B5CF6'];var penColorIdx=0;var penColor=PEN_COLORS[0];
+function togglePen(){penActive=!penActive;penCanvas.classList.toggle('active',penActive);$('btnPenToggle').classList.toggle('active',penActive)}
+function setPenMode(mode){penMode=mode;$('btnHighlighter').classList.toggle('active',mode==='highlighter');$('btnEraser').classList.toggle('active',mode==='eraser')}
+function clearPen(){penStrokes[currentSlide]=[];redrawPen();if(channel)channel.postMessage({type:'penClear'})}
+function resizePenCanvas(){var container=penCanvas.parentElement;penCanvas.width=container.offsetWidth;penCanvas.height=container.offsetHeight;redrawPen()}
+function redrawPen(){penCtx.clearRect(0,0,penCanvas.width,penCanvas.height);var strokes=penStrokes[currentSlide]||[];for(var i=0;i<strokes.length;i++){drawPenStroke(strokes[i])}}
+function drawPenStroke(stroke){if(stroke.points.length<2)return;penCtx.beginPath();penCtx.strokeStyle=stroke.color;penCtx.lineWidth=stroke.width;penCtx.lineCap='round';penCtx.lineJoin='round';penCtx.globalCompositeOperation=stroke.eraser?'destination-out':'source-over';penCtx.moveTo(stroke.points[0].x,stroke.points[0].y);for(var i=1;i<stroke.points.length;i++){penCtx.lineTo(stroke.points[i].x,stroke.points[i].y)}penCtx.stroke();penCtx.globalCompositeOperation='source-over'}
+penCanvas.addEventListener('pointerdown',function(e){if(!penActive)return;penDrawing=true;var rect=penCanvas.getBoundingClientRect();var x=e.clientX-rect.left;var y=e.clientY-rect.top;var isEraser=penMode==='eraser';var color=penMode==='highlighter'?'rgba(255,230,0,0.3)':penColor;var width=penMode==='pen'?3:penMode==='highlighter'?20:30;currentPenStroke={points:[{x:x,y:y}],color:color,width:width,eraser:isEraser}});
+penCanvas.addEventListener('pointermove',function(e){if(!penDrawing||!currentPenStroke)return;var rect=penCanvas.getBoundingClientRect();currentPenStroke.points.push({x:e.clientX-rect.left,y:e.clientY-rect.top});redrawPen();drawPenStroke(currentPenStroke)});
+penCanvas.addEventListener('pointerup',function(){if(!penDrawing||!currentPenStroke)return;penDrawing=false;if(!penStrokes[currentSlide])penStrokes[currentSlide]=[];penStrokes[currentSlide].push(currentPenStroke);if(channel)channel.postMessage({type:'penStroke',slideKey:currentSlide,stroke:currentPenStroke});currentPenStroke=null});
+$('btnPenToggle').addEventListener('click',function(){if(penMode!=='pen')setPenMode('pen');togglePen()});
+$('btnPenColor').addEventListener('click',function(){penColorIdx=(penColorIdx+1)%PEN_COLORS.length;penColor=PEN_COLORS[penColorIdx];$('btnPenColor').textContent=['\uD83D\uDD34','\uD83D\uDD35','\uD83D\uDFE2','\uD83D\uDFE1','\uD83D\uDFE3'][penColorIdx]});
+$('btnHighlighter').addEventListener('click',function(){if(!penActive)togglePen();setPenMode('highlighter')});
+$('btnEraser').addEventListener('click',function(){if(!penActive)togglePen();setPenMode('eraser')});
+$('btnPenClear').addEventListener('click',clearPen);
+function scaleIframe(){var container=iframe.parentElement;var cw=container.offsetWidth;var ch=container.offsetHeight;var scaleX=cw/1920;var scaleY=ch/1080;var scale=Math.min(scaleX,scaleY);iframe.style.transform='scale('+scale+')';iframe.style.transformOrigin='0 0';var scaledW=1920*scale;var scaledH=1080*scale;iframe.style.position='absolute';iframe.style.left=((cw-scaledW)/2)+'px';iframe.style.top=((ch-scaledH)/2)+'px';var nc=nextPreviewIframe.parentElement;var ncw=nc.offsetWidth;var nch=nc.offsetHeight;var nScale=Math.min(ncw/1920,nch/1080);nextPreviewIframe.style.transform='scale('+nScale+')';nextPreviewIframe.style.transformOrigin='0 0';nextPreviewIframe.style.position='absolute';nextPreviewIframe.style.left='0px';nextPreviewIframe.style.top='0px';resizePenCanvas()}
+var ro=new ResizeObserver(function(){scaleIframe()});ro.observe(iframe.parentElement);
+$('totalNum').textContent=TOTAL_SLIDES;scaleIframe();goToSlide(1);updatePace();
+})();
+</script>
+</body>
+</html>

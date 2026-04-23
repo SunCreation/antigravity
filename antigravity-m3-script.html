@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>발표자 노트 | Antigravity M3 | 모두의연구소</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@latest/dist/web/static/pretendard.min.css">
+<style>
+:root{--bg:#0f1117;--bg-secondary:#161822;--bg-tertiary:#1c1f2e;--bg-card:#1e2132;--border:rgba(255,255,255,.06);--text:#e4e6eb;--text-secondary:rgba(255,255,255,.55);--text-dim:rgba(255,255,255,.3);--accent:#F7585C;--accent-dim:rgba(247,88,92,.15);--green:#10B981;--yellow:#F59E0B;--red:#EF4444;--blue:#3B82F6;--radius:8px;--radius-sm:5px}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
+.app{display:flex;flex-direction:column;height:100vh}
+.header{display:flex;align-items:center;gap:16px;padding:8px 16px;background:var(--bg-secondary);border-bottom:1px solid var(--border);flex-shrink:0;z-index:10;height:44px}
+.slide-indicator{font-size:.82rem;font-weight:700;color:var(--text);font-variant-numeric:tabular-nums;min-width:60px}
+.slide-indicator span{color:var(--accent)}
+.header-sep{width:1px;height:20px;background:var(--border)}
+.timer-controls{display:flex;align-items:center;gap:8px}
+.timer-display{font-size:1.1rem;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:1px;min-width:70px}
+.timer-btn{width:26px;height:26px;border:none;border-radius:var(--radius-sm);background:rgba(255,255,255,.06);color:var(--text-secondary);cursor:pointer;font-size:.7rem;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.timer-btn:hover{background:rgba(255,255,255,.12);color:var(--text)}
+.timer-btn.active{background:var(--accent-dim);color:var(--accent)}
+.target-input{width:48px;height:26px;border:1px solid var(--border);border-radius:var(--radius-sm);background:rgba(255,255,255,.04);color:var(--text);text-align:center;font-size:.78rem;font-family:inherit;font-variant-numeric:tabular-nums;outline:none}
+.target-input:focus{border-color:var(--accent)}
+.header-spacer{flex:1}
+.header-toggle{height:26px;padding:0 10px;border:1px solid var(--border);border-radius:var(--radius-sm);background:rgba(255,255,255,.04);color:var(--text-secondary);cursor:pointer;font-size:.72rem;font-family:inherit;font-weight:600;letter-spacing:.5px;transition:all .15s;display:flex;align-items:center;gap:5px}
+.header-toggle:hover{background:rgba(255,255,255,.08);color:var(--text)}
+.header-toggle.active{background:var(--accent-dim);color:var(--accent);border-color:rgba(247,88,92,.3)}
+.sync-status{display:flex;align-items:center;gap:5px;font-size:.72rem;color:var(--text-dim)}
+.sync-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.pace-bar-area{display:flex;align-items:center;gap:12px;padding:6px 16px;background:var(--bg-secondary);border-bottom:1px solid var(--border);flex-shrink:0;font-size:.7rem}
+.pace-bars{flex:1;display:flex;gap:8px;align-items:center}
+.pace-bar-group{flex:1}
+.pace-bar-label{font-size:.65rem;color:var(--text-dim);margin-bottom:3px;display:flex;justify-content:space-between}
+.pace-bar-track{height:4px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden}
+.pace-bar-fill{height:100%;border-radius:2px;transition:width .5s ease}
+.pace-bar-fill.time{background:var(--blue)}
+.pace-bar-fill.slide{background:var(--accent)}
+.pace-status{display:flex;align-items:center;gap:4px;min-width:80px;justify-content:flex-end}
+.pace-status-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.pace-status-text{color:var(--text-secondary);font-weight:600}
+.main{display:flex;flex:1;min-height:0;overflow:hidden}
+.preview-panel{flex:3;display:flex;flex-direction:column;position:relative;background:#000;border-right:1px solid var(--border)}
+.preview-container{flex:1;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.preview-frame-wrap{position:relative;width:100%;height:100%;overflow:hidden}
+.preview-frame-wrap iframe{position:absolute;width:1920px;height:1080px;border:none;transform-origin:0 0;pointer-events:none;background:#030712}
+.pen-canvas{position:absolute;top:0;left:0;width:100%;height:100%;z-index:5;pointer-events:none}
+.pen-canvas.active{pointer-events:auto;cursor:crosshair}
+.preview-controls{display:flex;align-items:center;gap:8px;padding:6px 12px;background:rgba(0,0,0,.6);border-top:1px solid var(--border);flex-shrink:0}
+.preview-controls .pen-btn{height:24px;padding:0 8px;border:1px solid var(--border);border-radius:var(--radius-sm);background:rgba(255,255,255,.04);color:var(--text-secondary);cursor:pointer;font-size:.68rem;font-family:inherit;transition:all .15s}
+.preview-controls .pen-btn:hover{background:rgba(255,255,255,.1)}
+.preview-controls .pen-btn.active{background:var(--accent-dim);color:var(--accent);border-color:rgba(247,88,92,.3)}
+.next-preview{flex-shrink:0;border-top:1px solid var(--border);background:var(--bg-tertiary);display:flex;flex-direction:column}
+.next-preview-header{display:flex;align-items:center;justify-content:space-between;padding:4px 10px;font-size:.65rem;color:var(--text-dim)}
+.next-preview-num{font-weight:700;color:var(--accent);font-variant-numeric:tabular-nums}
+.next-preview-frame-wrap{position:relative;overflow:hidden;background:#000;aspect-ratio:16/9;margin:0 6px 6px;border-radius:var(--radius-sm)}
+.next-preview-frame-wrap iframe{position:absolute;width:1920px;height:1080px;border:none;transform-origin:0 0;pointer-events:none;background:#030712;border-radius:var(--radius-sm)}
+.script-panel{flex:1;display:flex;flex-direction:column;background:var(--bg-secondary);min-width:280px;max-width:400px}
+.script-header{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-bottom:1px solid var(--border);flex-shrink:0}
+.script-header-label{font-size:.72rem;font-weight:700;letter-spacing:1px;color:var(--text-dim);text-transform:uppercase}
+.font-controls{display:flex;align-items:center;gap:4px}
+.font-btn{width:24px;height:24px;border:1px solid var(--border);border-radius:var(--radius-sm);background:rgba(255,255,255,.04);color:var(--text-secondary);cursor:pointer;font-size:.8rem;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.font-btn:hover{background:rgba(255,255,255,.1);color:var(--text)}
+.script-cards{flex:1;overflow-y:auto;padding:8px;scroll-behavior:smooth}
+.script-cards::-webkit-scrollbar{width:4px}
+.script-cards::-webkit-scrollbar-track{background:transparent}
+.script-cards::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:2px}
+.script-card{padding:10px 12px;border-radius:var(--radius);border:1px solid transparent;margin-bottom:6px;cursor:pointer;transition:all .2s;display:none}
+.script-card:hover{background:rgba(255,255,255,.03)}
+.script-card.active{background:var(--bg-card);border-color:var(--accent);display:block}
+.script-meta{display:flex;align-items:flex-start;gap:8px;margin-bottom:6px}
+.script-number{width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700;flex-shrink:0;color:var(--text-secondary)}
+.script-card.active .script-number{background:var(--accent);color:#fff}
+.script-info{flex:1;min-width:0}
+.script-section{font-size:.65rem;font-weight:600;color:var(--text-dim);letter-spacing:.5px;text-transform:uppercase;margin-bottom:2px}
+.script-title{font-size:.82rem;font-weight:700;color:var(--text);line-height:1.35;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.script-body{padding-left:30px}
+.script-text{font-size:.78rem;line-height:1.65;color:var(--text-secondary);word-break:keep-all}
+.script-ref{font-size:.68rem;color:var(--text-dim);margin-top:4px;padding-top:4px;border-top:1px solid var(--border);display:none}
+.script-card.active .script-ref{display:block}
+.bottom-bar{display:flex;align-items:center;gap:12px;padding:8px 16px;background:var(--bg-secondary);border-top:1px solid var(--border);flex-shrink:0}
+.progress-track{flex:1;height:4px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden;cursor:pointer}
+.progress-fill{height:100%;background:var(--accent);border-radius:2px;transition:width .3s ease}
+.nav-btn{height:30px;padding:0 16px;border:none;border-radius:var(--radius-sm);font-size:.82rem;font-weight:700;cursor:pointer;transition:all .15s;font-family:inherit}
+.nav-btn.prev{background:rgba(255,255,255,.06);color:var(--text)}
+.nav-btn.prev:hover{background:rgba(255,255,255,.12)}
+.nav-btn.next{background:var(--accent);color:#fff}
+.nav-btn.next:hover{background:#e04448}
+.nav-btn:disabled{opacity:.3;cursor:not-allowed}
+body.teleprompter .header,body.teleprompter .pace-bar-area,body.teleprompter .preview-panel,body.teleprompter .bottom-bar{display:none}
+body.teleprompter .main{flex-direction:column}
+body.teleprompter .script-panel{max-width:100%;flex:1}
+body.teleprompter .script-card{display:none}
+body.teleprompter .script-card.active{display:block;padding:24px 48px}
+body.teleprompter .script-card.active .script-title{font-size:1.6rem;margin-bottom:12px;white-space:normal}
+body.teleprompter .script-card.active .script-text{font-size:1.4rem;line-height:2}
+body.teleprompter .script-card.active .script-number{width:36px;height:36px;font-size:1rem}
+body.teleprompter .script-card.active .script-section{font-size:.85rem;margin-bottom:6px}
+body.teleprompter .script-card.active .script-meta{margin-bottom:12px}
+body.teleprompter .script-header{position:sticky;top:0;z-index:5;background:var(--bg-secondary)}
+body.fullscreen-script .preview-panel{display:none}
+body.fullscreen-script .script-panel{max-width:100%;flex:1}
+.timer-overtime .timer-display{color:var(--red)}
+.timer-overtime .timer-display::after{content:' \26A0';font-size:.8rem}
+@media print{.header,.pace-bar-area,.preview-panel,.bottom-bar{display:none}.script-panel{max-width:100%}.script-card{break-inside:avoid}}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="header">
+<div class="slide-indicator"><span id="slideNum">1</span> / <span id="totalNum">35</span></div>
+<div class="header-sep"></div>
+<div class="timer-controls">
+<button class="timer-btn" id="btnTimerStart" title="시작/일시정지">▶</button>
+<button class="timer-btn" id="btnTimerReset" title="초기화">↺</button>
+<div class="timer-display" id="timerDisplay">00:00</div>
+<span style="font-size:.7rem;color:var(--text-dim)">/</span>
+<input type="number" class="target-input" id="targetMinutes" value="120" min="1" max="999" title="목표 시간(분)">
+<span style="font-size:.7rem;color:var(--text-dim)">분</span>
+</div>
+<div class="header-spacer"></div>
+<a class="header-toggle" id="btnOpenTab" target="_blank" title="새 탭에서 프레젠테이션 열기">🔗 새 탭에서 열기</a>
+<button class="header-toggle" id="btnTeleprompter" title="텔레프롬프터 모드 (T)">🎤 텔레프롬프터</button>
+<button class="header-toggle" id="btnFullscreenScript" title="전체 스크립트 (F)">📜 전체보기</button>
+<div class="header-sep"></div>
+<div class="sync-status"><div class="sync-dot"></div> 동기화</div>
+</div>
+<div class="pace-bar-area">
+<div class="pace-bars">
+<div class="pace-bar-group"><div class="pace-bar-label"><span>시간 진행률</span><span id="timePercent">0%</span></div><div class="pace-bar-track"><div class="pace-bar-fill time" id="timeBar"></div></div></div>
+<div class="pace-bar-group"><div class="pace-bar-label"><span>슬라이드 진행률</span><span id="slidePercent">0%</span></div><div class="pace-bar-track"><div class="pace-bar-fill slide" id="slideBar"></div></div></div>
+</div>
+<div class="pace-status"><div class="pace-status-dot" id="paceDot"></div><div class="pace-status-text" id="paceText">대기</div></div>
+</div>
+<div class="main">
+<div class="preview-panel">
+<div class="preview-container"><div class="preview-frame-wrap"><iframe id="previewIframe" src="./antigravity-m3-presentation.html#1"></iframe><canvas class="pen-canvas" id="penCanvas"></canvas></div></div>
+<div class="preview-controls">
+<button class="pen-btn" id="btnPenToggle" title="펜 모드 (P)">✏️ 펜</button>
+<button class="pen-btn" id="btnPenColor" title="색상 변경">🔴</button>
+<button class="pen-btn" id="btnHighlighter" title="형광펜 (H)">🖍️</button>
+<button class="pen-btn" id="btnEraser" title="지우개 (E)">🧹</button>
+<button class="pen-btn" id="btnPenClear" title="모두 지우기 (C)">🗑️</button>
+<div style="flex:1"></div>
+<span style="font-size:.65rem;color:var(--text-dim)">P: 펜 · 1/2/3: 모드 · C: 지우기</span>
+</div>
+</div>
+<div class="script-panel">
+<div class="script-header">
+<div class="script-header-label">스크립트</div>
+<div class="font-controls">
+<button class="font-btn" id="btnFontMinus" title="글자 작게">A-</button>
+<button class="font-btn" id="btnFontPlus" title="글자 크게">A+</button>
+</div>
+</div>
+<div class="script-cards" id="scriptCards">
+
+<div class="script-card active" data-slide="1"><div class="script-meta"><div class="script-number">1</div><div class="script-info"><div class="script-section">시작</div><div class="script-title">커버 — AI에게 말 거는 기술</div></div></div><div class="script-body"><div class="script-text">수강생들 환영. M3 시작. 오늘은 AI에게 말 거는 기술, 효과적인 프롬프팅을 배울 것이라고 소개. M2에서 컨텍스트를 설정하는 법을 배웠으니, 이제 그 위에 얹을 프롬프팅 기술. "지난주에 무대 세팅을 배웠죠? 오늘은 대본을 쓰는 법을 배웁니다."</div><div class="script-ref">data-section: 시작 | 테마: dark | 커버 슬라이드</div></div></div>
+
+<div class="script-card" data-slide="2"><div class="script-meta"><div class="script-number">2</div><div class="script-info"><div class="script-section">시작</div><div class="script-title">오늘 배울 것</div></div></div><div class="script-body"><div class="script-text">오늘 2시간 동안 배울 내용을 한눈에 보여주기. 5개 섹션: M2 복습, 프롬프팅 기본, Think-First 워크플로우, 멀티모달 프롬프팅, 실전 패턴. "오늘이 아마 가장 실용적인 시간이 될 거예요. 바로 오늘부터 쓸 수 있는 기술들입니다."</div><div class="script-ref">data-section: 시작 | 테마: light</div></div></div>
+
+<div class="script-card" data-slide="3"><div class="script-meta"><div class="script-number">3</div><div class="script-info"><div class="script-section">M2 복습</div><div class="script-title">M2 복습: Context Engineering</div></div></div><div class="script-body"><div class="script-text">M2에서 배운 Context Engineering 간단히 복습. Agent Pane, 멀티모델(Flash/Pro/Claude/GPT-OSS), Agent Skills(/로 호출), MCP(외부 도구 연결) 핵심을 되짚기. "지난주에 AI한테 프로젝트 맥락을 알려주는 법을 배웠죠?"</div><div class="script-ref">data-section: M2 복습 | 테마: gradient</div></div></div>
+
+<div class="script-card" data-slide="4"><div class="script-meta"><div class="script-number">4</div><div class="script-info"><div class="script-section">M2 복습</div><div class="script-title">M2 → M3 연결: 무대 → 대본</div></div></div><div class="script-body"><div class="script-text">M2가 무대 세팅, M3가 대본 작성이라는 비유로 연결. 컨텍스트가 완벽해도 프롬프트가 모호하면 AI는 엉뚱한 방향으로 감. "무대가 잘 세팅되어도, 대본이 이상하면 공연이 이상하겠죠?"</div><div class="script-ref">data-section: M2 복습 | 테마: white</div></div></div>
+
+<div class="script-card" data-slide="5"><div class="script-meta"><div class="script-number">5</div><div class="script-info"><div class="script-section">프롬프팅 기본</div><div class="script-title">왜 프롬프팅이 중요한가?</div></div></div><div class="script-body"><div class="script-text">바이브 코딩에서 프롬프트가 곧 코드의 역할. Garbage In Garbage Out. "여러분이 입력하는 프롬프트가 곧 여러분이 짜는 코드라고 생각하세요. 프롬프트가 모호하면 코드도 모호해집니다."</div><div class="script-ref">data-section: 프롬프팅 기본 | 테마: dark</div></div></div>
+
+<div class="script-card" data-slide="6"><div class="script-meta"><div class="script-number">6</div><div class="script-info"><div class="script-section">프롬프팅 기본</div><div class="script-title">좋은 프롬프트의 3요소</div></div></div><div class="script-body"><div class="script-text">Context + Intent + Constraints 3요소 설명. 이 세 가지가 갖춰지면 AI가 정확히 이해. "맥락, 의도, 제약조건. 이 세 가지만 기억하세요. 매번 이 셋을 체크하는 습관이 핵심입니다."</div><div class="script-ref">data-section: 프롬프팅 기본 | 테마: white</div></div></div>
+
+<div class="script-card" data-slide="7"><div class="script-meta"><div class="script-number">7</div><div class="script-info"><div class="script-section">프롬프팅 기본</div><div class="script-title">프롬프트 안티패턴 4가지</div></div></div><div class="script-body"><div class="script-text">흔한 실수 4가지: 너무 짧음, 맥락 없음, 모순된 지시, 한번에 너무 많이. "이거 다 해보신 적 있죠? 저도 해봤어요. 의식적으로 피해봅시다."</div><div class="script-ref">data-section: 프롬프팅 기본 | 테마: coral</div></div></div>
+
+<div class="script-card" data-slide="8"><div class="script-meta"><div class="script-number">8</div><div class="script-info"><div class="script-section">프롬프팅 기본</div><div class="script-title">모호한 → 구체적 프롬프트</div></div></div><div class="script-body"><div class="script-text">Before/After 비교 테이블로 확실히 보여주기. 같은 요청도 표현에 따라 결과가 다름. "이 차이가 진짜에요. '로그인 만들어줘'와 'React+TS로 이메일/비번 로그인 폼 만들어줘'는 완전 다른 결과를 줍니다."</div><div class="script-ref">data-section: 프롬프팅 기본 | 테마: white</div></div></div>
+
+<div class="script-card" data-slide="9"><div class="script-meta"><div class="script-number">9</div><div class="script-info"><div class="script-section">프롬프팅 기본</div><div class="script-title">코딩 작업용 프롬프트 템플릿</div></div></div><div class="script-body"><div class="script-text">바로 복사해서 쓸 수 있는 템플릿 4가지: 기능 구현, 버그 수정, 리팩토링, 테스트 작성. "이거 복사해서 바로 쓰세요. 오늘 실습에서도 쓸 거예요."</div><div class="script-ref">data-section: 프롬프팅 기본 | 테마: light</div></div></div>
+
+<div class="script-card" data-slide="10"><div class="script-meta"><div class="script-number">10</div><div class="script-info"><div class="script-section">Think-First</div><div class="script-title">Think-First 원칙: 생각 먼저, 코드는 나중에</div></div></div><div class="script-body"><div class="script-text">Think-First 워크플로우 소개. 생각 → 계획 → 검토 → 실행의 4단계. AI에게 바로 코드를 짜달라고 하지 말고 먼저 계획을 세우라고 요청. "이게 오늘의 하이라이트입니다. 이거 하나만 기억해도 성공이에요."</div><div class="script-ref">data-section: Think-First | 테마: gradient</div></div></div>
+
+<div class="script-card" data-slide="11"><div class="script-meta"><div class="script-number">11</div><div class="script-info"><div class="script-section">Think-First</div><div class="script-title">Step 1: 요구사항 명확히 설명하기</div></div></div><div class="script-body"><div class="script-text">Think-First 첫 단계. 무엇을 만들고 싶은지, 사용자는 누구인지, 핵심 기능은 무엇인지를 AI에게 전달. "이렇게 구체적으로 설명하면 AI가 훨씬 더 잘 이해해요."</div><div class="script-ref">data-section: Think-First | 테마: white</div></div></div>
+
+<div class="script-card" data-slide="12"><div class="script-meta"><div class="script-number">12</div><div class="script-info"><div class="script-section">Think-First</div><div class="script-title">Step 2: 계획 수립 요청하기</div></div></div><div class="script-body"><div class="script-text">핵심 테크닉: 코드 대신 계획을 먼저 달라고 요청. "아직 코드는 작성하지 마"가 마법의 문장. AI가 문제를 분해하는 과정을 보고 방향을 검증. "이 프롬프트 하나로 결과 품질이 2배는 올라갑니다."</div><div class="script-ref">data-section: Think-First | 테마: light</div></div></div>
+
+<div class="script-card" data-slide="13"><div class="script-meta"><div class="script-number">13</div><div class="script-info"><div class="script-section">Think-First</div><div class="script-title">Step 3: 계획 검토하기</div></div></div><div class="script-body"><div class="script-text">AI가 제시한 계획을 검토. 빠진 단계, 논리적 순서, 우선순위를 확인. 이 단계를 건너뛰면 나중에 전체를 다시 해야 할 수도. "여기서 5분만 투자하면 나중에 50분을 아낄 수 있어요."</div><div class="script-ref">data-section: Think-First | 테마: white</div></div></div>
+
+<div class="script-card" data-slide="14"><div class="script-meta"><div class="script-number">14</div><div class="script-info"><div class="script-section">Think-First</div><div class="script-title">Step 4: 점진적으로 실행하기</div></div></div><div class="script-body"><div class="script-text">승인한 계획을 한 단계씩 실행. 1단계 → 확인 → 다음 단계의 반복. 한번에 다 하지 않는 게 핵심. "조급해하지 마세요. 한 단계씩 확실하게 가는 게 결국 가장 빠른 길입니다."</div><div class="script-ref">data-section: Think-First | 테마: light</div></div></div>
+
+<div class="script-card" data-slide="15"><div class="script-meta"><div class="script-number">15</div><div class="script-info"><div class="script-section">Think-First</div><div class="script-title">분해: 큰 문제 → 작은 단위</div></div></div><div class="script-body"><div class="script-text">분해의 기술. 각 태스크는 독립적으로 테스트 가능해야 하고, 하나의 PR 정도 크기여야 함. "한 입에 다 넣으려 하지 말고, 잘게 썰어서 하나씩 먹읍시다."</div><div class="script-ref">data-section: Think-First | 테마: dark</div></div></div>
+
+<div class="script-card" data-slide="16"><div class="script-meta"><div class="script-number">16</div><div class="script-info"><div class="script-section">Think-First</div><div class="script-title">예시: 대시보드 → 8개 서브태스크</div></div></div><div class="script-body"><div class="script-text">실제 예시: '사용자 대시보드 만들어줘'를 Think-First로 처리하면 AI가 8개 서브태스크로 분해. "이렇게 분해가 되면 하나씩 확인하면서 진행할 수 있죠."</div><div class="script-ref">data-section: Think-First | 테마: gradient</div></div></div>
+
+<div class="script-card" data-slide="17"><div class="script-meta"><div class="script-number">17</div><div class="script-info"><div class="script-section">Think-First</div><div class="script-title">분해 요청 실전 프롬프트</div></div></div><div class="script-body"><div class="script-text">분해를 요청하는 실전 프롬프트 예시. Agent Pane에 직접 입력할 수 있는 내용. "이렇게 요청하면 AI가 알아서 분해해줍니다. '아직 코드는 작성하지 마'가 핵심이에요."</div><div class="script-ref">data-section: Think-First | 테마: white</div></div></div>
+
+<div class="script-card" data-slide="18"><div class="script-meta"><div class="script-number">18</div><div class="script-info"><div class="script-section">멀티모달</div><div class="script-title">멀티모달 프롬프팅 소개</div></div></div><div class="script-body"><div class="script-text">텍스트만이 아니라 이미지를 활용하는 기술 소개. 특히 UI 개발에서 이미지가 훨씬 효과적. "UI를 텍스트로 설명하는 게 얼마나 어렵죠? 그림 하나면 천 마디 말보다 나아요."</div><div class="script-ref">data-section: 멀티모달 | 테마: gradient</div></div></div>
+
+<div class="script-card" data-slide="19"><div class="script-meta"><div class="script-number">19</div><div class="script-info"><div class="script-section">멀티모달</div><div class="script-title">스크린샷 → 코드 워크플로우</div></div></div><div class="script-body"><div class="script-text">캡처 → 붙여넣기 → 프롬프트 → 검토의 4단계. 실제 데모를 보여주기 좋은 슬라이드. "지금 한번 보여드릴게요. 이 화면을 캡처해서... 자, 이렇게 하면 코드가 나와요."</div><div class="script-ref">data-section: 멀티모달 | 테마: white</div></div></div>
+
+<div class="script-card" data-slide="20"><div class="script-meta"><div class="script-number">20</div><div class="script-info"><div class="script-section">멀티모달</div><div class="script-title">와이어프레임 → 실제 코드</div></div></div><div class="script-body"><div class="script-text">손그림이나 Figma에서 Agent Pane으로. 디자인 툴 캡처를 코드로 변환. "손으로 그린 와이어프레임도 인식해요. 진짜예요."</div><div class="script-ref">data-section: 멀티모달 | 테마: light</div></div></div>
+
+<div class="script-card" data-slide="21"><div class="script-meta"><div class="script-number">21</div><div class="script-info"><div class="script-section">멀티모달</div><div class="script-title">Agent Pane에서 이미지 활용하기</div></div></div><div class="script-body"><div class="script-text">Agent Pane에 이미지를 추가하는 3가지 방법: 클립보드 붙여넣기, 파일 업로드, 드래그앤드롭. 이미지만 보내지 말고 반드시 텍스트 설명도 함께. "이미지만 덩그러니 넣으면 AI도 뭘 원하는지 모릅니다."</div><div class="script-ref">data-section: 멀티모달 | 테마: white</div></div></div>
+
+<div class="script-card" data-slide="22"><div class="script-meta"><div class="script-number">22</div><div class="script-info"><div class="script-section">멀티모달</div><div class="script-title">이미지 프롬프팅 베스트 프랙티스</div></div></div><div class="script-body"><div class="script-text">고해상도 이미지, 텍스트 설명 병행, 기술 스택 명시, 반응형 요구사항 추가. 좋은 예시와 나쁜 예시 비교. "이미지 + 설명이 최고의 조합입니다."</div><div class="script-ref">data-section: 멀티모달 | 테마: light</div></div></div>
+
+<div class="script-card" data-slide="23"><div class="script-meta"><div class="script-number">23</div><div class="script-info"><div class="script-section">실전 패턴</div><div class="script-title">Pattern 1: Explain first, then...</div></div></div><div class="script-body"><div class="script-text">AI에게 먼저 코드를 설명하게 하고 그 다음에 작업 요청. AI가 코드를 이해한 상태에서 수정하면 부작용 감소. "이해하고 고치는 거랑, 그냥 고치는 거랑 결과가 완전 달라요."</div><div class="script-ref">data-section: 실전 패턴 | 테마: white</div></div></div>
+
+<div class="script-card" data-slide="24"><div class="script-meta"><div class="script-number">24</div><div class="script-info"><div class="script-section">실전 패턴</div><div class="script-title">Pattern 2: Create a plan, don't code yet</div></div></div><div class="script-body"><div class="script-text">Planning Mode 핵심 프롬프트. 'don't code yet'이 마법의 문장. AI를 구조적 사고 모드로 전환. "이 패턴은 정말 어디서든 쓸 수 있어요. 제일 많이 쓰는 패턴."</div><div class="script-ref">data-section: 실전 패턴 | 테마: light</div></div></div>
+
+<div class="script-card" data-slide="25"><div class="script-meta"><div class="script-number">25</div><div class="script-info"><div class="script-section">실전 패턴</div><div class="script-title">Pattern 3: Refactor following pattern</div></div></div><div class="script-body"><div class="script-text">리팩토링 시 패턴과 원칙을 명시. 대상-방향-제약 3박자. "기존 동작 유지"라는 제약이 없으면 AI가 과도하게 변경. "리팩토링할 때는 항상 '기존 동작 유지'를 넣으세요."</div><div class="script-ref">data-section: 실전 패턴 | 테마: white</div></div></div>
+
+<div class="script-card" data-slide="26"><div class="script-meta"><div class="script-number">26</div><div class="script-info"><div class="script-section">실전 패턴</div><div class="script-title">Pattern 4: Write tests for X</div></div></div><div class="script-body"><div class="script-text">테스트 작성 시 프레임워크와 범위를 명시. 정상/에러/엣지 케이스 모두 포함하라고 요청. "AI가 테스트도 잘 써줘요. 근데 범위를 안 정해주면 대충만 써줘요."</div><div class="script-ref">data-section: 실전 패턴 | 테마: light</div></div></div>
+
+<div class="script-card" data-slide="27"><div class="script-meta"><div class="script-number">27</div><div class="script-info"><div class="script-section">실전 패턴</div><div class="script-title">Pattern 5: Debug — error + context</div></div></div><div class="script-body"><div class="script-text">디버깅 시 에러 메시지 + 파일 위치 + 발생 조건을 함께 제공. 좋은 예시와 나쁜 예시 비교. "에러만 보여주면 AI도 추측만 해요. 파일과 줄번호까지 같이 주면 정확하게 고쳐줘요."</div><div class="script-ref">data-section: 실전 패턴 | 테마: white</div></div></div>
+
+<div class="script-card" data-slide="28"><div class="script-meta"><div class="script-number">28</div><div class="script-info"><div class="script-section">실전 패턴</div><div class="script-title">Flash vs Pro 선택 가이드</div></div></div><div class="script-body"><div class="script-text">Flash는 빠른 반복과 간단한 작업, Pro/Claude는 복잡한 설계와 장문 코드. 전략: Flash로 프로토타입 → Pro로 품질 개선. "Flash로 빨리 해보고, 맘에 들면 Pro로 다듬는 게 가성비 최고."</div><div class="script-ref">data-section: 실전 패턴 | 테마: dark</div></div></div>
+
+<div class="script-card" data-slide="29"><div class="script-meta"><div class="script-number">29</div><div class="script-info"><div class="script-section">실전 패턴</div><div class="script-title">반복적 개선: Iterative Refinement</div></div></div><div class="script-body"><div class="script-text">한 번에 완벽한 결과를 기대하지 말고 점진적으로 개선. 초안 → 구체적 피드백 → 스타일 조정 → 엣지 케이스의 4단계. "4번의 구체적 피드백이 1번의 완벽한 프롬프트보다 나아요."</div><div class="script-ref">data-section: 실전 패턴 | 테마: light</div></div></div>
+
+<div class="script-card" data-slide="30"><div class="script-meta"><div class="script-number">30</div><div class="script-info"><div class="script-section">실습</div><div class="script-title">실습 1: Think-First로 기획하기 (25분)</div></div></div><div class="script-body"><div class="script-text">Planning Mode 워크플로우로 '팀 프로젝트 칸반 보드'를 기획. Step 1: 요구사항 작성(5분) → Step 2: 계획 요청(10분) → Step 3: 검토(5분) → Step 4: 첫 Phase 실행(5분). "이제 직접 해볼 시간입니다. 방금 배운 Think-First를 그대로 따라해 보세요."</div><div class="script-ref">data-section: 실습 | 테마: accent | 강조 슬라이드</div></div></div>
+
+<div class="script-card" data-slide="31"><div class="script-meta"><div class="script-number">31</div><div class="script-info"><div class="script-section">실습</div><div class="script-title">실습 2: 멀티모달 프롬프팅 (15분)</div></div></div><div class="script-body"><div class="script-text">UI 스크린샷을 Agent Pane에 넣고 코드를 생성. 이미지 + 텍스트 프롬프트의 조합이 얼마나 정확한 결과를 주는지 체감. "캡처 → 붙여넣기 → 프롬프트 입력. 간단하죠?"</div><div class="script-ref">data-section: 실습 | 테마: white</div></div></div>
+
+<div class="script-card" data-slide="32"><div class="script-meta"><div class="script-number">32</div><div class="script-info"><div class="script-section">실습</div><div class="script-title">실습 3: 프롬프트 비교 실험 (20분)</div></div></div><div class="script-body"><div class="script-text">같은 기능을 모호한 프롬프트와 구체적 프롬프트로 각각 요청하고 결과 비교. 정확도, 코드 품질, 완성도 비교. "직접 눈으로 확인하는 게 제일 확실합니다."</div><div class="script-ref">data-section: 실습 | 테마: light</div></div></div>
+
+<div class="script-card" data-slide="33"><div class="script-meta"><div class="script-number">33</div><div class="script-info"><div class="script-section">정리</div><div class="script-title">오늘의 핵심</div></div></div><div class="script-body"><div class="script-text">핵심 4가지 복습: 프롬프트 3요소(Context+Intent+Constraints), Think-First(생각→계획→검토→실행), 멀티모달(이미지+텍스트), 5가지 실전 패턴. "오늘 배운 건 앞으로 모든 실습에서 계속 쓸 거예요."</div><div class="script-ref">data-section: 정리 | 테마: gradient</div></div></div>
+
+<div class="script-card" data-slide="34"><div class="script-meta"><div class="script-number">34</div><div class="script-info"><div class="script-section">정리</div><div class="script-title">다음 시간: M4 — 코드 생성</div></div></div><div class="script-body"><div class="script-text">M4 예고: 코드 생성 — AI가 만든 코드 이해하기. 생성 → 검토 → 수정 → 테스트의 사이클. "오늘 배운 프롬프팅은 M4에서도 계속 사용합니다. 특히 Think-First는 꼭 연습하세요."</div><div class="script-ref">data-section: 정리 | 테마: white</div></div></div>
+
+<div class="script-card" data-slide="35"><div class="script-meta"><div class="script-number">35</div><div class="script-info"><div class="script-section">정리</div><div class="script-title">마무리</div></div></div><div class="script-body"><div class="script-text">마무리 인사. 좋은 프롬프트는 연습이 필요하다는 점 강조. 경쟁이 아닌 상생. "수고하셨습니다! 이번 주에 한 번이라도 Think-First로 코딩해보세요. 차이를 느끼실 거예요."</div><div class="script-ref">data-section: 정리 | 테마: dark | 커버 슬라이드</div></div></div>
+
+</div>
+<div class="next-preview" id="nextPreview">
+<div class="next-preview-header"><span class="next-preview-label">다음 슬라이드</span><span class="next-preview-num" id="nextSlideNum">2</span></div>
+<div class="next-preview-frame-wrap"><iframe id="nextPreviewIframe" src="./antigravity-m3-presentation.html#2"></iframe></div>
+</div>
+</div>
+</div>
+<div class="bottom-bar">
+<button class="nav-btn prev" id="btnPrev">◀ 이전</button>
+<div class="progress-track" id="progressTrack"><div class="progress-fill" id="progressFill"></div></div>
+<button class="nav-btn next" id="btnNext">다음 ▶</button>
+</div>
+</div>
+<script>
+(function(){
+var TOTAL_SLIDES=35;
+var IFRAME_SRC='./antigravity-m3-presentation.html';
+var CHANNEL_NAME='presentation-sync';
+var currentSlide=1;
+var iframeCurrentHash=1;
+var timerRunning=false;
+var timerStart=0;
+var timerElapsed=0;
+var timerInterval=null;
+var scriptFontSize=14;
+var $=function(id){return document.getElementById(id)};
+var iframe=$('previewIframe');
+var nextPreviewIframe=$('nextPreviewIframe');
+var penCanvas=$('penCanvas');
+var penCtx=penCanvas.getContext('2d');
+var cards=document.querySelectorAll('.script-card');
+var scriptCardsEl=$('scriptCards');
+var channel=null;
+try{channel=new BroadcastChannel(CHANNEL_NAME);channel.onmessage=function(e){var d=e.data;if(d.type==='slideChange'){goToSlide(d.slide,true)}}}catch(err){}
+function broadcast(slideNum){if(channel){channel.postMessage({type:'slideChange',slide:slideNum,total:TOTAL_SLIDES})}}
+function goToSlide(num,fromRemote){if(num<1||num>TOTAL_SLIDES)return;currentSlide=num;if(num!==iframeCurrentHash){try{iframe.contentWindow.location.hash=String(num)}catch(e){iframe.src=IFRAME_SRC+'#'+num}iframeCurrentHash=num}if(!fromRemote){broadcast(num)}updateNextPreview();$('slideNum').textContent=num;for(var i=0;i<cards.length;i++){var s=parseInt(cards[i].getAttribute('data-slide'));cards[i].classList.toggle('active',s===num)}var activeCard=scriptCardsEl.querySelector('.script-card.active');if(activeCard){activeCard.scrollIntoView({behavior:'smooth',block:'nearest'})}var pct=(num/TOTAL_SLIDES)*100;$('progressFill').style.width=pct+'%';$('btnPrev').disabled=num<=1;$('btnNext').disabled=num>=TOTAL_SLIDES;updatePace()}
+function updateNextPreview(){var nextNum=currentSlide+1;if(nextNum>TOTAL_SLIDES){$('nextPreview').style.display='none';return}$('nextPreview').style.display='flex';$('nextSlideNum').textContent=nextNum;try{nextPreviewIframe.contentWindow.location.hash=String(nextNum)}catch(e){nextPreviewIframe.src=IFRAME_SRC+'#'+nextNum}}
+function prevSlide(){goToSlide(currentSlide-1)}
+function nextSlide(){goToSlide(currentSlide+1)}
+$('btnPrev').addEventListener('click',prevSlide);
+$('btnNext').addEventListener('click',nextSlide);
+$('progressTrack').addEventListener('click',function(e){var rect=$('progressTrack').getBoundingClientRect();var pct=(e.clientX-rect.left)/rect.width;var slide=Math.max(1,Math.min(TOTAL_SLIDES,Math.round(pct*TOTAL_SLIDES)));goToSlide(slide)});
+for(var ci=0;ci<cards.length;ci++){cards[ci].addEventListener('click',function(){goToSlide(parseInt(this.getAttribute('data-slide')))})}
+document.addEventListener('keydown',function(e){if(e.target.tagName==='INPUT')return;if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key===' '){e.preventDefault();nextSlide()}if(e.key==='ArrowLeft'||e.key==='ArrowUp'){e.preventDefault();prevSlide()}if(e.key==='Home'){e.preventDefault();goToSlide(1)}if(e.key==='End'){e.preventDefault();goToSlide(TOTAL_SLIDES)}if(e.key==='p'||e.key==='P'){togglePen()}if(penActive){if(e.key==='1')setPenMode('pen');if(e.key==='2')setPenMode('highlighter');if(e.key==='3')setPenMode('eraser');if(e.key==='c'||e.key==='C')clearPen()}if(e.key==='t'||e.key==='T')toggleTeleprompter();if(e.key==='f'||e.key==='F')toggleFullscreenScript()});
+function startTimer(){if(timerRunning){timerElapsed+=Date.now()-timerStart;timerRunning=false;clearInterval(timerInterval);$('btnTimerStart').textContent='\u25B6';$('btnTimerStart').classList.remove('active')}else{timerStart=Date.now();timerRunning=true;$('btnTimerStart').textContent='\u23F8';$('btnTimerStart').classList.add('active');timerInterval=setInterval(updateTimerDisplay,1000)}}
+function resetTimer(){timerRunning=false;timerElapsed=0;timerStart=0;clearInterval(timerInterval);$('btnTimerStart').textContent='\u25B6';$('btnTimerStart').classList.remove('active');$('timerDisplay').textContent='00:00';document.body.classList.remove('timer-overtime')}
+function updateTimerDisplay(){var elapsed=timerElapsed+(timerRunning?Date.now()-timerStart:0);var sec=Math.floor(elapsed/1000);var min=String(Math.floor(sec/60)).padStart(2,'0');var s=String(sec%60).padStart(2,'0');$('timerDisplay').textContent=min+':'+s;var targetMin=parseInt($('targetMinutes').value)||120;var targetSec=targetMin*60;if(sec>targetSec){document.body.classList.add('timer-overtime')}else{document.body.classList.remove('timer-overtime')}updatePace()}
+$('btnTimerStart').addEventListener('click',startTimer);
+$('btnTimerReset').addEventListener('click',resetTimer);
+function updatePace(){var targetMin=parseInt($('targetMinutes').value)||120;var targetSec=targetMin*60;var elapsed=timerElapsed+(timerRunning?Date.now()-timerStart:0);var elapsedSec=Math.floor(elapsed/1000);var timePct=targetSec>0?Math.min(100,(elapsedSec/targetSec)*100):0;var slidePct=(currentSlide/TOTAL_SLIDES)*100;$('timeBar').style.width=timePct+'%';$('slideBar').style.width=slidePct+'%';$('timePercent').textContent=Math.round(timePct)+'%';$('slidePercent').textContent=Math.round(slidePct)+'%';var paceDot=$('paceDot');var paceText=$('paceText');if(elapsedSec===0){paceDot.style.background='var(--text-dim)';paceText.textContent='\uB300\uAE30';paceText.style.color='var(--text-dim)'}else if(slidePct>=timePct-2){paceDot.style.background='var(--green)';paceText.textContent='\uC801\uC808';paceText.style.color='var(--green)'}else{paceDot.style.background='var(--accent)';paceText.textContent='\uC9C0\uC5F0';paceText.style.color='var(--accent)'}}
+$('btnFontMinus').addEventListener('click',function(){scriptFontSize=Math.max(11,scriptFontSize-1);applyFontSize()});
+$('btnFontPlus').addEventListener('click',function(){scriptFontSize=Math.min(24,scriptFontSize+1);applyFontSize()});
+function applyFontSize(){var texts=document.querySelectorAll('.script-text');for(var i=0;i<texts.length;i++){texts[i].style.fontSize=scriptFontSize+'px'}}
+function toggleTeleprompter(){document.body.classList.toggle('teleprompter');$('btnTeleprompter').classList.toggle('active')}
+$('btnTeleprompter').addEventListener('click',toggleTeleprompter);
+function toggleFullscreenScript(){document.body.classList.toggle('fullscreen-script');$('btnFullscreenScript').classList.toggle('active')}
+$('btnFullscreenScript').addEventListener('click',toggleFullscreenScript);
+$('btnOpenTab').addEventListener('click',function(e){e.preventDefault();window.open(IFRAME_SRC+'#'+currentSlide,'_blank')});
+var penActive=false;var penMode='pen';var penDrawing=false;var penStrokes={};var currentPenStroke=null;
+var PEN_COLORS=['#F7585C','#3B82F6','#10B981','#F59E0B','#8B5CF6'];var penColorIdx=0;var penColor=PEN_COLORS[0];
+function togglePen(){penActive=!penActive;penCanvas.classList.toggle('active',penActive);$('btnPenToggle').classList.toggle('active',penActive)}
+function setPenMode(mode){penMode=mode;$('btnHighlighter').classList.toggle('active',mode==='highlighter');$('btnEraser').classList.toggle('active',mode==='eraser')}
+function clearPen(){penStrokes[currentSlide]=[];redrawPen();if(channel)channel.postMessage({type:'penClear'})}
+function resizePenCanvas(){var container=penCanvas.parentElement;penCanvas.width=container.offsetWidth;penCanvas.height=container.offsetHeight;redrawPen()}
+function redrawPen(){penCtx.clearRect(0,0,penCanvas.width,penCanvas.height);var strokes=penStrokes[currentSlide]||[];for(var i=0;i<strokes.length;i++){drawPenStroke(strokes[i])}}
+function drawPenStroke(stroke){if(stroke.points.length<2)return;penCtx.beginPath();penCtx.strokeStyle=stroke.color;penCtx.lineWidth=stroke.width;penCtx.lineCap='round';penCtx.lineJoin='round';penCtx.globalCompositeOperation=stroke.eraser?'destination-out':'source-over';penCtx.moveTo(stroke.points[0].x,stroke.points[0].y);for(var i=1;i<stroke.points.length;i++){penCtx.lineTo(stroke.points[i].x,stroke.points[i].y)}penCtx.stroke();penCtx.globalCompositeOperation='source-over'}
+penCanvas.addEventListener('pointerdown',function(e){if(!penActive)return;penDrawing=true;var rect=penCanvas.getBoundingClientRect();var x=e.clientX-rect.left;var y=e.clientY-rect.top;var isEraser=penMode==='eraser';var color=penMode==='highlighter'?'rgba(255,230,0,0.3)':penColor;var width=penMode==='pen'?3:penMode==='highlighter'?20:30;currentPenStroke={points:[{x:x,y:y}],color:color,width:width,eraser:isEraser}});
+penCanvas.addEventListener('pointermove',function(e){if(!penDrawing||!currentPenStroke)return;var rect=penCanvas.getBoundingClientRect();currentPenStroke.points.push({x:e.clientX-rect.left,y:e.clientY-rect.top});redrawPen();drawPenStroke(currentPenStroke)});
+penCanvas.addEventListener('pointerup',function(){if(!penDrawing||!currentPenStroke)return;penDrawing=false;if(!penStrokes[currentSlide])penStrokes[currentSlide]=[];penStrokes[currentSlide].push(currentPenStroke);if(channel)channel.postMessage({type:'penStroke',slideKey:currentSlide,stroke:currentPenStroke});currentPenStroke=null});
+$('btnPenToggle').addEventListener('click',function(){if(penMode!=='pen')setPenMode('pen');togglePen()});
+$('btnPenColor').addEventListener('click',function(){penColorIdx=(penColorIdx+1)%PEN_COLORS.length;penColor=PEN_COLORS[penColorIdx];$('btnPenColor').textContent=['\uD83D\uDD34','\uD83D\uDD35','\uD83D\uDFE2','\uD83D\uDFE1','\uD83D\uDFE3'][penColorIdx]});
+$('btnHighlighter').addEventListener('click',function(){if(!penActive)togglePen();setPenMode('highlighter')});
+$('btnEraser').addEventListener('click',function(){if(!penActive)togglePen();setPenMode('eraser')});
+$('btnPenClear').addEventListener('click',clearPen);
+function scaleIframe(){var container=iframe.parentElement;var cw=container.offsetWidth;var ch=container.offsetHeight;var scaleX=cw/1920;var scaleY=ch/1080;var scale=Math.min(scaleX,scaleY);iframe.style.transform='scale('+scale+')';iframe.style.transformOrigin='0 0';var scaledW=1920*scale;var scaledH=1080*scale;iframe.style.position='absolute';iframe.style.left=((cw-scaledW)/2)+'px';iframe.style.top=((ch-scaledH)/2)+'px';var nc=nextPreviewIframe.parentElement;var ncw=nc.offsetWidth;var nch=nc.offsetHeight;var nScale=Math.min(ncw/1920,nch/1080);nextPreviewIframe.style.transform='scale('+nScale+')';nextPreviewIframe.style.transformOrigin='0 0';nextPreviewIframe.style.position='absolute';nextPreviewIframe.style.left='0px';nextPreviewIframe.style.top='0px';resizePenCanvas()}
+var ro=new ResizeObserver(function(){scaleIframe()});ro.observe(iframe.parentElement);
+$('totalNum').textContent=TOTAL_SLIDES;scaleIframe();goToSlide(1);updatePace();
+})();
+</script>
+</body>
+</html>

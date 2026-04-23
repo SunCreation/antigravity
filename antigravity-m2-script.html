@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>발표자 노트 | Antigravity M2 | 모두의연구소</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@latest/dist/web/static/pretendard.min.css">
+<style>
+:root{--bg:#0f1117;--bg-secondary:#161822;--bg-tertiary:#1c1f2e;--bg-card:#1e2132;--border:rgba(255,255,255,.06);--text:#e4e6eb;--text-secondary:rgba(255,255,255,.55);--text-dim:rgba(255,255,255,.3);--accent:#F7585C;--accent-dim:rgba(247,88,92,.15);--green:#10B981;--yellow:#F59E0B;--red:#EF4444;--blue:#3B82F6;--radius:8px;--radius-sm:5px}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
+.app{display:flex;flex-direction:column;height:100vh}
+.header{display:flex;align-items:center;gap:16px;padding:8px 16px;background:var(--bg-secondary);border-bottom:1px solid var(--border);flex-shrink:0;z-index:10;height:44px}
+.slide-indicator{font-size:.82rem;font-weight:700;color:var(--text);font-variant-numeric:tabular-nums;min-width:60px}
+.slide-indicator span{color:var(--accent)}
+.header-sep{width:1px;height:20px;background:var(--border)}
+.timer-controls{display:flex;align-items:center;gap:8px}
+.timer-display{font-size:1.1rem;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:1px;min-width:70px}
+.timer-btn{width:26px;height:26px;border:none;border-radius:var(--radius-sm);background:rgba(255,255,255,.06);color:var(--text-secondary);cursor:pointer;font-size:.7rem;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.timer-btn:hover{background:rgba(255,255,255,.12);color:var(--text)}
+.timer-btn.active{background:var(--accent-dim);color:var(--accent)}
+.target-input{width:48px;height:26px;border:1px solid var(--border);border-radius:var(--radius-sm);background:rgba(255,255,255,.04);color:var(--text);text-align:center;font-size:.78rem;font-family:inherit;font-variant-numeric:tabular-nums;outline:none}
+.target-input:focus{border-color:var(--accent)}
+.header-spacer{flex:1}
+.header-toggle{height:26px;padding:0 10px;border:1px solid var(--border);border-radius:var(--radius-sm);background:rgba(255,255,255,.04);color:var(--text-secondary);cursor:pointer;font-size:.72rem;font-family:inherit;font-weight:600;letter-spacing:.5px;transition:all .15s;display:flex;align-items:center;gap:5px}
+.header-toggle:hover{background:rgba(255,255,255,.08);color:var(--text)}
+.header-toggle.active{background:var(--accent-dim);color:var(--accent);border-color:rgba(247,88,92,.3)}
+.sync-status{display:flex;align-items:center;gap:5px;font-size:.72rem;color:var(--text-dim)}
+.sync-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.pace-bar-area{display:flex;align-items:center;gap:12px;padding:6px 16px;background:var(--bg-secondary);border-bottom:1px solid var(--border);flex-shrink:0;font-size:.7rem}
+.pace-bars{flex:1;display:flex;gap:8px;align-items:center}
+.pace-bar-group{flex:1}
+.pace-bar-label{font-size:.65rem;color:var(--text-dim);margin-bottom:3px;display:flex;justify-content:space-between}
+.pace-bar-track{height:4px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden}
+.pace-bar-fill{height:100%;border-radius:2px;transition:width .5s ease}
+.pace-bar-fill.time{background:var(--blue)}
+.pace-bar-fill.slide{background:var(--accent)}
+.pace-status{display:flex;align-items:center;gap:4px;min-width:80px;justify-content:flex-end}
+.pace-status-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.pace-status-text{color:var(--text-secondary);font-weight:600}
+.main{display:flex;flex:1;min-height:0;overflow:hidden}
+.preview-panel{flex:3;display:flex;flex-direction:column;position:relative;background:#000;border-right:1px solid var(--border)}
+.preview-container{flex:1;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.preview-frame-wrap{position:relative;width:100%;height:100%;overflow:hidden}
+.preview-frame-wrap iframe{position:absolute;width:1920px;height:1080px;border:none;transform-origin:0 0;pointer-events:none;background:#030712}
+.pen-canvas{position:absolute;top:0;left:0;width:100%;height:100%;z-index:5;pointer-events:none}
+.pen-canvas.active{pointer-events:auto;cursor:crosshair}
+.preview-controls{display:flex;align-items:center;gap:8px;padding:6px 12px;background:rgba(0,0,0,.6);border-top:1px solid var(--border);flex-shrink:0}
+.preview-controls .pen-btn{height:24px;padding:0 8px;border:1px solid var(--border);border-radius:var(--radius-sm);background:rgba(255,255,255,.04);color:var(--text-secondary);cursor:pointer;font-size:.68rem;font-family:inherit;transition:all .15s}
+.preview-controls .pen-btn:hover{background:rgba(255,255,255,.1)}
+.preview-controls .pen-btn.active{background:var(--accent-dim);color:var(--accent);border-color:rgba(247,88,92,.3)}
+.next-preview{flex-shrink:0;border-top:1px solid var(--border);background:var(--bg-tertiary);display:flex;flex-direction:column}
+.next-preview-header{display:flex;align-items:center;justify-content:space-between;padding:4px 10px;font-size:.65rem;color:var(--text-dim)}
+.next-preview-num{font-weight:700;color:var(--accent);font-variant-numeric:tabular-nums}
+.next-preview-frame-wrap{position:relative;overflow:hidden;background:#000;aspect-ratio:16/9;margin:0 6px 6px;border-radius:var(--radius-sm)}
+.next-preview-frame-wrap iframe{position:absolute;width:1920px;height:1080px;border:none;transform-origin:0 0;pointer-events:none;background:#030712;border-radius:var(--radius-sm)}
+.script-panel{flex:1;display:flex;flex-direction:column;background:var(--bg-secondary);min-width:280px;max-width:400px}
+.script-header{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-bottom:1px solid var(--border);flex-shrink:0}
+.script-header-label{font-size:.72rem;font-weight:700;letter-spacing:1px;color:var(--text-dim);text-transform:uppercase}
+.font-controls{display:flex;align-items:center;gap:4px}
+.font-btn{width:24px;height:24px;border:1px solid var(--border);border-radius:var(--radius-sm);background:rgba(255,255,255,.04);color:var(--text-secondary);cursor:pointer;font-size:.8rem;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.font-btn:hover{background:rgba(255,255,255,.1);color:var(--text)}
+.script-cards{flex:1;overflow-y:auto;padding:8px;scroll-behavior:smooth}
+.script-cards::-webkit-scrollbar{width:4px}
+.script-cards::-webkit-scrollbar-track{background:transparent}
+.script-cards::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:2px}
+.script-card{padding:10px 12px;border-radius:var(--radius);border:1px solid transparent;margin-bottom:6px;cursor:pointer;transition:all .2s;display:none}
+.script-card:hover{background:rgba(255,255,255,.03)}
+.script-card.active{background:var(--bg-card);border-color:var(--accent);display:block}
+.script-meta{display:flex;align-items:flex-start;gap:8px;margin-bottom:6px}
+.script-number{width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700;flex-shrink:0;color:var(--text-secondary)}
+.script-card.active .script-number{background:var(--accent);color:#fff}
+.script-info{flex:1;min-width:0}
+.script-section{font-size:.65rem;font-weight:600;color:var(--text-dim);letter-spacing:.5px;text-transform:uppercase;margin-bottom:2px}
+.script-title{font-size:.82rem;font-weight:700;color:var(--text);line-height:1.35;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.script-body{padding-left:30px}
+.script-text{font-size:.78rem;line-height:1.65;color:var(--text-secondary);word-break:keep-all}
+.script-ref{font-size:.68rem;color:var(--text-dim);margin-top:4px;padding-top:4px;border-top:1px solid var(--border);display:none}
+.script-card.active .script-ref{display:block}
+.bottom-bar{display:flex;align-items:center;gap:12px;padding:8px 16px;background:var(--bg-secondary);border-top:1px solid var(--border);flex-shrink:0}
+.progress-track{flex:1;height:4px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden;cursor:pointer}
+.progress-fill{height:100%;background:var(--accent);border-radius:2px;transition:width .3s ease}
+.nav-btn{height:30px;padding:0 16px;border:none;border-radius:var(--radius-sm);font-size:.82rem;font-weight:700;cursor:pointer;transition:all .15s;font-family:inherit}
+.nav-btn.prev{background:rgba(255,255,255,.06);color:var(--text)}
+.nav-btn.prev:hover{background:rgba(255,255,255,.12)}
+.nav-btn.next{background:var(--accent);color:#fff}
+.nav-btn.next:hover{background:#e04448}
+.nav-btn:disabled{opacity:.3;cursor:not-allowed}
+body.teleprompter .header,body.teleprompter .pace-bar-area,body.teleprompter .preview-panel,body.teleprompter .bottom-bar{display:none}
+body.teleprompter .main{flex-direction:column}
+body.teleprompter .script-panel{max-width:100%;flex:1}
+body.teleprompter .script-card{display:none}
+body.teleprompter .script-card.active{display:block;padding:24px 48px}
+body.teleprompter .script-card.active .script-title{font-size:1.6rem;margin-bottom:12px;white-space:normal}
+body.teleprompter .script-card.active .script-text{font-size:1.4rem;line-height:2}
+body.teleprompter .script-card.active .script-number{width:36px;height:36px;font-size:1rem}
+body.teleprompter .script-card.active .script-section{font-size:.85rem;margin-bottom:6px}
+body.teleprompter .script-card.active .script-meta{margin-bottom:12px}
+body.teleprompter .script-header{position:sticky;top:0;z-index:5;background:var(--bg-secondary)}
+body.fullscreen-script .preview-panel{display:none}
+body.fullscreen-script .script-panel{max-width:100%;flex:1}
+.timer-overtime .timer-display{color:var(--red)}
+.timer-overtime .timer-display::after{content:' \26A0';font-size:.8rem}
+@media print{.header,.pace-bar-area,.preview-panel,.bottom-bar{display:none}.script-panel{max-width:100%}.script-card{break-inside:avoid}}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="header">
+<div class="slide-indicator"><span id="slideNum">1</span> / <span id="totalNum">38</span></div>
+<div class="header-sep"></div>
+<div class="timer-controls">
+<button class="timer-btn" id="btnTimerStart" title="시작/일시정지">▶</button>
+<button class="timer-btn" id="btnTimerReset" title="초기화">↺</button>
+<div class="timer-display" id="timerDisplay">00:00</div>
+<span style="font-size:.7rem;color:var(--text-dim)">/</span>
+<input type="number" class="target-input" id="targetMinutes" value="120" min="1" max="999" title="목표 시간(분)">
+<span style="font-size:.7rem;color:var(--text-dim)">분</span>
+</div>
+<div class="header-spacer"></div>
+<a class="header-toggle" id="btnOpenTab" target="_blank" title="새 탭에서 프레젠테이션 열기">🔗 새 탭에서 열기</a>
+<button class="header-toggle" id="btnTeleprompter" title="텔레프롬프터 모드 (T)">🎤 텔레프롬프터</button>
+<button class="header-toggle" id="btnFullscreenScript" title="전체 스크립트 (F)">📜 전체보기</button>
+<div class="header-sep"></div>
+<div class="sync-status"><div class="sync-dot"></div> 동기화</div>
+</div>
+<div class="pace-bar-area">
+<div class="pace-bars">
+<div class="pace-bar-group"><div class="pace-bar-label"><span>시간 진행률</span><span id="timePercent">0%</span></div><div class="pace-bar-track"><div class="pace-bar-fill time" id="timeBar"></div></div></div>
+<div class="pace-bar-group"><div class="pace-bar-label"><span>슬라이드 진행률</span><span id="slidePercent">0%</span></div><div class="pace-bar-track"><div class="pace-bar-fill slide" id="slideBar"></div></div></div>
+</div>
+<div class="pace-status"><div class="pace-status-dot" id="paceDot"></div><div class="pace-status-text" id="paceText">대기</div></div>
+</div>
+<div class="main">
+<div class="preview-panel">
+<div class="preview-container"><div class="preview-frame-wrap"><iframe id="previewIframe" src="./antigravity-m2-presentation.html#1"></iframe><canvas class="pen-canvas" id="penCanvas"></canvas></div></div>
+<div class="preview-controls">
+<button class="pen-btn" id="btnPenToggle" title="펜 모드 (P)">✏️ 펜</button>
+<button class="pen-btn" id="btnPenColor" title="색상 변경">🔴</button>
+<button class="pen-btn" id="btnHighlighter" title="형광펜 (H)">🖍️</button>
+<button class="pen-btn" id="btnEraser" title="지우개 (E)">🧹</button>
+<button class="pen-btn" id="btnPenClear" title="모두 지우기 (C)">🗑️</button>
+<div style="flex:1"></div>
+<span style="font-size:.65rem;color:var(--text-dim)">P: 펜 · 1/2/3: 모드 · C: 지우기</span>
+</div>
+</div>
+<div class="script-panel">
+<div class="script-header">
+<div class="script-header-label">스크립트</div>
+<div class="font-controls">
+<button class="font-btn" id="btnFontMinus" title="글자 작게">A-</button>
+<button class="font-btn" id="btnFontPlus" title="글자 크게">A+</button>
+</div>
+</div>
+<div class="script-cards" id="scriptCards">
+
+<div class="script-card active" data-slide="1"><div class="script-meta"><div class="script-number">1</div><div class="script-info"><div class="script-section">시작</div><div class="script-title">커버 — 에이전트에게 내 프로젝트를 가르치는 법</div></div></div><div class="script-body"><div class="script-text">수강생들 환영. 지난 주 M1에서 바이브 코딩과 Antigravity 기본을 배웠고, 오늘은 AI에게 내 프로젝트를 이해시키는 방법을 배울 것이라고 소개. Context Engineering은 바이브 코딩의 핵심 기술. "지난 주에 AI랑 대화하는 법을 배웠죠? 오늘은 AI한테 내 프로젝트를 제대로 가르치는 법을 배웁니다."</div><div class="script-ref">data-section: 시작 | 테마: dark | 커버 슬라이드</div></div></div>
+
+<div class="script-card" data-slide="2"><div class="script-meta"><div class="script-number">2</div><div class="script-info"><div class="script-section">시작</div><div class="script-title">오늘 배울 것</div></div></div><div class="script-body"><div class="script-text">오늘 2시간 동안 배울 4개 섹션을 한눈에 보여주기. Context, Agent Skills, 프로젝트 컨텍스트, MCP 연동. M1의 기본 사용법을 넘어, AI를 더 효과적으로 활용하는 방법이라는 점 강조. "지난 주엔 AI랑 대화하는 법을 배웠다면, 오늘은 AI한테 지식을 심어주는 겁니다."</div><div class="script-ref">data-section: 시작 | 테마: light</div></div></div>
+
+<div class="script-card" data-slide="3"><div class="script-meta"><div class="script-number">3</div><div class="script-info"><div class="script-section">M1 리뷰</div><div class="script-title">M1 복습: 바이브 코딩 & Antigravity</div></div></div><div class="script-body"><div class="script-text">지난 주 핵심 내용을 간단히 복습. 바이브 코딩은 자연어로 AI와 협업하는 방식, Antigravity는 Google의 agent-first IDE. 3가지 핵심을 카드로 상기시키며, M1의 교훈인 '구체적인 프롬프트'가 중요하다는 점을 다시 강조. "잘 기억나죠? 오늘은 이걸 한 단계 더 발전시킵니다."</div><div class="script-ref">data-section: M1 리뷰 | 테마: white</div></div></div>
+
+<div class="script-card" data-slide="4"><div class="script-meta"><div class="script-number">4</div><div class="script-info"><div class="script-section">M1 리뷰</div><div class="script-title">M1에서 M2로: 다음 단계</div></div></div><div class="script-body"><div class="script-text">M1의 한계를 자연스럽게 소개하며 M2로 연결. AI가 프로젝트 문맥을 모르면 매번 설명해야 하는 문제를 지적. "지난 주에 '버튼 색 바꿔줘'는 잘 됐죠? 근데 '이 프로젝트에 맞게 기능 추가해줘'는 잘 안 됐을 거예요. 왜냐하면 AI가 우리 프로젝트를 모르니까요."</div><div class="script-ref">data-section: M1 리뷰 | 테마: light</div></div></div>
+
+<div class="script-card" data-slide="5"><div class="script-meta"><div class="script-number">5</div><div class="script-info"><div class="script-section">Context란?</div><div class="script-title">Context란 무엇인가?</div></div></div><div class="script-body"><div class="script-text">Context의 정의를 명확히 설명. System Prompt + Project Files + Conversation = Context라는 공식을 강조. "AI가 이해하고 있는 모든 정보가 바로 Context입니다. 이게 많을수록, 정확할수록 AI가 더 잘 도와줍니다."</div><div class="script-ref">data-section: Context란? | 테마: dark</div></div></div>
+
+<div class="script-card" data-slide="6"><div class="script-meta"><div class="script-number">6</div><div class="script-info"><div class="script-section">Context란?</div><div class="script-title">왜 Context가 중요한가?</div></div></div><div class="script-body"><div class="script-text">Garbage In Garbage Out 원칙을 설명. 나쁜 Context와 좋은 Context를 비교하며, 정보의 질이 결과의 질을 결정한다는 것을 강조. "AI한테 대충 물어보면 대충 대답합니다. 정확한 정보를 주면 정확한 코드를 줍니다."</div><div class="script-ref">data-section: Context란? | 테마: white</div></div></div>
+
+<div class="script-card" data-slide="7"><div class="script-meta"><div class="script-number">7</div><div class="script-info"><div class="script-section">Context란?</div><div class="script-title">컨텍스트 윈도우와 한계</div></div></div><div class="script-body"><div class="script-text">컨텍스트 윈도우의 개념을 모델별로 비교. Gemini Pro가 2M 토큰으로 가장 넓고, Claude가 200K, GPT-OSS가 128K. 하지만 아무리 넓어도 중요한 정보를 먼저 전달하는 게 핵심이라고 설명. "큰 그릇도 중요하지만, 뭘 먼저 담느냐가 더 중요합니다."</div><div class="script-ref">data-section: Context란? | 테마: light</div></div></div>
+
+<div class="script-card" data-slide="8"><div class="script-meta"><div class="script-number">8</div><div class="script-info"><div class="script-section">Context란?</div><div class="script-title">Agent가 프로젝트를 읽는 방법</div></div></div><div class="script-body"><div class="script-text">Antigravity Agent가 프로젝트 파일을 읽는 기본 동작을 설명. 파일 스캔 → README 읽기 → 코드 분석의 흐름. 하지만 기본 동작만으로는 프로젝트의 의도와 아키텍처 결정까지 파악하기 어렵다는 한계 지적. "AI가 파일을 읽을 수는 있어요. 근데 왜 이렇게 만들었는지는 모릅니다."</div><div class="script-ref">data-section: Context란? | 테마: white</div></div></div>
+
+<div class="script-card" data-slide="9"><div class="script-meta"><div class="script-number">9</div><div class="script-info"><div class="script-section">Context란?</div><div class="script-title">Context Engineering 마인드셋</div></div></div><div class="script-body"><div class="script-text">Prompt Engineering vs Context Engineering의 차이를 명확히 설명. '어떻게 물을 것인가'에서 '무엇을 알려줄 것인가'로의 전환이 오늘의 핵심. 앞으로 배울 3가지 방법을 체크리스트로 미리 보여주기. "프롬프트를 잘 쓰는 것도 중요하지만, AI한테 뭘 가르칠지가 더 중요합니다."</div><div class="script-ref">data-section: Context란? | 테마: gradient</div></div></div>
+
+<div class="script-card" data-slide="10"><div class="script-meta"><div class="script-number">10</div><div class="script-info"><div class="script-section">Agent Skills</div><div class="script-title">Agent Skills란?</div></div></div><div class="script-body"><div class="script-text">Agent Skills의 정의를 설명. AI에게 전문 지식을 주입하는 포터블 모듈이라는 개념을 강조. 포터블, 전문화, 확장성 세 가지 특징을 소개. "AI한테 Firestore 전문가 지식을 설치한다고 생각하시면 됩니다. 신입한테 온보딩 문서 주는 것과 같아요."</div><div class="script-ref">data-section: Agent Skills | 테마: white</div></div></div>
+
+<div class="script-card" data-slide="11"><div class="script-meta"><div class="script-number">11</div><div class="script-info"><div class="script-section">Agent Skills</div><div class="script-title">Firebase Agent Skills 설치하기</div></div></div><div class="script-body"><div class="script-text">Skills 설치 방법을 실제로 보여줄 준비. npx skills add firebase/agent-skills 한 줄이면 설치 완료. 설치 → 다운로드 → 사용 준비의 흐름을 설명. "정말 한 줄이에요. 나중에 직접 해볼 겁니다."</div><div class="script-ref">data-section: Agent Skills | 테마: dark</div></div></div>
+
+<div class="script-card" data-slide="12"><div class="script-meta"><div class="script-number">12</div><div class="script-info"><div class="script-section">Agent Skills</div><div class="script-title">Agent Skills 사용법</div></div></div><div class="script-body"><div class="script-text">Agent Pane에서 /를 입력하면 Skills 목록이 나타나는 것을 설명. 선택하면 해당 지식이 AI에게 적용되어 더 정확한 코드를 작성하게 된다는 점을 강조. "슬래시만 치면 돼요. 그러면 설치한 Skills 목록이 쫙 나옵니다."</div><div class="script-ref">data-section: Agent Skills | 테마: light</div></div></div>
+
+<div class="script-card" data-slide="13"><div class="script-meta"><div class="script-number">13</div><div class="script-info"><div class="script-section">Agent Skills</div><div class="script-title">점진적 지식 공개 (Progressive Disclosure)</div></div></div><div class="script-body"><div class="script-text">Progressive Disclosure 개념을 설명. AI가 모든 지식을 한 번에 쓰는 게 아니라, 현재 작업에 관련된 지식만 꺼내서 쓴다는 것. 토큰 절약 효과: 전체 로드 시 ~45,000 토큰에서 ~8,000 토큰으로 약 5배 절약. "AI가 똑똑하게 필요한 것만 골라서 씁니다. 우리가 다 신경 쓸 필요 없어요."</div><div class="script-ref">data-section: Agent Skills | 테마: white</div></div></div>
+
+<div class="script-card" data-slide="14"><div class="script-meta"><div class="script-number">14</div><div class="script-info"><div class="script-section">Agent Skills</div><div class="script-title">Firebase Agent Skills 구성</div></div></div><div class="script-body"><div class="script-text">Firebase Agent Skills의 6가지 주요 구성을 소개. firebase-basics, firebase-auth-basics, firebase-firestore-standard, firebase-storage-basics, firebase-ai-logic-basics, firebase-hosting-basics. 우리 과정에서 주로 사용할 Skills를 미리 보여주며, 실습에서 직접 설치해볼 것이라고 안내. "이 여섯 개만 설치하면 Firebase 전문가가 AI한테 빙의합니다."</div><div class="script-ref">data-section: Agent Skills | 테마: gradient</div></div></div>
+
+<div class="script-card" data-slide="15"><div class="script-meta"><div class="script-number">15</div><div class="script-info"><div class="script-section">Agent Skills</div><div class="script-title">자동 vs 수동: 언제 어떻게?</div></div></div><div class="script-body"><div class="script-text">Skills가 언제 자동으로 로드되고 언제 수동으로 불러야 하는지 설명. "Firestore 쿼리 최적화해줘"는 자동, "처음 프로젝트 설정 시"은 수동. 질문에 따라 자동으로 관련 Skill이 활성화되지만, 복잡한 설정 시에는 직접 호출하는 것이 좋다는 점을 안내.</div><div class="script-ref">data-section: Agent Skills | 테마: white</div></div></div>
+
+<div class="script-card" data-slide="16"><div class="script-meta"><div class="script-number">16</div><div class="script-info"><div class="script-section">프로젝트 컨텍스트</div><div class="script-title">프로젝트 컨텍스트 설정</div></div></div><div class="script-body"><div class="script-text">Section 3의 시작. README.md, AGENTS.md, .cursorrules 세 가지가 합쳐져서 AI가 이해하는 프로젝트가 완성된다는 것을 플로우로 보여주기. "Skills와 MCP를 넘어서, 프로젝트 자체를 AI가 이해하도록 구조화하는 작업입니다."</div><div class="script-ref">data-section: 프로젝트 컨텍스트 | 테마: dark</div></div></div>
+
+<div class="script-card" data-slide="17"><div class="script-meta"><div class="script-number">17</div><div class="script-info"><div class="script-section">프로젝트 컨텍스트</div><div class="script-title">AI 친화적 프로젝트 구조</div></div></div><div class="script-body"><div class="script-text">AI가 이해하기 좋은 프로젝트 구조를 실제 디렉토리 트리로 보여주기. 핵심은 루트에 핵심 파일을 두고, 세부 내용은 docs/에 정리하는 것. "이렇게 정리해두면 AI가 프로젝트를 훨씬 빨리 이해합니다."</div><div class="script-ref">data-section: 프로젝트 컨텍스트 | 테마: light</div></div></div>
+
+<div class="script-card" data-slide="18"><div class="script-meta"><div class="script-number">18</div><div class="script-info"><div class="script-section">프로젝트 컨텍스트</div><div class="script-title">README.md — 첫 번째 컨텍스트</div></div></div><div class="script-body"><div class="script-text">README.md가 AI에게 프로젝트를 설명하는 첫 번째 창구라는 점 강조. 사람과 AI 모두를 위한 README를 작성하면 한 번에 두 배 효과. AI가 README를 읽고 70%를 이해할 수 있어야 한다는 원칙을 강조. "여러분이 README를 잘 쓰면, 신규 팀원도 이해하고 AI도 이해합니다. 일석이조죠."</div><div class="script-ref">data-section: 프로젝트 컨텍스트 | 테마: white</div></div></div>
+
+<div class="script-card" data-slide="19"><div class="script-meta"><div class="script-number">19</div><div class="script-info"><div class="script-section">프로젝트 컨텍스트</div><div class="script-title">AI 친화적 README 예시</div></div></div><div class="script-body"><div class="script-text">Next.js + Firebase 프로젝트의 실제 README 예시를 코드 블록으로 보여주기. 기술 스택, 프로젝트 구조, 컨벤션, 주의사항이 명시된 예시. 수강생들이 직접 작성해볼 수 있도록 구체적인 가이드 제공. "이게 실제 README에 들어갈 내용입니다. 나중에 직접 써볼 거예요."</div><div class="script-ref">data-section: 프로젝트 컨텍스트 | 테마: dark</div></div></div>
+
+<div class="script-card" data-slide="20"><div class="script-meta"><div class="script-number">20</div><div class="script-info"><div class="script-section">프로젝트 컨텍스트</div><div class="script-title">AGENTS.md — AI 전용 지시사항</div></div></div><div class="script-body"><div class="script-text">AGENTS.md의 역할을 README와 비교하며 설명. README는 '프로젝트 개요', AGENTS.md는 'AI에게 주는 작업 지시서'. 역할, 코딩 규칙, 아키텍처, 금지사항을 명시하는 것이 핵심. "README는 뭘 만드는지, AGENTS.md는 어떻게 만들지를 AI에게 알려줍니다."</div><div class="script-ref">data-section: 프로젝트 컨텍스트 | 테마: light</div></div></div>
+
+<div class="script-card" data-slide="21"><div class="script-meta"><div class="script-number">21</div><div class="script-info"><div class="script-section">프로젝트 컨텍스트</div><div class="script-title">코드 컨벤션: .cursorrules 활용</div></div></div><div class="script-body"><div class="script-text">설정 파일(.prettierrc, .eslintrc, tsconfig.json, .cursorrules)도 AI가 자동으로 참고한다는 것을 설명. 컨벤션을 명시하면 코드 리뷰 시간 50% 감소, 스타일 수정 요청 80% 감소라는 실무 팁 제공. "여러분이 이미 쓰고 있는 설정 파일들이 AI한테도 도움이 됩니다."</div><div class="script-ref">data-section: 프로젝트 컨텍스트 | 테마: white</div></div></div>
+
+<div class="script-card" data-slide="22"><div class="script-meta"><div class="script-number">22</div><div class="script-info"><div class="script-section">프로젝트 컨텍스트</div><div class="script-title">컨텍스트가 있을 때의 프롬프트</div></div></div><div class="script-body"><div class="script-text">컨텍스트 유무에 따른 프롬프트 비교. 컨텍스트 없으면 매번 길게 설명해야 하지만, 있으면 한 줄로 정확한 결과를 얻을 수 있다는 것을 실제 예시로 보여주기. "보이죠? 컨텍스트가 있으면 이렇게 간단해집니다."</div><div class="script-ref">data-section: 프로젝트 컨텍스트 | 테마: light</div></div></div>
+
+<div class="script-card" data-slide="23"><div class="script-meta"><div class="script-number">23</div><div class="script-info"><div class="script-section">프로젝트 컨텍스트</div><div class="script-title">실전: Next.js + Firebase 컨텍스트 설정 5단계</div></div></div><div class="script-body"><div class="script-text">Next.js + Firebase 프로젝트의 컨텍스트 설정 전체 워크플로우를 5단계로 정리. Skills 설치 → README 작성 → AGENTS.md 생성 → MCP 설정 → 테스트. "이 5단계만 따라하면 Context Engineering 끝입니다. 나중에 실습에서 그대로 해볼 거예요."</div><div class="script-ref">data-section: 프로젝트 컨텍스트 | 테마: dark</div></div></div>
+
+<div class="script-card" data-slide="24"><div class="script-meta"><div class="script-number">24</div><div class="script-info"><div class="script-section">프로젝트 컨텍스트</div><div class="script-title">실습 예고: 내 프로젝트 Context 작성</div></div></div><div class="script-body"><div class="script-text">이어질 실습을 예고. README 재작성, AGENTS.md 생성, .cursorrules 정리, Antigravity 테스트까지 진행할 것이라고 안내. 페어 프로그래밍 추천, 15분 소요. "방금 배운 걸로 직접 README를 고쳐볼 겁니다. Before & After를 비교해보세요."</div><div class="script-ref">data-section: 프로젝트 컨텍스트 | 테마: white</div></div></div>
+
+<div class="script-card" data-slide="25"><div class="script-meta"><div class="script-number">25</div><div class="script-info"><div class="script-section">MCP</div><div class="script-title">MCP — Model Context Protocol</div></div></div><div class="script-body"><div class="script-text">MCP의 개념을 Agent Skills와 비교하며 설명. Skills가 정적 지식 주입이라면, MCP는 실시간 데이터 접근. 교과서 vs 인터넷의 비유. AI가 Firestore, Auth, Storage에 직접 접근할 수 있다는 것이 핵심. "Skills는 '어떻게 하는지 알려줘'라면, MCP는 '직접 확인해줘'입니다."</div><div class="script-ref">data-section: MCP | 테마: light</div></div></div>
+
+<div class="script-card" data-slide="26"><div class="script-meta"><div class="script-number">26</div><div class="script-info"><div class="script-section">MCP</div><div class="script-title">Firebase MCP 설정하기</div></div></div><div class="script-body"><div class="script-text">Firebase MCP 설정 방법을 4단계로 안내. 설정 열기 → MCP Servers 섹션 → Firebase 추가 → 재시작. 설정부터 사용까지 약 2분이면 완료된다는 간단함을 강조. "진짜 2분이에요. 나중에 같이 해봅시다."</div><div class="script-ref">data-section: MCP | 테마: white</div></div></div>
+
+<div class="script-card" data-slide="27"><div class="script-meta"><div class="script-number">27</div><div class="script-info"><div class="script-section">MCP</div><div class="script-title">mcp_config.json 설정 상세</div></div></div><div class="script-body"><div class="script-text">mcp_config.json의 실제 JSON 설정을 보여주기. mcpServers > firebase-mcp-server > command: npx, args: firebase-tools@latest mcp. 컬러 코드 블록으로 시각화. 이건 실습에서 직접 복사해서 사용할 것이라고 안내. "이 JSON을 그대로 복사해서 쓰시면 됩니다."</div><div class="script-ref">data-section: MCP | 테마: dark</div></div></div>
+
+<div class="script-card" data-slide="28"><div class="script-meta"><div class="script-number">28</div><div class="script-info"><div class="script-section">MCP</div><div class="script-title">Firebase MCP 도구</div></div></div><div class="script-body"><div class="script-text">Firestore, Authentication, Storage 세 가지 MCP 도구를 소개. AI가 "Firestore users 컬렉션에서 최근 가입한 10명을 보여줘"라고 하면 직접 조회해서 결과를 반환한다는 것을 예시로 설명. "AI가 직접 데이터베이스를 읽어옵니다. 상상해보세요 얼마나 편한지."</div><div class="script-ref">data-section: MCP | 테마: light</div></div></div>
+
+<div class="script-card" data-slide="29"><div class="script-meta"><div class="script-number">29</div><div class="script-info"><div class="script-section">MCP</div><div class="script-title">MCP vs Agent Skills: 언제 뭘 쓰나?</div></div></div><div class="script-body"><div class="script-text">MCP와 Agent Skills의 비교 테이블을 설명. 역할, 비유, 업데이트, 예시로 비교. 모범 사례: Skills로 '어떻게'를 가르치고 MCP로 '실제 데이터'를 보여주면 가장 강력. "둘 다 쓰는 게 최고입니다. 오늘 실습에서 둘 다 설정해볼 거예요."</div><div class="script-ref">data-section: MCP | 테마: white</div></div></div>
+
+<div class="script-card" data-slide="30"><div class="script-meta"><div class="script-number">30</div><div class="script-info"><div class="script-section">MCP</div><div class="script-title">MCP 설정 3단계 요약</div></div></div><div class="script-body"><div class="script-text">MCP 설정을 다시 한번 3단계로 요약. mcp_config.json 생성 → Firebase MCP 패키지 확인 → Antigravity에서 테스트. Firebase 프로젝트가 배포된 상태여야 정상 작동한다는 주의사항도 안내. "이 3단계만 기억하시면 됩니다."</div><div class="script-ref">data-section: MCP | 테마: light</div></div></div>
+
+<div class="script-card" data-slide="31"><div class="script-meta"><div class="script-number">31</div><div class="script-info"><div class="script-section">실습</div><div class="script-title">실습: Context Engineering 종합</div></div></div><div class="script-body"><div class="script-text">실습 시작 신호. 오늘 배운 3가지를 모두 실습: README 개선, Skills 설치, MCP 설정. 총 35분 실습 시간. 목표는 Context Engineering 전체 워크플로우를 체험하는 것. "오늘 배운 걸 한 번에 다 해봅니다. 막히면 손들어 주세요!"</div><div class="script-ref">data-section: 실습 | 테마: accent | 강조 슬라이드</div></div></div>
+
+<div class="script-card" data-slide="32"><div class="script-meta"><div class="script-number">32</div><div class="script-info"><div class="script-section">실습</div><div class="script-title">Step 1: 샘플 프로젝트 열기</div></div></div><div class="script-body"><div class="script-text">실습 첫 번째 단계. Antigravity에서 Next.js + Firebase 템플릿으로 새 프로젝트를 열고, Agent Pane에 "이 프로젝트 구조 분석해줘"를 입력해서 기준점을 만드는 단계. 아직 수정하지 말고 AI가 현재 얼마나 이해하는지 파악하는 것이 목적. "먼저 AI가 지금 얼마나 이해하는지 확인해봅시다."</div><div class="script-ref">data-section: 실습 | 테마: white</div></div></div>
+
+<div class="script-card" data-slide="33"><div class="script-meta"><div class="script-number">33</div><div class="script-info"><div class="script-section">실습</div><div class="script-title">Step 2: Agent Skills 설치 & 테스트</div></div></div><div class="script-body"><div class="script-text">실습 두 번째 단계. npx skills add firebase/agent-skills를 실행하고, 동일한 질문을 다시 해서 Before/After를 비교. Skills 설치 후 AI가 Firestore 컨벤션과 베스트 프랙티스를 언급하는지 확인. "설치 전후로 응답 품질이 어떻게 달라지는지 직접 보세요!"</div><div class="script-ref">data-section: 실습 | 테마: light</div></div></div>
+
+<div class="script-card" data-slide="34"><div class="script-meta"><div class="script-number">34</div><div class="script-info"><div class="script-section">실습</div><div class="script-title">Step 3: MCP 서버 설정</div></div></div><div class="script-body"><div class="script-text">실습 세 번째 단계. mcp_config.json을 생성하고 Firebase 프로젝트를 연결. "현재 Firestore에 어떤 컬렉션이 있어?"로 실시간 데이터 접근을 확인. Firebase 프로젝트가 없으면 미리 준비된 임시 프로젝트를 사용. 약 10분 소요.</div><div class="script-ref">data-section: 실습 | 테마: dark</div></div></div>
+
+<div class="script-card" data-slide="35"><div class="script-meta"><div class="script-number">35</div><div class="script-info"><div class="script-section">실습</div><div class="script-title">Step 4: 종합 테스트!</div></div></div><div class="script-body"><div class="script-text">실습 마지막 단계. 4가지 질문으로 AI의 이해도를 종합 테스트. Q1 기술 스택 (README 효과), Q2 Firestore 추가 (Skills+컨벤션), Q3 실시간 데이터 (MCP), Q4 에러 처리 (AGENTS.md). 모든 질문에 만족스러운 답이 나오면 Context Engineering 성공!</div><div class="script-ref">data-section: 실습 | 테마: light</div></div></div>
+
+<div class="script-card" data-slide="36"><div class="script-meta"><div class="script-number">36</div><div class="script-info"><div class="script-section">정리</div><div class="script-title">오늘의 핵심</div></div></div><div class="script-body"><div class="script-text">네 가지 핵심을 카드로 요약: Context Engineering 마인드셋, Agent Skills로 지식 주입, README+AGENTS.md로 AI 가르치기, MCP로 외부 서비스 연동. 다음 시간 M3 Effective Prompting을 예고. "오늘 배운 Context Engineering이 앞으로 모든 AI 코딩의 기본이 될 겁니다."</div><div class="script-ref">data-section: 정리 | 테마: gradient | 중앙 정렬</div></div></div>
+
+<div class="script-card" data-slide="37"><div class="script-meta"><div class="script-number">37</div><div class="script-info"><div class="script-section">정리</div><div class="script-title">Module 3 예고: Effective Prompting</div></div></div><div class="script-body"><div class="script-text">다음 시간 M3 Effective Prompting을 미리 보여주기. 프롬프트 구조화, 역할 부여, Chain of Thought, 반복 개선 워크플로우, 프로젝트별 템플릿 만들기. M2에서 구축한 Context 위에 M3의 프롬프트 기법이 더해지면 AI 코딩 마스터가 된다는 점 강조.</div><div class="script-ref">data-section: 정리 | 테마: white</div></div></div>
+
+<div class="script-card" data-slide="38"><div class="script-meta"><div class="script-number">38</div><div class="script-info"><div class="script-section">정리</div><div class="script-title">마무리 — Context Engineering으로 AI를 내 팀원으로</div></div></div><div class="script-body"><div class="script-text">마무리 인사. 프로젝트를 AI가 이해하도록 구조화하면 에이전트는 진짜 팀원이 된다는 메시지. 모두의연구소의 경쟁이 아닌 상생 정신을 강조. "수고하셨습니다! 다음 주 M3에서 만나요!"</div><div class="script-ref">data-section: 정리 | 테마: dark | 커버 슬라이드</div></div></div>
+
+</div>
+<div class="next-preview" id="nextPreview">
+<div class="next-preview-header"><span class="next-preview-label">다음 슬라이드</span><span class="next-preview-num" id="nextSlideNum">2</span></div>
+<div class="next-preview-frame-wrap"><iframe id="nextPreviewIframe" src="./antigravity-m2-presentation.html#2"></iframe></div>
+</div>
+</div>
+</div>
+<div class="bottom-bar">
+<button class="nav-btn prev" id="btnPrev">◀ 이전</button>
+<div class="progress-track" id="progressTrack"><div class="progress-fill" id="progressFill"></div></div>
+<button class="nav-btn next" id="btnNext">다음 ▶</button>
+</div>
+</div>
+<script>
+(function(){
+var TOTAL_SLIDES=38;
+var IFRAME_SRC='./antigravity-m2-presentation.html';
+var CHANNEL_NAME='presentation-sync';
+var currentSlide=1;
+var iframeCurrentHash=1;
+var timerRunning=false;
+var timerStart=0;
+var timerElapsed=0;
+var timerInterval=null;
+var scriptFontSize=14;
+var $=function(id){return document.getElementById(id)};
+var iframe=$('previewIframe');
+var nextPreviewIframe=$('nextPreviewIframe');
+var penCanvas=$('penCanvas');
+var penCtx=penCanvas.getContext('2d');
+var cards=document.querySelectorAll('.script-card');
+var scriptCardsEl=$('scriptCards');
+var channel=null;
+try{channel=new BroadcastChannel(CHANNEL_NAME);channel.onmessage=function(e){var d=e.data;if(d.type==='slideChange'){goToSlide(d.slide,true)}}}catch(err){}
+function broadcast(slideNum){if(channel){channel.postMessage({type:'slideChange',slide:slideNum,total:TOTAL_SLIDES})}}
+function goToSlide(num,fromRemote){if(num<1||num>TOTAL_SLIDES)return;currentSlide=num;if(num!==iframeCurrentHash){try{iframe.contentWindow.location.hash=String(num)}catch(e){iframe.src=IFRAME_SRC+'#'+num}iframeCurrentHash=num}if(!fromRemote){broadcast(num)}updateNextPreview();$('slideNum').textContent=num;for(var i=0;i<cards.length;i++){var s=parseInt(cards[i].getAttribute('data-slide'));cards[i].classList.toggle('active',s===num)}var activeCard=scriptCardsEl.querySelector('.script-card.active');if(activeCard){activeCard.scrollIntoView({behavior:'smooth',block:'nearest'})}var pct=(num/TOTAL_SLIDES)*100;$('progressFill').style.width=pct+'%';$('btnPrev').disabled=num<=1;$('btnNext').disabled=num>=TOTAL_SLIDES;updatePace()}
+function updateNextPreview(){var nextNum=currentSlide+1;if(nextNum>TOTAL_SLIDES){$('nextPreview').style.display='none';return}$('nextPreview').style.display='flex';$('nextSlideNum').textContent=nextNum;try{nextPreviewIframe.contentWindow.location.hash=String(nextNum)}catch(e){nextPreviewIframe.src=IFRAME_SRC+'#'+nextNum}}
+function prevSlide(){goToSlide(currentSlide-1)}
+function nextSlide(){goToSlide(currentSlide+1)}
+$('btnPrev').addEventListener('click',prevSlide);
+$('btnNext').addEventListener('click',nextSlide);
+$('progressTrack').addEventListener('click',function(e){var rect=$('progressTrack').getBoundingClientRect();var pct=(e.clientX-rect.left)/rect.width;var slide=Math.max(1,Math.min(TOTAL_SLIDES,Math.round(pct*TOTAL_SLIDES)));goToSlide(slide)});
+for(var ci=0;ci<cards.length;ci++){cards[ci].addEventListener('click',function(){goToSlide(parseInt(this.getAttribute('data-slide')))})}
+document.addEventListener('keydown',function(e){if(e.target.tagName==='INPUT')return;if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key===' '){e.preventDefault();nextSlide()}if(e.key==='ArrowLeft'||e.key==='ArrowUp'){e.preventDefault();prevSlide()}if(e.key==='Home'){e.preventDefault();goToSlide(1)}if(e.key==='End'){e.preventDefault();goToSlide(TOTAL_SLIDES)}if(e.key==='p'||e.key==='P'){togglePen()}if(penActive){if(e.key==='1')setPenMode('pen');if(e.key==='2')setPenMode('highlighter');if(e.key==='3')setPenMode('eraser');if(e.key==='c'||e.key==='C')clearPen()}if(e.key==='t'||e.key==='T')toggleTeleprompter();if(e.key==='f'||e.key==='F')toggleFullscreenScript()});
+function startTimer(){if(timerRunning){timerElapsed+=Date.now()-timerStart;timerRunning=false;clearInterval(timerInterval);$('btnTimerStart').textContent='\u25B6';$('btnTimerStart').classList.remove('active')}else{timerStart=Date.now();timerRunning=true;$('btnTimerStart').textContent='\u23F8';$('btnTimerStart').classList.add('active');timerInterval=setInterval(updateTimerDisplay,1000)}}
+function resetTimer(){timerRunning=false;timerElapsed=0;timerStart=0;clearInterval(timerInterval);$('btnTimerStart').textContent='\u25B6';$('btnTimerStart').classList.remove('active');$('timerDisplay').textContent='00:00';document.body.classList.remove('timer-overtime')}
+function updateTimerDisplay(){var elapsed=timerElapsed+(timerRunning?Date.now()-timerStart:0);var sec=Math.floor(elapsed/1000);var min=String(Math.floor(sec/60)).padStart(2,'0');var s=String(sec%60).padStart(2,'0');$('timerDisplay').textContent=min+':'+s;var targetMin=parseInt($('targetMinutes').value)||120;var targetSec=targetMin*60;if(sec>targetSec){document.body.classList.add('timer-overtime')}else{document.body.classList.remove('timer-overtime')}updatePace()}
+$('btnTimerStart').addEventListener('click',startTimer);
+$('btnTimerReset').addEventListener('click',resetTimer);
+function updatePace(){var targetMin=parseInt($('targetMinutes').value)||120;var targetSec=targetMin*60;var elapsed=timerElapsed+(timerRunning?Date.now()-timerStart:0);var elapsedSec=Math.floor(elapsed/1000);var timePct=targetSec>0?Math.min(100,(elapsedSec/targetSec)*100):0;var slidePct=(currentSlide/TOTAL_SLIDES)*100;$('timeBar').style.width=timePct+'%';$('slideBar').style.width=slidePct+'%';$('timePercent').textContent=Math.round(timePct)+'%';$('slidePercent').textContent=Math.round(slidePct)+'%';var paceDot=$('paceDot');var paceText=$('paceText');if(elapsedSec===0){paceDot.style.background='var(--text-dim)';paceText.textContent='\uB300\uAE30';paceText.style.color='var(--text-dim)'}else if(slidePct>=timePct-2){paceDot.style.background='var(--green)';paceText.textContent='\uC801\uC808';paceText.style.color='var(--green)'}else{paceDot.style.background='var(--accent)';paceText.textContent='\uC9C0\uC5F0';paceText.style.color='var(--accent)'}}
+$('btnFontMinus').addEventListener('click',function(){scriptFontSize=Math.max(11,scriptFontSize-1);applyFontSize()});
+$('btnFontPlus').addEventListener('click',function(){scriptFontSize=Math.min(24,scriptFontSize+1);applyFontSize()});
+function applyFontSize(){var texts=document.querySelectorAll('.script-text');for(var i=0;i<texts.length;i++){texts[i].style.fontSize=scriptFontSize+'px'}}
+function toggleTeleprompter(){document.body.classList.toggle('teleprompter');$('btnTeleprompter').classList.toggle('active')}
+$('btnTeleprompter').addEventListener('click',toggleTeleprompter);
+function toggleFullscreenScript(){document.body.classList.toggle('fullscreen-script');$('btnFullscreenScript').classList.toggle('active')}
+$('btnFullscreenScript').addEventListener('click',toggleFullscreenScript);
+$('btnOpenTab').addEventListener('click',function(e){e.preventDefault();window.open(IFRAME_SRC+'#'+currentSlide,'_blank')});
+var penActive=false;var penMode='pen';var penDrawing=false;var penStrokes={};var currentPenStroke=null;
+var PEN_COLORS=['#F7585C','#3B82F6','#10B981','#F59E0B','#8B5CF6'];var penColorIdx=0;var penColor=PEN_COLORS[0];
+function togglePen(){penActive=!penActive;penCanvas.classList.toggle('active',penActive);$('btnPenToggle').classList.toggle('active',penActive)}
+function setPenMode(mode){penMode=mode;$('btnHighlighter').classList.toggle('active',mode==='highlighter');$('btnEraser').classList.toggle('active',mode==='eraser')}
+function clearPen(){penStrokes[currentSlide]=[];redrawPen();if(channel)channel.postMessage({type:'penClear'})}
+function resizePenCanvas(){var container=penCanvas.parentElement;penCanvas.width=container.offsetWidth;penCanvas.height=container.offsetHeight;redrawPen()}
+function redrawPen(){penCtx.clearRect(0,0,penCanvas.width,penCanvas.height);var strokes=penStrokes[currentSlide]||[];for(var i=0;i<strokes.length;i++){drawPenStroke(strokes[i])}}
+function drawPenStroke(stroke){if(stroke.points.length<2)return;penCtx.beginPath();penCtx.strokeStyle=stroke.color;penCtx.lineWidth=stroke.width;penCtx.lineCap='round';penCtx.lineJoin='round';penCtx.globalCompositeOperation=stroke.eraser?'destination-out':'source-over';penCtx.moveTo(stroke.points[0].x,stroke.points[0].y);for(var i=1;i<stroke.points.length;i++){penCtx.lineTo(stroke.points[i].x,stroke.points[i].y)}penCtx.stroke();penCtx.globalCompositeOperation='source-over'}
+penCanvas.addEventListener('pointerdown',function(e){if(!penActive)return;penDrawing=true;var rect=penCanvas.getBoundingClientRect();var x=e.clientX-rect.left;var y=e.clientY-rect.top;var isEraser=penMode==='eraser';var color=penMode==='highlighter'?'rgba(255,230,0,0.3)':penColor;var width=penMode==='pen'?3:penMode==='highlighter'?20:30;currentPenStroke={points:[{x:x,y:y}],color:color,width:width,eraser:isEraser}});
+penCanvas.addEventListener('pointermove',function(e){if(!penDrawing||!currentPenStroke)return;var rect=penCanvas.getBoundingClientRect();currentPenStroke.points.push({x:e.clientX-rect.left,y:e.clientY-rect.top});redrawPen();drawPenStroke(currentPenStroke)});
+penCanvas.addEventListener('pointerup',function(){if(!penDrawing||!currentPenStroke)return;penDrawing=false;if(!penStrokes[currentSlide])penStrokes[currentSlide]=[];penStrokes[currentSlide].push(currentPenStroke);if(channel)channel.postMessage({type:'penStroke',slideKey:currentSlide,stroke:currentPenStroke});currentPenStroke=null});
+$('btnPenToggle').addEventListener('click',function(){if(penMode!=='pen')setPenMode('pen');togglePen()});
+$('btnPenColor').addEventListener('click',function(){penColorIdx=(penColorIdx+1)%PEN_COLORS.length;penColor=PEN_COLORS[penColorIdx];$('btnPenColor').textContent=['\uD83D\uDD34','\uD83D\uDD35','\uD83D\uDFE2','\uD83D\uDFE1','\uD83D\uDFE3'][penColorIdx]});
+$('btnHighlighter').addEventListener('click',function(){if(!penActive)togglePen();setPenMode('highlighter')});
+$('btnEraser').addEventListener('click',function(){if(!penActive)togglePen();setPenMode('eraser')});
+$('btnPenClear').addEventListener('click',clearPen);
+function scaleIframe(){var container=iframe.parentElement;var cw=container.offsetWidth;var ch=container.offsetHeight;var scaleX=cw/1920;var scaleY=ch/1080;var scale=Math.min(scaleX,scaleY);iframe.style.transform='scale('+scale+')';iframe.style.transformOrigin='0 0';var scaledW=1920*scale;var scaledH=1080*scale;iframe.style.position='absolute';iframe.style.left=((cw-scaledW)/2)+'px';iframe.style.top=((ch-scaledH)/2)+'px';var nc=nextPreviewIframe.parentElement;var ncw=nc.offsetWidth;var nch=nc.offsetHeight;var nScale=Math.min(ncw/1920,nch/1080);nextPreviewIframe.style.transform='scale('+nScale+')';nextPreviewIframe.style.transformOrigin='0 0';nextPreviewIframe.style.position='absolute';nextPreviewIframe.style.left='0px';nextPreviewIframe.style.top='0px';resizePenCanvas()}
+var ro=new ResizeObserver(function(){scaleIframe()});ro.observe(iframe.parentElement);
+$('totalNum').textContent=TOTAL_SLIDES;scaleIframe();goToSlide(1);updatePace();
+})();
+</script>
+</body>
+</html>

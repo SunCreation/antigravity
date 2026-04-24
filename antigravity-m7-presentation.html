@@ -132,17 +132,17 @@ body.light-slide .slide-num{color:rgba(0,0,0,.12)}
 </div>
 
 <!-- 2. 오늘의 아젠다 -->
-<div class="slide s-light" data-theme="light" data-section="시작" data-notes="오늘 2시간 동안 배울 내용을 한눈에 보여주기. M6 복습, 프로젝트 고도화, 배포, 발표, 전체 복습, 다음 단계 6개 섹션으로 구성. 마지막 수업이므로 성취감을 느낄 수 있도록 분위기 조성.">
+<div class="slide s-light" data-theme="light" data-section="시작" data-notes="오늘 2시간 동안 배울 내용을 한눈에 보여주기. M6 복습, 프로젝트 고도화, 커스텀 Skill 만들기, 배포, 발표, 전체 복습, 다음 단계 7개 섹션으로 구성. 마지막 수업이므로 성취감을 느낄 수 있도록 분위기 조성.">
 <p class="s-label">Today</p>
 <h2 class="s-title">오늘 배울 것</h2>
 <div class="s-body">
 <div class="grid-2">
 <div class="card"><div class="card-icon">🔄</div><div class="card-title">M6 복습</div><div class="card-desc">지난 주 실전 프로젝트 I 되짚기</div></div>
 <div class="card"><div class="card-icon">✨</div><div class="card-title">프로젝트 고도화</div><div class="card-desc">코드 품질, 성능, 보안, 접근성</div></div>
+<div class="card"><div class="card-icon">🛠️</div><div class="card-title">프로젝트 3</div><div class="card-desc">나만의 Skill로 반복 업무 자동화</div></div>
 <div class="card"><div class="card-icon">☁️</div><div class="card-title">Code-to-Cloud 배포</div><div class="card-desc">Firebase로 실제 서비스 배포</div></div>
 <div class="card"><div class="card-icon">🎤</div><div class="card-title">프로젝트 발표</div><div class="card-desc">팀별 데모와 코드 리뷰</div></div>
 <div class="card"><div class="card-icon">📚</div><div class="card-title">전체 과정 복습</div><div class="card-desc">M1부터 M7까지 여정 정리</div></div>
-<div class="card"><div class="card-icon">🚀</div><div class="card-title">다음 단계</div><div class="card-desc">과정 이후의 성장 로드맵</div></div>
 </div>
 </div>
 </div>
@@ -279,6 +279,76 @@ body.light-slide .slide-num{color:rgba(0,0,0,.12)}
 <div class="hl-box-content">
 <div class="hl-box-title">Agent 프롬프트</div>
 <div class="hl-box-desc">"이 프로젝트의 README.md를 작성해줘. 설치 방법, 사용법, 기술 스택을 포함해줘."</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- 프로젝트 3: 나만의 Skill 만들기 — 오프너 -->
+<div class="slide s-accent" data-theme="dark" data-section="프로젝트 3" data-notes="프로젝트 3 시작. 그동안 남이 만든 Skills를 썼다면, 이번에는 직접 만든다. 반복 업무를 자동화하는 나만의 Skill을 만드는 것이 목표.">
+<p class="s-label">Project 3</p>
+<h2 class="s-title">나만의 Skill 만들어서<br><span>반복 업무 자동화하기</span></h2>
+<div class="s-body">
+<p class="t-main">M2에서 배운 Agent Skills를 넘어, <span class="hl">직접 만드는</span> 실전 프로젝트.</p>
+<p class="t-sub" style="margin-top:14px">목표: 매번 반복하는 작업을 Skill 하나로 자동화하기</p>
+</div>
+</div>
+
+<!-- 반복 업무 식별하기 -->
+<div class="slide s-white" data-theme="light" data-section="프로젝트 3" data-notes="반복 업무를 식별하는 방법. Agent Pane에 매번 같은 질문을 하거나, 같은 패턴의 코드를 반복 작성한다면 Skill로 만들 시점. 실제 사례를 들어 설명.">
+<p class="s-label">Step 1</p>
+<h2 class="s-title">반복 업무 <span class="hl">식별하기</span></h2>
+<div class="s-body">
+<p class="t-main">이런 적 없나요?</p>
+<div class="grid-2" style="margin-top:20px">
+<div class="card"><div class="card-icon">🔄</div><div class="card-title">매번 같은 질문</div><div class="card-desc">"Firebase 에러 핸들링해줘"<br>"컴포넌트 테스트 만들어줘"</div></div>
+<div class="card"><div class="card-icon">📋</div><div class="card-title">매번 같은 패턴</div><div class="card-desc">CRUD 함수, API 라우트, 폼 유효성 검사…</div></div>
+</div>
+<div class="hl-box success" style="margin-top:20px">
+<div class="hl-box-icon">💡</div>
+<div class="hl-box-content">
+<div class="hl-box-title">Skill 후보 찾는 법</div>
+<div class="hl-box-desc">최근 Agent 대화에서 3번 이상 같은 지시를 내렸다면 → Skill 만들 시점!</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- SKILL.md 작성하기 -->
+<div class="slide s-dark" data-theme="dark" data-section="프로젝트 3" data-notes=".agents/skills/ 폴더에 SKILL.md 파일을 만드는 방법. 파일 하나면 Skill이 완성됨. 구조는 간단: 이름, 설명, 지시사항, 예시.">
+<p class="s-label">Step 2</p>
+<h2 class="s-title">SKILL.md <span class="hl">작성하기</span></h2>
+<div class="s-body">
+<div class="card" style="font-family:monospace;font-size:.88rem;line-height:1.7;max-width:88%">
+<div style="color:#F7585C;font-weight:700;font-family:inherit">.agents/skills/firebase-crud.md</div>
+<div style="color:#8B5CF6;font-weight:600;font-family:inherit;margin-top:10px">## Firebase CRUD 자동 생성</div>
+<div style="margin-top:6px">이 프로젝트의 Firestore CRUD 함수를 생성합니다.</div>
+<div style="color:#8B5CF6;font-weight:600;font-family:inherit;margin-top:10px">### 규칙</div>
+<div>- 모든 함수는 try/catch로 감싸기</div>
+<div>- 컬렉션명은 snake_case</div>
+<div>- 반환값은 { success, data, error } 형식</div>
+<div>- TypeScript strict mode 준수</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- 실전: Skill 만들고 테스트하기 -->
+<div class="slide s-light" data-theme="light" data-section="프로젝트 3" data-notes="직접 Skill을 만들고 Agent Pane에서 테스트하는 실습. 15분 실습 시간. 반복 업무 하나를 골라서 SKILL.md로 만들고, Agent가 해당 규칙을 따르는지 확인.">
+<p class="s-label">Hands-on</p>
+<h2 class="s-title">실습: <span class="hl">나만의 Skill</span> 만들기</h2>
+<div class="s-body">
+<ul class="num-list">
+<li><strong>반복 업무 하나 선택</strong> — 최근 Agent 대화에서 가장 많이 한 요청 고르기</li>
+<li><strong>.agents/skills/ 폴더 생성</strong> — 프로젝트 루트에 생성</li>
+<li><strong>SKILL.md 작성</strong> — 이름, 규칙, 예시 포함 (최소 3가지 규칙)</li>
+<li><strong>Agent Pane에서 테스트</strong> — 해당 작업 요청 → Skill이 적용되는지 확인</li>
+</ul>
+<div class="hl-box info" style="margin-top:20px">
+<div class="hl-box-icon">⏱️</div>
+<div class="hl-box-content">
+<div class="hl-box-title">실습 시간: 15분</div>
+<div class="hl-box-desc">추천 주제: Firebase CRUD 자동화, 컴포넌트 템플릿, 에러 핸들링, 테스트 생성</div>
 </div>
 </div>
 </div>

@@ -161,7 +161,14 @@ body.light-slide .slide-num{color:rgba(0,0,0,.12)}
 <div class="card"><div class="card-icon">🎶</div><div class="card-title">바이브 코딩이란?</div><div class="card-desc">AI와 함께 코딩하는 새로운 패러다임</div></div>
 <div class="card"><div class="card-icon">🚀</div><div class="card-title">Antigravity 소개</div><div class="card-desc">Google의 agent-first IDE</div></div>
 <div class="card"><div class="card-icon">⚙️</div><div class="card-title">설치 및 환경 설정</div><div class="card-desc">개발 환경을 구축해 봅시다</div></div>
-<div class="card"><div class="card-icon">💬</div><div class="card-title">첫 실습</div><div class="card-desc">Agent와 대화하며 코드 수정하기</div></div>
+<div class="card"><div class="card-icon">🎮</div><div class="card-title">실습: 게임 만들기</div><div class="card-desc">바이브 코딩으로 게임을 만들어봅시다</div></div>
+</div>
+<div class="hl-box info" style="margin-top:20px">
+<div class="hl-box-icon">🔗</div>
+<div class="hl-box-content">
+<div class="hl-box-title">실시간 소통</div>
+<div class="hl-box-desc">질문, 아이디어 공유: <a href="https://www.tldraw.com/f/UNAhxrL1PtgRDRlXaWJSr?d=v41.139.1468.923.page" target="_blank" style="color:#F7585C;text-decoration:underline">tldraw 보드 열기</a></div>
+</div>
 </div>
 </div>
 </div>
@@ -527,12 +534,23 @@ body.light-slide .slide-num{color:rgba(0,0,0,.12)}
 </div>
 
 <!-- 18. 실습 안내 -->
-<div class="slide s-accent" data-theme="dark" data-section="실습" data-notes="실습 시작 신호. 30분 정도 실습 시간을 줄 것이라고 안내. 에이전트와의 대화가 익숙해지는 것이 오늘의 목표.">
+<div class="slide s-accent" data-theme="dark" data-section="실습" data-notes="실습 시작 신호. 오늘의 실습은 바이브 코딩으로 게임 만들기. Ralph Loop를 켜두면 AI가 자동으로 반복 작업. 30분 실습.">
 <p class="s-label">Hands-on</p>
-<h2 class="s-title">실습: Agent와 대화하기</h2>
+<h2 class="s-title">실습: 바이브 코딩으로 <span class="hl">게임 만들기</span></h2>
 <div class="s-body">
-<p class="t-main">Agent Pane을 열고, AI에게 질문해 봅시다.</p>
-<p class="t-sub" style="margin-top:16px">목표: Agent Pane이 익숙해지기</p>
+<p class="t-main">Agent Pane에 게임 아이디어를 말하고, AI가 만들어줍니다.</p>
+<div class="grid-3" style="margin-top:16px">
+<div class="card"><div class="card-icon">🏓</div><div class="card-title">Pong</div><div class="card-desc">클래식 핑퐁 게임</div></div>
+<div class="card"><div class="card-icon">🐍</div><div class="card-title">Snake</div><div class="card-desc">스네이크 게임</div></div>
+<div class="card"><div class="card-icon">🧩</div><div class="card-title">자유 주제</div><div class="card-desc">원하는 게임 직접!</div></div>
+</div>
+<div class="hl-box" style="margin-top:16px;background:rgba(247,88,92,.08);border-color:#F7585C">
+<div class="hl-box-icon">🔄</div>
+<div class="hl-box-content">
+<div class="hl-box-title">Ralph Loop</div>
+<div class="hl-box-desc">자동 반복 개발 모드. Agent가 코드 생성 → 실행 → 수정을 자동으로 반복합니다. Agent Pane에서 <code>/ralph-loop</code> 입력으로 시작.</div>
+</div>
+</div>
 </div>
 </div>
 
@@ -551,36 +569,40 @@ body.light-slide .slide-num{color:rgba(0,0,0,.12)}
 </div>
 
 <!-- 20. 코드 설명 요청 -->
-<div class="slide s-light" data-theme="light" data-section="실습" data-notes="첫 번째 실습 과제. Agent에게 코드를 설명해 달라고 요청해보기. 실제 파일을 열고 '이 코드를 설명해줘'라고 입력해 보라고 안내.">
+<div class="slide s-light" data-theme="light" data-section="실습" data-notes="첫 번째 실습: 간단한 게임을 Agent에게 요청. Pong이나 Snake 같은 클래식 게임 추천.">
 <p class="s-label">Exercise 1</p>
-<h2 class="s-title">실습 1: 코드 설명받기</h2>
+<h2 class="s-title">실습 1: <span class="hl">게임 기획</span>하기</h2>
 <div class="s-body">
-<p class="t-main">프로젝트의 파일을 하나 열고, Agent Pane에 입력:</p>
+<p class="t-main">Agent Pane에 게임 아이디어를 입력하세요:</p>
 <div class="hl-box info" style="margin-top:16px">
 <div class="hl-box-icon">💬</div>
 <div class="hl-box-content">
 <div class="hl-box-title">프롬프트 예시</div>
-<div class="hl-box-desc">"이 파일의 코드를 설명해줘. 주요 기능이 뭐야?"</div>
+<div class="hl-box-desc">"HTML/JS로 Pong 게임을 만들어줘. 2인용, 화면 크기에 맞게, 점수 표시 포함. 하나의 HTML 파일로."</div>
 </div>
 </div>
-<p class="t-sub">→ AI가 코드를 분석하고 구조를 설명해 줍니다</p>
+<p class="t-sub">→ AI가 전체 코드를 생성합니다. 브라우저에서 바로 실행!</p>
 </div>
 </div>
 
 <!-- 21. 코드 수정 요청 -->
-<div class="slide s-white" data-theme="light" data-section="실습" data-notes="두 번째 실습 과제. Agent에게 코드 수정을 요청해보기. 구체적인 변경사항을 자연어로 전달하는 연습.">
+<div class="slide s-white" data-theme="light" data-section="실습" data-notes="두 번째 실습: 생성된 게임에 기능 추가. 바이브 코딩의 핵심은 반복 개선.">
 <p class="s-label">Exercise 2</p>
-<h2 class="s-title">실습 2: 코드 수정하기</h2>
+<h2 class="s-title">실습 2: 게임 <span class="hl">고도화</span>하기</h2>
 <div class="s-body">
-<p class="t-main">Agent Pane에 구체적인 수정 요청을 입력해 보세요:</p>
+<p class="t-main">생성된 게임에 기능을 추가해 보세요:</p>
 <div class="hl-box info" style="margin-top:16px">
 <div class="hl-box-icon">💬</div>
 <div class="hl-box-content">
 <div class="hl-box-title">프롬프트 예시</div>
-<div class="hl-box-desc">"버튼의 색상을 빨간색에서 파란색으로 변경해줘"<br>"이 함수에 에러 처리를 추가해줘"</div>
+<div class="hl-box-desc">"게임에 시작 화면 추가해줘. 스페이스바로 시작. 난이도 선택(쉬움/보통/어려움)도 넣어줘. 그리고 게임오버 화면도."</div>
 </div>
 </div>
-<p class="t-sub">→ AI가 변경사항을 제안하고, 수락하면 코드가 수정됩니다</p>
+<p class="t-sub">→ 바이브 코딩의 핵심: 대화로 반복 개선하기</p>
+</div>
+</div>
+
+<!-- 22. Agent Pane 사용 팁 -->
 </div>
 </div>
 
@@ -604,25 +626,34 @@ body.light-slide .slide-num{color:rgba(0,0,0,.12)}
 </div>
 
 <!-- 23. 자주하는 실수 -->
-<div class="slide s-coral" data-theme="light" data-section="실습" data-notes="초보자들이 바이브 코딩에서 자주 하는 3가지 실수를 설명. AI를 너무 맹신하지 말 것, 한번에 너무 많이 요청하지 말 것, 결과를 무조건 검증할 것.">
-<p class="s-label">Common Mistakes</p>
-<h2 class="s-title">자주하는 실수 TOP 3</h2>
+<div class="slide s-coral" data-theme="light" data-section="실습" data-notes="초보자들이 바이브 코딩에서 자주 하는 3가지 실수를 설명. AI를 너무 맹신하지 말 것, 한번에 너무 많이 요청하지 말 것, 결과를 무조건 검증할 것. 위험 사례도 같이 언급.">
+<p class="s-label">Watch Out</p>
+<h2 class="s-title">바이브 코딩 <span class="hl">위험과 실수</span></h2>
 <div class="s-body">
 <ul class="num-list">
 <li><strong>AI를 맹신하기</strong> — 생성된 코드를 반드시 검증하세요</li>
 <li><strong>한번에 너무 많이 요청</strong> — 작은 단위로 나누어 요청하세요</li>
 <li><strong>컨텍스트 없이 질문</strong> — 관련 파일을 먼저 열어두세요</li>
+<li><strong>리뷰 없이 커밋</strong> — AI 코드도 사람 코드처럼 리뷰하세요</li>
 </ul>
+<div class="hl-box" style="margin-top:20px;background:rgba(247,88,92,.08);border-color:#F7585C">
+<div class="hl-box-icon">⚠️</div>
+<div class="hl-box-content">
+<div class="hl-box-title">실제 위험 사례</div>
+<div class="hl-box-desc">AI가 존재하지 않는 라이브러리를 import해서 런타임 에러 발생. 보안 취약점이 있는 코드를 생성. 삭제된 API를 사용해 배포 후 장애. "AI가 만든 코드도 내 코드입니다. 책임은 항상 사람에게."</div>
+</div>
+</div>
 </div>
 </div>
 
 <!-- 24. 실습 자유시간 -->
-<div class="slide s-gradient centered" data-theme="dark" data-section="실습" data-notes="실습 자유 시간. 15-20분 정도. 참가자들이 자유롭게 Agent Pane을 사용해보도록. 문제가 있으면 순회하며 도와주기.">
-<p class="s-label">Practice</p>
-<h2 class="s-title">자유 실습 시간 🛠️</h2>
-<div class="s-body">
-<p class="t-main">Agent Pane에 자유롭게 질문하고 코드를 수정해 보세요.</p>
-<p class="t-sub">막히면 손들어 주세요! 도와드리겠습니다.</p>
+<div class="slide s-gradient centered" data-theme="dark" data-section="실습" data-notes="실습 자유 시간. 15-20분. 참가자들이 자유롭게 게임을 고도화. Ralph Loop도 시도해보라고 권장.">
+<p class="s-label">Free Time</p>
+<h2 class="s-title">자유 실습 시간 <span class="hl">🛠️</span></h2>
+<div class="s-body" style="text-align:center">
+<p class="t-main">게임을 더 발전시켜 보세요!</p>
+<p class="t-sub" style="margin-top:12px">Ralph Loop 켜두면 AI가 자동으로 반복 개선합니다</p>
+</div>
 </div>
 </div>
 
